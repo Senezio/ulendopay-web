@@ -1,13 +1,15 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/api/*"
-  to = "https://198.251.88.32/api/:splat"
+  to = "/.netlify/functions/api-proxy"
   status = 200
-  force = true
-  headers = {Host = "ulendopay.malawihire.com", X-Forwarded-For = "netlify"}
 
 [[redirects]]
   from = "/*"
