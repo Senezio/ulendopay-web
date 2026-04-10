@@ -9,7 +9,7 @@
       <!-- KYC Banner -->
       <div v-if="auth.user?.kyc_status !== 'verified'" class="kyc-banner fade-up-1" @click="router.push('/kyc')">
         <div class="kyc-banner__left">
-          <span>⚠️</span>
+          <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-amber);"></i>
           <div>
             <div class="kyc-banner__title">KYC Verification Required</div>
             <div class="kyc-banner__sub">Verify your identity to send money</div>

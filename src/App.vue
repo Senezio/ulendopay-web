@@ -27,6 +27,9 @@ import ToastContainer from '@/components/ui/ToastContainer.vue'
   --danger-bg:      #fef2f2;
   --success:        #16a34a;
   --success-bg:     #f0fdf4;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --accent-amber: #b45309;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
