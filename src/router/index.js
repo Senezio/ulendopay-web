@@ -50,6 +50,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresKyc: true },
     },
     {
+      path: '/topup',
+      name: 'topup',
+      component: () => import('@/views/dashboard/TopUpView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/history',
       name: 'history',
       component: () => import('@/views/dashboard/TransactionHistoryView.vue'),
