@@ -193,3 +193,489 @@ function onScroll() { scrolled.value = window.scrollY > 20 }
 onMounted(()    => window.addEventListener('scroll', onScroll))
 onUnmounted(()  => window.removeEventListener('scroll', onScroll))
 
+const trustPoints = [
+  { iconClass: 'fa-regular fa-clock', label: 'Fast transfers',    desc: 'Most transfers complete within minutes' },
+  { iconClass: 'fa-solid fa-chart-line', label: 'Official rates',    desc: 'Rates sourced from central banks' },
+  { iconClass: 'fa-solid fa-lock', label: 'Secure by design',  desc: 'KYC verified, PIN protected, encrypted' },
+  { iconClass: 'fa-solid fa-globe', label: 'Pan-African',        desc: 'Supported across Sub-Saharan Africa' },
+]
+
+const steps = [
+  { title: 'Create your account',     desc: 'Register with your phone number and verify your identity. Takes less than 2 minutes.' },
+  { title: 'Add a recipient',          desc: 'Enter the recipient\'s mobile money number or bank account. Save them for future transfers.' },
+  { title: 'Send and track',           desc: 'Enter the amount, confirm the rate, and send. Track your transfer in real time.' },
+]
+
+const features = [
+  { iconClass: 'fa-solid fa-arrow-right', title: 'Send money',         desc: 'Transfer to mobile money accounts and bank accounts across Africa at transparent rates.' },
+  { iconClass: 'fa-solid fa-chart-simple', title: 'Live exchange rates', desc: 'Rates are pulled directly from official central bank sources. No inflated margins.' },
+  { iconClass: 'fa-solid fa-clock-rotate-left', title: 'Transaction history', desc: 'Every transfer is logged with a unique reference number and full status tracking.' },
+  { iconClass: 'fa-solid fa-key', title: 'PIN & 2FA login',    desc: 'Log in using your phone number and PIN. Every session requires a one-time verification code.' },
+  { iconClass: 'fa-solid fa-id-card', title: 'KYC verification',   desc: 'Submit your national ID or passport once. Verified accounts get higher transfer limits.' },
+  { iconClass: 'fa-solid fa-message', title: 'SMS notifications',  desc: 'Receive SMS updates for every transfer — initiated, completed, or refunded.' },
+]
+
+const securityPoints = [
+  'Phone numbers are encrypted and hashed at rest',
+  'PINs are never stored in plain text',
+  'All transfers use escrow with double-entry ledger',
+  'Every login requires a 6-digit OTP',
+  'KYC identity verification required for all users',
+]
+</script>
+
+<style scoped>
+/* ── Base ──────────────────────────────────────────────────────────────── */
+.landing {
+  font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  color: #1a1a1a;
+  background: #fff;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Navbar ────────────────────────────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.navbar--scrolled {
+  border-bottom-color: #e5e5e5;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.navbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #1a1a1a;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.navbar__logo-mark {
+  width: 30px; height: 30px;
+  background: #e85d04;
+  color: #fff;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800;
+  flex-shrink: 0;
+}
+.navbar__logo-mark--sm { width: 24px; height: 24px; font-size: 12px; border-radius: 5px; }
+.navbar__logo strong { font-weight: 700; }
+
+.navbar__links {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+}
+.navbar__links a {
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.navbar__links a:hover { color: #1a1a1a; }
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.navbar__mobile-actions {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* Buttons */
+.btn-ghost {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+}
+.btn-ghost:hover { border-color: #aaa; background: #f7f7f7; }
+.btn-ghost--sm { padding: 6px 12px; font-size: 13px; }
+
+.btn-primary {
+  display: inline-block;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #e85d04;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #d05204; }
+.btn-primary--lg   { padding: 13px 28px; font-size: 15px; }
+.btn-primary--full { width: 100%; text-align: center; border-radius: 8px; padding: 14px; }
+
+.btn-outline {
+  display: inline-block;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+}
+.btn-outline:hover { border-color: #888; background: #f7f7f7; }
+.btn-outline--lg   { padding: 13px 28px; font-size: 15px; }
+
+/* Hamburger */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  background: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #333;
+  border-radius: 2px;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  padding: 8px 24px 14px;
+  border-top: 1px solid #eee;
+  gap: 2px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  padding: 10px 0;
+  font-size: 15px;
+  color: #333;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+}
+.mobile-menu a:last-child { border-bottom: none; }
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+.hero {
+  padding: 80px 0 72px;
+  border-bottom: 1px solid #efefef;
+}
+.hero__tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.hero__headline {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #111;
+  margin-bottom: 18px;
+}
+.hero__headline span { color: #e85d04; }
+.hero__sub {
+  font-size: 17px;
+  color: #555;
+  max-width: 520px;
+  margin-bottom: 36px;
+  line-height: 1.65;
+}
+.hero__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.hero__disclaimer {
+  font-size: 13px;
+  color: #999;
+}
+
+/* ── Trust bar ─────────────────────────────────────────────────────────── */
+.trust-bar {
+  background: #fafafa;
+  border-bottom: 1px solid #efefef;
+  padding: 32px 0;
+}
+.trust-bar__inner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.trust-item__icon { font-size: 20px; margin-top: 2px; flex-shrink: 0; }
+.trust-item__label { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.trust-item__desc  { font-size: 13px; color: #777; margin-top: 2px; }
+
+/* ── Sections ──────────────────────────────────────────────────────────── */
+.section     { padding: 80px 0; }
+.section--alt { background: #fafafa; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; }
+
+.section__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #e85d04;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.section__title {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  color: #111;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+}
+
+/* ── Steps ─────────────────────────────────────────────────────────────── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #e5e5e5;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.step-card {
+  background: #fff;
+  padding: 32px;
+}
+.step-card__num {
+  font-size: 28px;
+  font-weight: 800;
+  color: #e5e5e5;
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.step-card h3 { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 8px; }
+.step-card p  { font-size: 14px; color: #666; line-height: 1.6; }
+
+/* ── Features ──────────────────────────────────────────────────────────── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.feature-card {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+}
+.feature-card__icon {
+  font-size: 22px;
+  margin-bottom: 14px;
+  display: block;
+}
+.feature-card h3 { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; }
+.feature-card p  { font-size: 13px; color: #666; line-height: 1.6; }
+
+/* ── Security ──────────────────────────────────────────────────────────── */
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.security__body {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.security__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.security__list li {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  color: #333;
+}
+.security__list li span { color: #e85d04; font-weight: 700; flex-shrink: 0; }
+
+.security__visual { display: flex; justify-content: center; }
+.security__card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 24px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.security__card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  border-bottom: 1px solid #f0f0f0;
+}
+.security__card-row--muted { font-weight: 400; color: #555; }
+.security__card-row:last-of-type { border-bottom: none; }
+.security__card-divider { height: 1px; background: #efefef; margin: 8px 0; }
+.security__card-status {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  padding-top: 4px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+.badge--green { background: #e8f5e9; color: #2e7d32; }
+
+/* ── CTA Section ────────────────────────────────────────────────────────── */
+.cta-section {
+  background: #111;
+  padding: 80px 0;
+}
+.cta-section__inner {
+  text-align: center;
+}
+.cta-section h2 {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+.cta-section p {
+  font-size: 16px;
+  color: #aaa;
+  max-width: 460px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+.cta-section__note {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.footer {
+  padding: 32px 0;
+  border-top: 1px solid #efefef;
+}
+.footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+.footer__links {
+  display: flex;
+  gap: 20px;
+}
+.footer__links a { font-size: 13px; color: #666; text-decoration: none; }
+.footer__links a:hover { color: #111; }
+.footer__copy { font-size: 12px; color: #aaa; }
+
+/* ── Sticky mobile CTA ───────────────────────────────────────────────────── */
+.sticky-cta {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 16px;
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  z-index: 99;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .navbar__links   { display: none; }
+  .navbar__actions { display: none; }
+  .navbar__mobile-actions { display: flex; }
+
+  .trust-bar__inner   { grid-template-columns: 1fr 1fr; }
+  .steps-grid         { grid-template-columns: 1fr; }
+  .features-grid      { grid-template-columns: 1fr 1fr; }
+  .security-grid      { grid-template-columns: 1fr; gap: 40px; }
+  .security__visual   { order: -1; }
+
+  .footer__inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .sticky-cta    { display: block; }
+
+  /* Push content above sticky CTA */
+  .footer { padding-bottom: 80px; }
+}
+
+@media (max-width: 480px) {
+  .hero { padding: 56px 0 52px; }
+  .trust-bar__inner { grid-template-columns: 1fr; }
+  .features-grid    { grid-template-columns: 1fr; }
+}
+</style>
