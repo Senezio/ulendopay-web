@@ -93,7 +93,7 @@ async function handleSubmit() {
     fd.append('document_type',   form.value.document_type)
     fd.append('document_number', form.value.document_number)
     fd.append('document', file.value)
-    await client.post('/kyc', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    await client.post('/kyc/submit', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
     submitted.value = true
   } catch (err) {
     const errs = err.response?.data?.errors
