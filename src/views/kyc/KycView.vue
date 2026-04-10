@@ -95,6 +95,7 @@ const statuses = {
   none:     { color: 'var(--text-secondary)', bg: '#ffffff11', iconClass: 'fa-regular fa-circle', text: 'Not submitted' },
   pending:  { color: 'var(--accent-amber)',   bg: '#ffb93822', iconClass: 'fa-regular fa-clock', text: 'Under review' },
   verified: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-solid fa-circle-check', text: 'Verified' },
+  approved: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-solid fa-circle-check', text: 'Verified' },
   rejected: { color: 'var(--danger)',         bg: '#ff444422', iconClass: 'fa-solid fa-circle-xmark', text: 'Rejected' },
 }
 
