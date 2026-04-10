@@ -145,62 +145,43 @@ const confirmRows = computed(() => [
 ])
 
 async function handleQuote() {
-  // If we already have a quote, just move to the next step
-  if (quote.value) {
-    currentStep.value = 'Recipient'
-    return
-  }
-
+  if (quote.value) { currentStep.value = 'Recipient'; return }
   error.value = ''
   loading.value = true
   try {
-    // Instead of calling /rates/quote (which 404s), we call /rate-locks
-    // This returns the rate, fee, and receive_amount in one go.
     const { data: rl } = await client.post('/rate-locks', quoteForm.value)
-    
     rateLock.value = rl.rate_lock
     quote.value = {
       exchange_rate: rl.rate_lock.locked_rate,
       fee_amount: rl.rate_lock.fee_amount,
-      receive_rate: rl.rate_lock.locked_rate,
       receive_amount: rl.rate_lock.receive_amount
     }
-    
     countdown.value = rl.rate_lock.expires_in_seconds || 600
     if (timer) clearInterval(timer)
-    timer = setInterval(() => { 
-      if (countdown.value > 0) countdown.value-- 
-    }, 1000)
-
+    timer = setInterval(() => { if (countdown.value > 0) countdown.value-- }, 1000)
+    currentStep.value = 'Recipient'
   } catch (err) {
     error.value = err.response?.data?.message || 'Could not get quote'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 
 async function handleSend() {
   error.value = ''
   loading.value = true
   try {
-    // 1. Create/Validate the recipient
     const { data: rd } = await client.post('/recipients', recipientForm.value)
-    
-    // 2. Create the transaction using the rate_lock_id
     const { data } = await client.post('/transactions', {
+      idempotency_key: `send-${Date.now()}`,
       rate_lock_id:    rateLock.value.id,
       recipient_id:    rd.recipient.id,
       send_amount:     quoteForm.value.send_amount,
     })
-    
     transaction.value = data.transaction
     currentStep.value = 'Done'
     if (timer) clearInterval(timer)
   } catch (err) {
     error.value = err.response?.data?.message || 'Transfer failed'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 
 function reset() {
@@ -215,7 +196,6 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
 </script>
 
 <style scoped>
-/* ALL YOUR ORIGINAL CSS RETAINED EXACTLY */
 .send-header { margin-bottom: 24px; }
 .send-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
 .send-header p  { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
