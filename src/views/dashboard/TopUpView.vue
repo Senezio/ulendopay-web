@@ -214,7 +214,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useUiStore } from '@/stores/ui'
 
 const router = useRouter()
-const auth   = useUiStore()
+const auth   = useAuthStore()
 const ui     = useUiStore()
 
 const wallet       = ref(null)
@@ -256,13 +256,12 @@ const quickAmounts = computed(() => {
 
 // Dial code based on user country
 const dialCode = computed(() => {
-  const store = useAuthStore()
   const codes = {
     MWI: '+265', TZA: '+255', KEN: '+254',
     ZMB: '+260', ZAF: '+27',  MOZ: '+258',
     GHA: '+233', UGA: '+256', RWA: '+250',
   }
-  return codes[store.user?.country_code] || '+'
+  return codes[auth.user?.country_code] || '+'
 })
 
 const pollingStatusClass = computed(() => ({
@@ -380,6 +379,7 @@ function startPolling(reference) {
       if (data.status === 'completed') {
         pollingStatus.value = 'completed'
         clearInterval(pollingTimer)
+        pollingTimer = null
         await loadWallet()
         await loadHistory()
         ui.success('Wallet topped up successfully!')
@@ -389,6 +389,7 @@ function startPolling(reference) {
       if (['failed', 'cancelled'].includes(data.status)) {
         pollingStatus.value = 'failed'
         clearInterval(pollingTimer)
+        pollingTimer = null
         return
       }
 
@@ -407,7 +408,8 @@ function startPolling(reference) {
 async function loadWallet() {
   try {
     const { data } = await walletApi.getAll()
-    wallet.value = data.wallets?.[0] ?? null
+    const raw = data.wallets?.[0] ?? null
+    wallet.value = raw ? { ...raw, currency_code: raw.currency } : null
   } catch {
     // Silent fail
   }
@@ -438,7 +440,7 @@ function reset() {
   errors.value = { amount: '', mobile_operator: '', phone_number: '', general: '' }
   currentRef.value    = ''
   pollingStatus.value = 'waiting'
-  if (pollingTimer) clearInterval(pollingTimer)
+  if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null }
 }
 
 onMounted(async () => {
@@ -446,7 +448,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  if (pollingTimer) clearInterval(pollingTimer)
+  if (pollingTimer) { clearInterval(pollingTimer); pollingTimer = null }
 })
 </script>
 
