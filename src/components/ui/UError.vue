@@ -1,12 +1,18 @@
 <template>
-  <div class="error">{{ message }}</div>
+  <div class="error">
+    <i class="fa-solid fa-circle-exclamation"></i>
+    {{ message }}
+  </div>
 </template>
 <script setup>
 defineProps(['message'])
 </script>
 <style scoped>
 .error {
-  padding: 10px 14px; background: #ff444411; border: 1px solid #ff444433;
-  border-radius: 8px; color: #ff6666; font-size: 13px; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; background: var(--danger-bg);
+  border: 1px solid #fecaca; border-radius: 6px;
+  color: var(--danger); font-size: 13px; margin-bottom: 16px;
 }
+.error i { font-size: 13px; flex-shrink: 0; }
 </style>

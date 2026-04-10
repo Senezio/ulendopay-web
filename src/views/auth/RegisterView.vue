@@ -1,47 +1,66 @@
 <template>
   <div class="auth-page">
-    <div class="auth-container">
-      <div class="auth-logo fade-up">
-        <div class="logo-icon">U</div>
-        <h1>{{ step === 'form' ? 'Create account' : 'Verify phone' }}</h1>
-        <p>{{ step === 'form' ? 'Join Ulendo Pay — send money across Africa' : 'Enter the code sent to your phone' }}</p>
+    <div class="auth-wrap">
+
+      <div class="auth-brand fade-up">
+        <RouterLink to="/" class="brand-link">
+          <div class="brand-mark">U</div>
+          <span>Ulendo <strong>Pay</strong></span>
+        </RouterLink>
       </div>
 
-      <div class="auth-card fade-up-1">
-        <form v-if="step === 'form'" @submit.prevent="handleRegister">
-          <UField label="Full Name" v-model="form.name" placeholder="Alinafe Banda" />
-          <UField label="Phone Number" type="tel" v-model="form.phone" placeholder="+265 XXX XXX XXX" />
-
-          <div class="field">
-            <label>Country</label>
-            <select v-model="form.country_code">
-              <option v-for="c in countries" :key="c[0]" :value="c[0]">{{ c[1] }}</option>
-            </select>
+      <div class="auth-box fade-up-1">
+        <template v-if="step === 'form'">
+          <div class="auth-head">
+            <h1>Create account</h1>
+            <p>Join Ulendo Pay and send money across Africa.</p>
           </div>
 
-          <UField label="4-digit PIN" type="password" v-model="form.pin" placeholder="••••" maxlength="4" />
-          <UField label="Confirm PIN" type="password" v-model="form.pin_confirmation" placeholder="••••" maxlength="4" />
+          <form @submit.prevent="handleRegister">
+            <UField label="Full Name" v-model="form.name" placeholder="e.g. Alinafe Banda" />
+            <UField label="Phone Number" type="tel" v-model="form.phone" placeholder="+265 XXX XXX XXX" />
 
-          <UError v-if="error" :message="error" />
-          <UButton :loading="loading">Create Account</UButton>
+            <div class="field">
+              <label>Country</label>
+              <select v-model="form.country_code">
+                <option v-for="c in countries" :key="c[0]" :value="c[0]">{{ c[1] }}</option>
+              </select>
+            </div>
 
-          <div class="auth-link">
-            <RouterLink to="/login">Already have an account? Sign in</RouterLink>
+            <div class="pin-row">
+              <UField label="4-digit PIN" type="password" v-model="form.pin" placeholder="••••" maxlength="4" />
+              <UField label="Confirm PIN" type="password" v-model="form.pin_confirmation" placeholder="••••" maxlength="4" />
+            </div>
+
+            <UError v-if="error" :message="error" />
+            <UButton :loading="loading">Create Account</UButton>
+          </form>
+
+          <p class="auth-alt">Already have an account? <RouterLink to="/login">Sign in</RouterLink></p>
+          <p class="auth-terms">
+            By creating an account you agree to our
+            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </p>
+        </template>
+
+        <template v-else>
+          <div class="auth-head">
+            <div class="otp-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <h1>Verify your phone</h1>
+            <p>We sent a 6-digit code to <strong>{{ form.phone }}</strong>. Enter it below.</p>
           </div>
-        </form>
-
-        <form v-else @submit.prevent="handleVerify">
-          <div class="otp-header">
-            <span class="otp-icon">📱</span>
-            <p>Enter the 6-digit code we sent to your phone</p>
-          </div>
-          <UField label="Verification Code" type="text" v-model="otp"
-            placeholder="000000" maxlength="6"
-            :style="{ textAlign: 'center', letterSpacing: '8px', fontSize: '20px' }" />
-          <UError v-if="error" :message="error" />
-          <UButton :loading="loading">Verify Phone</UButton>
-        </form>
+          <form @submit.prevent="handleVerify">
+            <UField label="Verification Code" type="text" v-model="otp"
+              placeholder="000000" maxlength="6" class="otp-field" />
+            <UError v-if="error" :message="error" />
+            <UButton :loading="loading">Verify Phone Number</UButton>
+            <button type="button" class="btn-text" @click="step = 'form'">
+              ← Go back
+            </button>
+          </form>
+        </template>
       </div>
+
     </div>
   </div>
 </template>
@@ -55,13 +74,12 @@ import UField  from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
 import UError  from '@/components/ui/UError.vue'
 
-const router = useRouter()
-const ui     = useUiStore()
-
-const step   = ref('form')
-const userId = ref(null)
-const otp    = ref('')
-const error  = ref('')
+const router  = useRouter()
+const ui      = useUiStore()
+const step    = ref('form')
+const userId  = ref(null)
+const otp     = ref('')
+const error   = ref('')
 const loading = ref(false)
 
 const form = ref({
@@ -94,10 +112,10 @@ async function handleVerify() {
   loading.value = true
   try {
     await client.post('/auth/verify-phone', { user_id: userId.value, otp: otp.value })
-    ui.success('Phone verified! You can now log in.')
+    ui.success('Phone verified. You can now sign in.')
     router.push('/login')
   } catch (err) {
-    error.value = err.response?.data?.message || 'Invalid code'
+    error.value = err.response?.data?.message || 'Invalid or expired code'
   } finally { loading.value = false }
 }
 </script>
@@ -105,36 +123,71 @@ async function handleVerify() {
 <style scoped>
 .auth-page {
   min-height: 100vh; display: flex; align-items: center;
-  justify-content: center; padding: 20px;
+  justify-content: center; background: var(--bg-alt); padding: 24px;
 }
-.auth-container { width: 100%; max-width: 420px; }
-.auth-logo { text-align: center; margin-bottom: 36px; }
-.logo-icon {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: var(--accent); display: flex; align-items: center;
-  justify-content: center; margin: 0 auto 14px;
-  font-size: 26px; font-weight: 700; color: #000;
+.auth-wrap { width: 100%; max-width: 420px; }
+
+.auth-brand { margin-bottom: 28px; }
+.brand-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  text-decoration: none; color: var(--text-primary); font-size: 16px;
 }
-.auth-logo h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
-.auth-logo p  { color: var(--text-secondary); font-size: 14px; margin-top: 5px; }
-.auth-card {
-  background: var(--bg-card); border-radius: 20px;
-  border: 1px solid var(--border); padding: 28px;
+.brand-mark {
+  width: 30px; height: 30px; background: var(--accent); color: #fff;
+  border-radius: 7px; display: flex; align-items: center;
+  justify-content: center; font-size: 15px; font-weight: 800;
 }
+.brand-link strong { font-weight: 700; }
+
+.auth-box {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; padding: 32px;
+}
+
+.auth-head { margin-bottom: 24px; }
+.auth-head h1 { font-size: 22px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+.auth-head p  { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+.auth-head strong { color: var(--text-primary); }
+.otp-icon { font-size: 28px; color: var(--accent); margin-bottom: 10px; }
+
 .field { margin-bottom: 16px; }
 .field label {
-  display: block; font-size: 12px; color: var(--text-secondary);
-  margin-bottom: 6px; font-weight: 500;
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 6px;
 }
 .field select {
-  width: 100%; padding: 11px 14px; background: var(--bg-elevated);
-  border: 1px solid var(--border); border-radius: 10px;
+  width: 100%; padding: 11px 14px; background: #fff;
+  border: 1px solid var(--border); border-radius: 6px;
   color: var(--text-primary); font-size: 14px;
-  font-family: 'Sora', sans-serif; outline: none;
+  font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color 0.15s;
 }
-.otp-header { text-align: center; margin-bottom: 20px; }
-.otp-icon   { font-size: 32px; display: block; margin-bottom: 10px; }
-.otp-header p { color: var(--text-secondary); font-size: 13px; }
-.auth-link { text-align: center; margin-top: 18px; }
-.auth-link a { color: var(--accent); font-size: 13px; text-decoration: none; }
+.field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,93,4,0.1); }
+
+.pin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.otp-field :deep(input) {
+  text-align: center; letter-spacing: 0.4em;
+  font-size: 20px; font-weight: 700;
+}
+
+.auth-alt {
+  text-align: center; margin-top: 20px;
+  font-size: 14px; color: var(--text-secondary);
+}
+.auth-alt a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.auth-alt a:hover { text-decoration: underline; }
+
+.auth-terms {
+  text-align: center; margin-top: 12px;
+  font-size: 12px; color: var(--text-muted); line-height: 1.5;
+}
+.auth-terms a { color: var(--text-secondary); text-decoration: underline; }
+
+.btn-text {
+  width: 100%; margin-top: 10px; padding: 8px;
+  background: none; border: none; color: var(--text-muted);
+  font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.btn-text:hover { color: var(--text-secondary); }
 </style>

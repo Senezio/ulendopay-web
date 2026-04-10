@@ -1,16 +1,20 @@
 <template>
   <div class="field">
-    <label>{{ label }}</label>
-    <input v-bind="$attrs" :value="modelValue"
+    <label v-if="label">{{ label }}</label>
+    <input
+      v-bind="$attrs"
+      :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
-      @focus="focused = true" @blur="focused = false"
-      :style="[{ borderColor: focused ? 'var(--accent)' : 'var(--border)' }, inputStyle]" />
+      @focus="focused = true"
+      @blur="focused = false"
+      :class="{ focused }"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-defineProps(['label', 'modelValue', 'inputStyle'])
+defineProps(['label', 'modelValue'])
 defineEmits(['update:modelValue'])
 defineOptions({ inheritAttrs: false })
 const focused = ref(false)
@@ -18,11 +22,24 @@ const focused = ref(false)
 
 <style scoped>
 .field { margin-bottom: 16px; }
-label  { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
-input  {
-  width: 100%; padding: 11px 14px; background: var(--bg-elevated);
-  border: 1px solid var(--border); border-radius: 10px;
-  color: var(--text-primary); font-size: 14px;
-  font-family: 'Sora', sans-serif; outline: none; transition: border-color 0.15s;
+label {
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 6px;
 }
+input {
+  width: 100%; padding: 11px 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input.focused {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.1);
+}
+input::placeholder { color: var(--text-muted); }
 </style>

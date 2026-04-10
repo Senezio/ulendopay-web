@@ -1,21 +1,46 @@
 <template>
-  <button type="submit" :disabled="loading" class="btn" @click="$emit('click')">
-    {{ loading ? 'Please wait...' : $slots.default?.()[0]?.children }}
+  <button
+    :type="type || 'submit'"
+    :disabled="loading"
+    class="btn"
+    :class="variant"
+    @click="$emit('click')"
+  >
+    <span v-if="loading" class="spinner"></span>
+    <span v-else><slot /></span>
   </button>
 </template>
 
 <script setup>
-defineProps({ loading: Boolean })
+defineProps({ loading: Boolean, variant: String, type: String })
 defineEmits(['click'])
 </script>
 
 <style scoped>
 .btn {
-  width: 100%; padding: 13px; background: var(--accent);
-  border: none; border-radius: 10px; color: #000;
-  font-size: 14px; font-weight: 700; cursor: pointer;
-  font-family: 'Sora', sans-serif; transition: opacity 0.15s; margin-top: 4px;
+  width: 100%; padding: 12px 20px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 6px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s; margin-top: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
 }
-.btn:disabled { opacity: 0.7; cursor: not-allowed; }
-.btn:hover:not(:disabled) { opacity: 0.9; }
+.btn:hover:not(:disabled) { background: var(--accent-hover); }
+.btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.btn.outline {
+  background: transparent; color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.btn.outline:hover:not(:disabled) { background: var(--bg-alt); }
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
