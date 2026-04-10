@@ -3,17 +3,14 @@ import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  scrollBehavior: () => ({ top: 0 }),
   routes: [
     // ── Public ──────────────────────────────────────────────────────────────
     {
       path: '/',
       name: 'landing',
       component: () => import('@/views/LandingView.vue'),
-      meta: { public: true },
+      meta: { public: true, guestOnly: true },
     },
-
-    // ── Auth ─────────────────────────────────────────────────────────────────
     {
       path: '/register',
       name: 'register',
@@ -79,21 +76,17 @@ const router = createRouter({
   ],
 })
 
-// ── Navigation Guards ─────────────────────────────────────────────────────
 router.beforeEach((to) => {
   const auth = useAuthStore()
 
-  // Redirect authenticated users away from guest-only pages
   if (to.meta.guestOnly && auth.isAuthenticated) {
     return { name: 'dashboard' }
   }
 
-  // Redirect unauthenticated users to login
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
-  // Redirect users without KYC away from KYC-required pages
   if (to.meta.requiresKyc && !auth.isKycVerified) {
     return { name: 'kyc' }
   }
