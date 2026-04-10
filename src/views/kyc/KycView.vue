@@ -24,10 +24,11 @@
 
       <div v-else class="kyc-card">
         <div v-if="submitted" class="submitted">
-          <i class="fa-regular fa-file-lines" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
+          <i class="fa-regular fa-circle-check" style="font-size: 48px; color: var(--accent); margin-bottom: 16px; display: block;"></i>
           <h3>Documents Submitted</h3>
-          <p>We will review your documents within 24 hours.</p>
+          <p>We will review your documents within 24 hours. You will receive an SMS once processed.</p>
         </div>
+
         <form v-else @submit.prevent="handleSubmit">
           <div class="field">
             <label>Document Type</label>
@@ -35,19 +36,32 @@
               <option value="national_id">National ID</option>
               <option value="passport">Passport</option>
               <option value="drivers_license">Driver's License</option>
+              <option value="utility_bill">Utility Bill</option>
             </select>
           </div>
-          <UField label="Document Number" v-model="form.document_number" placeholder="Enter document number" />
+
+          <UField 
+            label="Document Number" 
+            v-model="form.document_number" 
+            placeholder="Enter ID or Passport number" 
+          />
+
           <div class="field">
-            <label>Document Photo</label>
+            <label>Document Photo / PDF</label>
             <label class="file-upload">
-              <span class="file-icon"><i :class="file ? 'fa-regular fa-file' : 'fa-regular fa-image'"></i></span>
-              <span class="file-text">{{ file ? file.name : 'Click to upload document photo' }}</span>
-              <input type="file" accept="image/*,.pdf" @change="e => file = e.target.files[0]" />
+              <span class="file-icon">
+                <i :class="file ? 'fa-regular fa-file-pdf' : 'fa-regular fa-image'"></i>
+              </span>
+              <span class="file-text">{{ file ? file.name : 'Click to upload (Max 15MB)' }}</span>
+              <input type="file" accept="image/*,.pdf" @change="handleFileChange" />
             </label>
           </div>
+
           <UError v-if="error" :message="error" />
-          <UButton :loading="loading">Submit for Verification</UButton>
+          
+          <UButton :loading="loading" type="submit" style="margin-top: 10px;">
+            Submit for Verification
+          </UButton>
         </form>
       </div>
     </div>
@@ -77,26 +91,50 @@ const statuses = {
   verified: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-solid fa-circle-check', text: 'Verified' },
   rejected: { color: 'var(--danger)',         bg: '#ff444422', iconClass: 'fa-solid fa-circle-xmark', text: 'Rejected' },
 }
+
 const status = computed(() => statuses[auth.user?.kyc_status] || statuses.none)
 
+function handleFileChange(e) {
+  const selectedFile = e.target.files[0]
+  if (selectedFile) {
+    file.value = selectedFile
+    error.value = ''
+  }
+}
+
 async function handleSubmit() {
-  if (!file.value) { error.value = 'Please select a document photo'; return }
+  if (!file.value) {
+    error.value = 'Please upload a document photo or PDF'
+    return
+  }
+
   error.value = ''
   loading.value = true
-  
+
   try {
     const fd = new FormData()
-    // Append fields explicitly
-    fd.append('document_type',   String(form.value.document_type))
-    fd.append('document_number', String(form.value.document_number))
+    // Aligning exactly with KycController.php validation keys
+    fd.append('document_type',   form.value.document_type)
+    fd.append('document_number', form.value.document_number || '')
     fd.append('document',        file.value)
 
+    // Note: No manual Content-Type header; Axios handles multipart boundaries automatically
     await client.post('/kyc/submit', fd)
+    
     submitted.value = true
   } catch (err) {
-    const errs = err.response?.data?.errors
-    error.value = errs ? Object.values(errs).flat()[0] : err.response?.data?.message || 'Submission failed'
-  } finally { loading.value = false }
+    console.error('KYC Submission Error:', err)
+    const errData = err.response?.data
+    
+    if (errData?.errors) {
+      // Flatten Laravel validation errors
+      error.value = Object.values(errData.errors).flat()[0]
+    } else {
+      error.value = errData?.message || 'Submission failed. Please try a smaller file.'
+    }
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -143,9 +181,9 @@ async function handleSubmit() {
 .file-upload:hover { border-color: var(--accent); }
 .file-upload input { display: none; }
 .file-icon { font-size: 28px; }
-.file-text { font-size: 13px; color: var(--text-secondary); }
+.file-text { font-size: 13px; color: var(--text-secondary); text-align: center; }
 
-.submitted { text-align: center; padding: 24px 0; }
-.submitted h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-.submitted p  { color: var(--text-secondary); font-size: 13px; }
+.submitted { text-align: center; padding: 20px 0; }
+.submitted h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+.submitted p  { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
 </style>
