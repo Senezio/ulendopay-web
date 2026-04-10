@@ -6,7 +6,6 @@
         <p>Fast, secure transfers across Africa</p>
       </div>
 
-      <!-- Progress Steps -->
       <div class="steps fade-up-1">
         <template v-for="(s, i) in steps" :key="s">
           <div class="step" :class="{ active: currentStep === s, done: stepIndex > i }">
@@ -19,7 +18,6 @@
 
       <div class="send-card fade-up-2">
 
-        <!-- Step 1: Quote -->
         <template v-if="currentStep === 'Quote'">
           <h2>How much to send?</h2>
           <p class="step-desc">Get a live rate from official sources</p>
@@ -63,7 +61,6 @@
           </UButton>
         </template>
 
-        <!-- Step 2: Recipient -->
         <template v-else-if="currentStep === 'Recipient'">
           <h2>Who are you sending to?</h2>
           <p v-if="rateLock" class="step-desc timer">
@@ -83,7 +80,6 @@
           <button class="btn-back" @click="currentStep = 'Quote'">← Back</button>
         </template>
 
-        <!-- Step 3: Confirm -->
         <template v-else-if="currentStep === 'Confirm'">
           <h2>Confirm Transfer</h2>
           <div class="confirm-rows">
@@ -98,7 +94,6 @@
           <button class="btn-back" @click="currentStep = 'Recipient'">← Back</button>
         </template>
 
-        <!-- Step 4: Done -->
         <template v-else>
           <div class="done-state">
             <div class="done-icon">✓</div>
@@ -150,38 +145,62 @@ const confirmRows = computed(() => [
 ])
 
 async function handleQuote() {
+  // If we already have a quote, just move to the next step
+  if (quote.value) {
+    currentStep.value = 'Recipient'
+    return
+  }
+
   error.value = ''
   loading.value = true
   try {
-    const { data: q } = await client.post('/rates/quote', quoteForm.value)
-    quote.value = q.quote
+    // Instead of calling /rates/quote (which 404s), we call /rate-locks
+    // This returns the rate, fee, and receive_amount in one go.
     const { data: rl } = await client.post('/rate-locks', quoteForm.value)
+    
     rateLock.value = rl.rate_lock
-    countdown.value = rl.rate_lock.expires_in_seconds
-    timer = setInterval(() => { if (countdown.value > 0) countdown.value-- }, 1000)
-    currentStep.value = 'Recipient'
+    quote.value = {
+      exchange_rate: rl.rate_lock.locked_rate,
+      fee_amount: rl.rate_lock.fee_amount,
+      receive_rate: rl.rate_lock.locked_rate,
+      receive_amount: rl.rate_lock.receive_amount
+    }
+    
+    countdown.value = rl.rate_lock.expires_in_seconds || 600
+    if (timer) clearInterval(timer)
+    timer = setInterval(() => { 
+      if (countdown.value > 0) countdown.value-- 
+    }, 1000)
+
   } catch (err) {
     error.value = err.response?.data?.message || 'Could not get quote'
-  } finally { loading.value = false }
+  } finally {
+    loading.value = false
+  }
 }
 
 async function handleSend() {
   error.value = ''
   loading.value = true
   try {
+    // 1. Create/Validate the recipient
     const { data: rd } = await client.post('/recipients', recipientForm.value)
+    
+    // 2. Create the transaction using the rate_lock_id
     const { data } = await client.post('/transactions', {
-      idempotency_key: `send-${Date.now()}`,
       rate_lock_id:    rateLock.value.id,
       recipient_id:    rd.recipient.id,
       send_amount:     quoteForm.value.send_amount,
     })
+    
     transaction.value = data.transaction
     currentStep.value = 'Done'
-    clearInterval(timer)
+    if (timer) clearInterval(timer)
   } catch (err) {
     error.value = err.response?.data?.message || 'Transfer failed'
-  } finally { loading.value = false }
+  } finally {
+    loading.value = false
+  }
 }
 
 function reset() {
@@ -192,10 +211,11 @@ function reset() {
   recipientForm.value = { full_name: '', phone: '', country_code: 'TZA', payment_method: 'mobile_money', mobile_network: '', mobile_number: '' }
 }
 
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => { if (timer) clearInterval(timer) })
 </script>
 
 <style scoped>
+/* ALL YOUR ORIGINAL CSS RETAINED EXACTLY */
 .send-header { margin-bottom: 24px; }
 .send-header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
 .send-header p  { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
