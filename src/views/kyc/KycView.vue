@@ -1,13 +1,12 @@
 <template>
   <AppLayout>
     <div class="kyc">
-      <div class="kyc__header fade-up">
+      <div class="kyc__header">
         <h1>KYC Verification</h1>
         <p>Verify your identity to unlock all features</p>
       </div>
 
-      <!-- Status -->
-      <div class="status-card fade-up-1">
+      <div class="status-card">
         <div class="status-icon" :style="{ background: status.bg, color: status.color }">
           <i :class="status.iconClass"></i>
         </div>
@@ -17,17 +16,15 @@
         </div>
       </div>
 
-      <!-- Verified -->
-      <div v-if="auth.user?.kyc_status === 'verified'" class="verified-card fade-up-2">
+      <div v-if="auth.user?.kyc_status === 'verified'" class="verified-card">
         <span>✅</span>
         <h2>You're verified!</h2>
         <p>Your identity has been verified. You can send money freely.</p>
       </div>
 
-      <!-- Form -->
-      <div v-else class="kyc-card fade-up-2">
+      <div v-else class="kyc-card">
         <div v-if="submitted" class="submitted">
-          <i class="fa-regular fa-file-lines"></i>
+          <i class="fa-regular fa-file-lines" style="font-size: 40px; color: var(--accent); margin-bottom: 15px;"></i>
           <h3>Documents Submitted</h3>
           <p>We will review your documents within 24 hours.</p>
         </div>
@@ -43,7 +40,7 @@
           <UField label="Document Number" v-model="form.document_number" placeholder="Enter document number" />
           <div class="field">
             <label>Document Photo</label>
-            <label class="file-upload" @dragover.prevent @drop.prevent="onDrop">
+            <label class="file-upload">
               <span class="file-icon"><i :class="file ? 'fa-regular fa-file' : 'fa-regular fa-image'"></i></span>
               <span class="file-text">{{ file ? file.name : 'Click to upload document photo' }}</span>
               <input type="file" accept="image/*,.pdf" @change="e => file = e.target.files[0]" />
@@ -82,18 +79,19 @@ const statuses = {
 }
 const status = computed(() => statuses[auth.user?.kyc_status] || statuses.none)
 
-const onDrop = (e) => { file.value = e.dataTransfer.files[0] }
-
 async function handleSubmit() {
   if (!file.value) { error.value = 'Please select a document photo'; return }
   error.value = ''
   loading.value = true
+  
   try {
     const fd = new FormData()
-    fd.append('document_type',   form.value.document_type)
-    fd.append('document_number', form.value.document_number)
-    fd.append('document', file.value)
-    await client.post('/kyc/submit', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+    // Append fields explicitly
+    fd.append('document_type',   String(form.value.document_type))
+    fd.append('document_number', String(form.value.document_number))
+    fd.append('document',        file.value)
+
+    await client.post('/kyc/submit', fd)
     submitted.value = true
   } catch (err) {
     const errs = err.response?.data?.errors
@@ -148,7 +146,6 @@ async function handleSubmit() {
 .file-text { font-size: 13px; color: var(--text-secondary); }
 
 .submitted { text-align: center; padding: 24px 0; }
-.submitted span { font-size: 36px; display: block; margin-bottom: 12px; }
 .submitted h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
 .submitted p  { color: var(--text-secondary); font-size: 13px; }
 </style>
