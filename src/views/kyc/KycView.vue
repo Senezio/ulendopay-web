@@ -40,10 +40,10 @@
             </select>
           </div>
 
-          <UField 
-            label="Document Number" 
-            v-model="form.document_number" 
-            placeholder="Enter ID or Passport number" 
+          <UField
+            label="Document Number"
+            v-model="form.document_number"
+            placeholder="Enter ID or Passport number"
           />
 
           <div class="field">
@@ -53,12 +53,17 @@
                 <i :class="file ? 'fa-regular fa-file-pdf' : 'fa-regular fa-image'"></i>
               </span>
               <span class="file-text">{{ file ? file.name : 'Click to upload (Max 15MB)' }}</span>
-              <input type="file" accept="image/*,.pdf" @change="handleFileChange" />
+              <input 
+                type="file" 
+                ref="fileInput"
+                accept="image/jpeg,image/png,image/webp,application/pdf" 
+                @change="handleFileChange" 
+              />
             </label>
           </div>
 
           <UError v-if="error" :message="error" />
-          
+
           <UButton :loading="loading" type="submit" style="margin-top: 10px;">
             Submit for Verification
           </UButton>
@@ -81,6 +86,7 @@ const auth = useAuthStore()
 
 const form      = ref({ document_type: 'national_id', document_number: '' })
 const file      = ref(null)
+const fileInput = ref(null)
 const error     = ref('')
 const loading   = ref(false)
 const submitted = ref(false)
@@ -99,38 +105,67 @@ function handleFileChange(e) {
   if (selectedFile) {
     file.value = selectedFile
     error.value = ''
+    console.log('File selected:', selectedFile.name, selectedFile.size, selectedFile.type)
+  } else {
+    file.value = null
   }
 }
 
 async function handleSubmit() {
+  // Clear previous error
+  error.value = ''
+  
+  // Validate file exists
   if (!file.value) {
-    error.value = 'Please upload a document photo or PDF'
+    error.value = 'Please select a document to upload'
     return
   }
 
-  error.value = ''
+  // Validate file size (15MB limit)
+  if (file.value.size > 15 * 1024 * 1024) {
+    error.value = 'File size exceeds 15MB limit'
+    return
+  }
+
   loading.value = true
 
   try {
     const fd = new FormData()
-    // Aligning exactly with KycController.php validation keys
-    fd.append('document_type',   form.value.document_type)
+    fd.append('document_type', form.value.document_type)
     fd.append('document_number', form.value.document_number || '')
-    fd.append('document',        file.value)
+    fd.append('document', file.value, file.value.name)
 
-    // Note: No manual Content-Type header; Axios handles multipart boundaries automatically
-    await client.post('/kyc/submit', fd)
-    
+    // Log FormData contents for debugging
+    console.log('Submitting KYC:', {
+      document_type: form.value.document_type,
+      document_number: form.value.document_number,
+      file_name: file.value.name,
+      file_size: file.value.size,
+      file_type: file.value.type
+    })
+
+    const response = await client.post('/kyc/submit', fd, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    console.log('KYC submission successful:', response.data)
     submitted.value = true
+    
+    // Refresh user data to update KYC status
+    await auth.fetchMe?.() || null
+    
   } catch (err) {
     console.error('KYC Submission Error:', err)
     const errData = err.response?.data
-    
+
     if (errData?.errors) {
       // Flatten Laravel validation errors
-      error.value = Object.values(errData.errors).flat()[0]
+      const errors = errData.errors
+      error.value = Object.values(errors).flat()[0]
     } else {
-      error.value = errData?.message || 'Submission failed. Please try a smaller file.'
+      error.value = errData?.message || 'Submission failed. Please try again.'
     }
   } finally {
     loading.value = false
