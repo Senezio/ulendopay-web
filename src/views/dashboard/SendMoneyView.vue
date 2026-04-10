@@ -45,21 +45,25 @@
           <div v-if="quote" class="quote-box">
             <div class="quote-row">
               <span>Exchange Rate</span>
-              <span class="mono">1 {{ quoteForm.from_currency }} = {{ quote.exchange_rate }} {{ quoteForm.to_currency }}</span>
+              <span class="mono">1 {{ quoteForm.from_currency }} = {{ quote.locked_rate }} {{ quoteForm.to_currency }}</span>
             </div>
             <div class="quote-row">
-              <span>Fee</span>
+              <span>Fee ({{ quote.fee_percent }}%)</span>
               <span class="mono">{{ quote.fee_amount }} {{ quoteForm.from_currency }}</span>
             </div>
             <div class="quote-row quote-row--total">
               <span>Recipient gets</span>
               <span class="mono accent">{{ quote.receive_amount }} {{ quoteForm.to_currency }}</span>
             </div>
+            <div class="quote-row" v-if="rateLock">
+              <span>Rate locked until</span>
+              <span class="mono">{{ countdown }}s remaining</span>
+            </div>
           </div>
 
           <UError v-if="error" :message="error" />
           <UButton :loading="loading" @click="handleQuote">
-            {{ quote ? 'Lock Rate & Continue' : 'Get Quote' }}
+            {{ rateLock ? 'Rate Locked ✓' : 'Get Quote' }}
           </UButton>
         </template>
 
@@ -70,17 +74,17 @@
             Rate locked · expires in {{ countdown }}s
           </p>
           <UField label="Full Name" v-model="recipientForm.full_name" placeholder="John Doe" />
-          <UField label="Phone" type="tel" v-model="recipientForm.phone" placeholder="+255 XXX XXX XXX" />
+          <UField label="Phone" type="tel" v-model="recipientForm.phone" placeholder="+265 XXX XXX XXX" />
           <div class="field">
             <label>Mobile Network</label>
             <select v-model="recipientForm.mobile_network">
               <option v-for="n in networks" :key="n">{{ n }}</option>
             </select>
           </div>
-          <UField label="Mobile Number" type="tel" v-model="recipientForm.mobile_number" placeholder="+255 XXX XXX XXX" />
+          <UField label="Mobile Number" type="tel" v-model="recipientForm.mobile_number" placeholder="+265 XXX XXX XXX" />
           <UError v-if="error" :message="error" />
-          <UButton :loading="loading" @click="currentStep = 'Confirm'">Continue</UButton>
-          <button class="btn-back" @click="currentStep = 'Quote'">← Back</button>
+          <UButton :loading="loading" @click="handleCreateRecipient">Continue</UButton>
+          <button class="btn-back" @click="goBack">← Back</button>
         </template>
 
         <!-- Step 3: Confirm -->
@@ -117,35 +121,171 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue'
 import AppLayout from '@/components/AppLayout.vue'
-import UField  from '@/components/ui/UField.vue'
+import UField from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
-import UError  from '@/components/ui/UError.vue'
+import UError from '@/components/ui/UError.vue'
 import client from '@/api/client'
 
-const steps       = ['Quote', 'Recipient', 'Confirm', 'Done']
+const steps = ['Quote', 'Recipient', 'Confirm', 'Done']
 const currentStep = ref('Quote')
-const stepIndex   = computed(() => steps.indexOf(currentStep.value))
+const stepIndex = computed(() => steps.indexOf(currentStep.value))
 
-const currencies = ['MWK','KES','TZS','ZMW','ZAR','MZN','BWP','NGN','GHS','ZWG']
-const networks   = ['Airtel','TNM','M-Pesa','MTN','Vodacom','Zamtel','Tigo']
+const currencies = ['MWK', 'KES', 'TZS', 'ZMW', 'ZAR', 'MZN', 'BWP', 'NGN', 'GHS', 'ZWG']
+const networks = ['Airtel', 'TNM', 'M-Pesa', 'MTN', 'Vodacom', 'Zamtel', 'Tigo']
 
 const quoteForm = ref({ from_currency: 'MWK', to_currency: 'TZS', send_amount: '' })
-const recipientForm = ref({ full_name: '', phone: '', country_code: 'TZA', payment_method: 'mobile_money', mobile_network: '', mobile_number: '' })
+const recipientForm = ref({ 
+  full_name: '', 
+  phone: '', 
+  country_code: 'MWI', 
+  payment_method: 'mobile_money', 
+  mobile_network: '', 
+  mobile_number: '' 
+})
 
-const quote       = ref(null)
-const rateLock    = ref(null)
+const quote = ref(null)
+const rateLock = ref(null)
+const recipient = ref(null)
 const transaction = ref(null)
-const error       = ref('')
-const loading     = ref(false)
-const countdown   = ref(0)
+const error = ref('')
+const loading = ref(false)
+const countdown = ref(0)
 let timer = null
 
 const confirmRows = computed(() => [
-  ['You send',      `${Number(quoteForm.value.send_amount).toLocaleString()} ${quoteForm.value.from_currency}`],
-  ['Fee',           `${quote.value?.fee_amount} ${quoteForm.value.from_currency}`],
-  ['Rate',          `1 ${quoteForm.value.from_currency} = ${quote.value?.exchange_rate} ${quoteForm.value.to_currency}`],
-  ['Recipient gets',`${quote.value?.receive_amount} ${quoteForm.value.to_currency}`],
-  ['To',            recipientForm.value.full_name],
-  ['Via',           recipientForm.value.mobile_network],
+  ['You send', `${Number(quoteForm.value.send_amount).toLocaleString()} ${quoteForm.value.from_currency}`],
+  ['Fee', `${quote.value?.fee_amount} ${quoteForm.value.from_currency}`],
+  ['Rate', `1 ${quoteForm.value.from_currency} = ${quote.value?.locked_rate} ${quoteForm.value.to_currency}`],
+  ['Recipient gets', `${quote.value?.receive_amount} ${quoteForm.value.to_currency}`],
+  ['To', recipientForm.value.full_name],
+  ['Via', recipientForm.value.mobile_network],
 ])
 
+const handleQuote = async () => {
+  if (!quoteForm.value.send_amount || quoteForm.value.send_amount <= 0) {
+    error.value = 'Please enter a valid amount'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+
+  try {
+    // Create a rate lock using your existing backend
+    const { data } = await client.post('/rate-locks', {
+      from_currency: quoteForm.value.from_currency,
+      to_currency: quoteForm.value.to_currency,
+      send_amount: quoteForm.value.send_amount
+    })
+    
+    rateLock.value = data.rate_lock
+    quote.value = data.rate_lock
+    
+    // Start countdown timer if rate lock expires
+    if (data.rate_lock.expires_at) {
+      startCountdown(data.rate_lock.expires_at)
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message || 'Failed to get quote'
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleCreateRecipient = async () => {
+  if (!recipientForm.value.full_name || !recipientForm.value.mobile_number) {
+    error.value = 'Please fill in all recipient details'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+
+  try {
+    const { data } = await client.post('/recipients', recipientForm.value)
+    recipient.value = data
+    currentStep.value = 'Confirm'
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message || 'Failed to save recipient'
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleSend = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    const payload = {
+      from_currency: quoteForm.value.from_currency,
+      to_currency: quoteForm.value.to_currency,
+      amount: quoteForm.value.send_amount,
+      recipient_id: recipient.value?.id,
+      rate_lock_id: rateLock.value?.id,
+      exchange_rate: quote.value?.locked_rate,
+      fee_amount: quote.value?.fee_amount,
+      receive_amount: quote.value?.receive_amount
+    }
+    
+    const { data } = await client.post('/transactions', payload)
+    transaction.value = data
+    currentStep.value = 'Done'
+    
+    if (timer) clearInterval(timer)
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message || 'Transaction failed'
+  } finally {
+    loading.value = false
+  }
+}
+
+const startCountdown = (expiresAt) => {
+  const expiry = new Date(expiresAt).getTime()
+  
+  timer = setInterval(() => {
+    const now = new Date().getTime()
+    const distance = expiry - now
+    
+    if (distance <= 0) {
+      clearInterval(timer)
+      countdown.value = 0
+      quote.value = null
+      rateLock.value = null
+      error.value = 'Rate lock has expired. Please get a new quote.'
+    } else {
+      countdown.value = Math.floor(distance / 1000)
+    }
+  }, 1000)
+}
+
+const goBack = () => {
+  currentStep.value = 'Quote'
+  error.value = ''
+}
+
+const reset = () => {
+  quoteForm.value = { from_currency: 'MWK', to_currency: 'TZS', send_amount: '' }
+  recipientForm.value = { 
+    full_name: '', 
+    phone: '', 
+    country_code: 'MWI', 
+    payment_method: 'mobile_money', 
+    mobile_network: '', 
+    mobile_number: '' 
+  }
+  quote.value = null
+  rateLock.value = null
+  recipient.value = null
+  transaction.value = null
+  error.value = ''
+  currentStep.value = 'Quote'
+  
+  if (timer) clearInterval(timer)
+  countdown.value = 0
+}
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer)
+})
+</script>
