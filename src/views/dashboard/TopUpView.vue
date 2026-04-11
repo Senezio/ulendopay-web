@@ -509,13 +509,14 @@ onUnmounted(() => {
 
 .quick-amounts {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 8px; margin-bottom: 20px;
+  gap: 6px; margin-bottom: 20px;
 }
 .quick-amount {
-  padding: 10px 8px; border: 1px solid var(--border);
+  padding: 10px 4px; border: 1px solid var(--border);
   border-radius: 10px; background: var(--bg-elevated);
-  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-size: 11px; font-weight: 600; cursor: pointer;
   color: var(--text-secondary); transition: all 0.15s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .quick-amount:hover { border-color: var(--accent); color: var(--accent); }
 .quick-amount.active {
