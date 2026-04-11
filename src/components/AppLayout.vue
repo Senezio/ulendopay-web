@@ -63,6 +63,7 @@ const nav = [
   { to: '/dashboard', icon: 'fa-solid fa-house',          label: 'Home' },
   { to: '/send',      icon: 'fa-solid fa-paper-plane',    label: 'Send' },
   { to: '/topup',    icon: 'fa-solid fa-wallet',           label: 'Top Up' },
+  { to: '/withdraw', icon: 'fa-solid fa-money-bill-transfer', label: 'Withdraw' },
   { to: '/history',   icon: 'fa-solid fa-clock-rotate-left', label: 'History' },
   { to: '/kyc',       icon: 'fa-solid fa-id-card',        label: 'KYC' },
   { to: '/profile',   icon: 'fa-solid fa-user',           label: 'Profile' },

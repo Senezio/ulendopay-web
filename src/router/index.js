@@ -56,6 +56,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/withdraw',
+      name: 'withdraw',
+      component: () => import('@/views/dashboard/WithdrawView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/history',
       name: 'history',
       component: () => import('@/views/dashboard/TransactionHistoryView.vue'),
