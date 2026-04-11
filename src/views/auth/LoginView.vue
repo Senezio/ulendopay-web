@@ -117,7 +117,7 @@ async function handleOtp() {
   try {
     const { data } = await client.post('/auth/verify-login', { user_id: userId.value, otp: otp.value })
     auth.setSession(data.token, data.user)
-    router.push('/dashboard')
+    router.push(auth.isStaff ? '/admin' : '/dashboard')
   } catch (err) {
     error.value = err.response?.data?.message || 'Invalid or expired code'
   } finally { loading.value = false }
