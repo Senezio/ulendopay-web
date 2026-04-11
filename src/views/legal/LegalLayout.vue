@@ -35,7 +35,7 @@ defineProps({
 
 <style scoped>
 .legal-page { min-height: 100vh; background: #fff; }
-.legal-nav { border-bottom: 1px solid var(--border); padding: 16px 24px; sticky top: 0; background: #fff; z-index: 10; }
+.legal-nav { border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; background: #fff; z-index: 10; }
 .nav-content { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-primary); font-weight: 700; }
 .logo-mark { width: 32px; height: 32px; background: var(--accent); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
