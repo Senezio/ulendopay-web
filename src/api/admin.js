@@ -32,4 +32,8 @@ export const adminApi = {
   // Staff
   staffList: () => client.get('/admin/staff'),
   staffCreate: (data) => client.post('/admin/staff', data),
+  analytics: (days) => client.get('/admin/analytics', { params: { days } }),
 }
+
+// Analytics
+export const adminAnalytics = () => adminApi.get ? adminApi.get('/admin/analytics') : null

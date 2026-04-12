@@ -49,6 +49,9 @@
         </RouterLink>
 
         <div class="nav-section-label">System</div>
+        <RouterLink to="/admin/analytics" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/analytics') }" @click="sidebarOpen = false">
+          <i class="fa-solid fa-chart-bar"></i>Analytics
+        </RouterLink>
         <RouterLink to="/admin/rates" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/rates') }" @click="sidebarOpen = false">
           <i class="fa-solid fa-chart-line"></i>Exchange Rates
         </RouterLink>

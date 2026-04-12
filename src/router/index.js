@@ -34,6 +34,7 @@ const router = createRouter({
     { path: '/admin/transactions', name: 'admin-transactions', component: () => import('@/views/admin/AdminTransactions.vue'),meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/rates',        name: 'admin-rates',        component: () => import('@/views/admin/AdminRates.vue'),       meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/fraud',        name: 'admin-fraud',        component: () => import('@/views/admin/AdminFraud.vue'),       meta: { requiresAuth: true, requiresStaff: true } },
+    { path: '/admin/analytics', name: 'admin-analytics', component: () => import('@/views/admin/AdminAnalytics.vue'), meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/staff',        name: 'admin-staff',        component: () => import('@/views/admin/AdminStaff.vue'),       meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
 
     // ── 404 ──────────────────────────────────────────────────────────────────
