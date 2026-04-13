@@ -19,7 +19,13 @@ exports.handler = async (event) => {
   }
 
   const path = event.path.replace(/^\/\.netlify\/functions\/api-proxy\/?/, '').replace(/^\/api\/?/, '');
-  const targetUrl = `https://198.251.88.32/api/${path}`;
+
+  // Build query string from parameters
+  const queryString = event.queryStringParameters
+    ? '?' + new URLSearchParams(event.queryStringParameters).toString()
+    : '';
+
+  const targetUrl = `https://198.251.88.32/api/${path}${queryString}`;
 
   const options = {
     method: event.httpMethod,
