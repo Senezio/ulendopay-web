@@ -41,26 +41,37 @@
     </header>
 
     <!-- ── Hero ──────────────────────────────────────────────────────────── -->
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <section class="hero">
-      <div class="container">
-        <div class="hero__tag">Available across Sub-Saharan Africa</div>
-        <h1 class="hero__headline">
-          Send money across Africa.<br />
-          <span>Instantly. Securely.</span>
-        </h1>
-        <p class="hero__sub">
-          Ulendo Pay lets individuals and families send money between African countries
-          at official exchange rates — with no hidden fees.
-        </p>
-        <div class="hero__actions">
-          <RouterLink to="/register" class="btn-primary btn-primary--lg">Create account</RouterLink>
-          <RouterLink to="/login"    class="btn-outline btn-outline--lg">Sign in</RouterLink>
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <div class="hero__tag">Available across Sub-Saharan Africa</div>
+          <h1 class="hero__headline">
+            Send money across Africa.<br />
+            <span>Instantly. Securely.</span>
+          </h1>
+          <p class="hero__sub">
+            Ulendo Pay lets individuals and families send money between African countries
+            at official exchange rates — with no hidden fees.
+          </p>
+          <div class="hero__actions">
+            <RouterLink to="/register" class="btn-primary btn-primary--lg">Create account</RouterLink>
+            <RouterLink to="/login"    class="btn-outline btn-outline--lg">Sign in</RouterLink>
+          </div>
+          <div class="hero__disclaimer">
+            No subscription required. Free to register.
+          </div>
         </div>
-        <div class="hero__disclaimer">
-          No subscription required. Free to register.
+        <div class="hero__image-wrap">
+          <img
+            src="https://ulendopay.malawihire.com/images/banner.png"
+            alt="A man in a city and a woman at a market both smiling while sending money on their phones"
+            class="hero__image"
+          />
         </div>
       </div>
     </section>
+
 
     <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
     <section class="trust-bar">
@@ -397,8 +408,19 @@ const securityPoints = [
 
 /* ── Hero ──────────────────────────────────────────────────────────────── */
 .hero {
-  padding: 80px 0 72px;
+  padding: 72px 0 64px;
   border-bottom: 1px solid #efefef;
+  overflow: hidden;
+}
+.hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.hero__content {
+  display: flex;
+  flex-direction: column;
 }
 .hero__tag {
   display: inline-block;
@@ -410,7 +432,7 @@ const securityPoints = [
   margin-bottom: 20px;
 }
 .hero__headline {
-  font-size: clamp(32px, 5vw, 52px);
+  font-size: clamp(30px, 4vw, 48px);
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -419,9 +441,9 @@ const securityPoints = [
 }
 .hero__headline span { color: #e85d04; }
 .hero__sub {
-  font-size: 17px;
+  font-size: 16px;
   color: #555;
-  max-width: 520px;
+  max-width: 460px;
   margin-bottom: 36px;
   line-height: 1.65;
 }
@@ -434,6 +456,34 @@ const securityPoints = [
 .hero__disclaimer {
   font-size: 13px;
   color: #999;
+}
+.hero__image-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(232, 93, 4, 0.15), 0 2px 12px rgba(0,0,0,0.08);
+}
+.hero__image-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255,255,255,0.18) 0%,
+    transparent 40%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+.hero__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.hero__image-wrap:hover .hero__image {
+  transform: scale(1.02);
 }
 
 /* ── Trust bar ─────────────────────────────────────────────────────────── */
@@ -674,7 +724,9 @@ const securityPoints = [
 }
 
 @media (max-width: 480px) {
-  .hero { padding: 56px 0 52px; }
+  .hero { padding: 48px 0 40px; }
+  .hero__inner { grid-template-columns: 1fr; gap: 32px; }
+  .hero__image-wrap { border-radius: 12px; }
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
 }
