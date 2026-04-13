@@ -64,7 +64,7 @@
         </div>
         <div class="hero__image-wrap">
           <img
-            src="https://ulendopay.malawihire.com/images/banner.png"
+            :src="bannerImage"
             alt="A man in a city and a woman at a market both smiling while sending money on their phones"
             class="hero__image"
           />
@@ -196,6 +196,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import bannerImage from '../assets/banner.png'
 
 const menuOpen = ref(false)
 const scrolled = ref(false)
