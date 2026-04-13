@@ -39,4 +39,11 @@ export const adminApi = {
   staffList: () => client.get('/admin/staff'),
   staffCreate: (data) => client.post('/admin/staff', data),
   analytics: (days) => client.get('/admin/analytics', { params: { days } }),
+
+  // System Accounts
+  systemAccounts: ()         => client.get('/admin/accounts'),
+  accountLedger:  (id)       => client.get(`/admin/accounts/${id}/ledger`),
+  accountToggle:  (id)       => client.post(`/admin/accounts/${id}/toggle`),
+  accountAdjust:  (id, data) => client.post(`/admin/accounts/${id}/adjust`, data),
+  accountCreate:  (data)     => client.post('/admin/accounts', data),
 }
