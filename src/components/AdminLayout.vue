@@ -62,6 +62,9 @@
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/staff" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/staff') }" @click="sidebarOpen = false">
           <i class="fa-solid fa-user-shield"></i>Staff
         </RouterLink>
+        <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/partners" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/partners') }" @click="sidebarOpen = false">
+          <i class="fa-solid fa-handshake"></i>Partners
+        </RouterLink>
       </nav>
 
       <div class="admin-sidebar__footer">

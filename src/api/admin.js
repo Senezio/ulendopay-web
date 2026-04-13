@@ -24,6 +24,12 @@ export const adminApi = {
   rates: () => client.get('/admin/rates'),
   fetchRates: () => client.post('/admin/rates/fetch'),
 
+  // Partners
+  partners: () => client.get('/admin/partners'),
+  partnerToggle: (id) => client.post(`/admin/partners/${id}/toggle`),
+  corridorUpdate: (id, data) => client.put(`/admin/corridors/${id}`, data),
+  corridorToggle: (id) => client.post(`/admin/corridors/${id}/toggle`),
+
   // Fraud
   fraudAlerts: (params) => client.get('/admin/fraud-alerts', { params }),
   fraudClear: (id, notes) => client.post(`/admin/fraud-alerts/${id}/clear`, { notes }),
@@ -34,6 +40,3 @@ export const adminApi = {
   staffCreate: (data) => client.post('/admin/staff', data),
   analytics: (days) => client.get('/admin/analytics', { params: { days } }),
 }
-
-// Analytics
-export const adminAnalytics = () => adminApi.get ? adminApi.get('/admin/analytics') : null
