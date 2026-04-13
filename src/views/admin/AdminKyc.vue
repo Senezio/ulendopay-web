@@ -62,15 +62,50 @@
       </div>
 
       <!-- Review Modal -->
-      <div v-if="selected" class="modal-overlay" @click.self="selected = null">
+      <div v-if="selected" class="modal-overlay" @click.self="closeModal">
         <div class="modal">
           <div class="modal__header">
             <h3>KYC Review — {{ selected.user?.name }}</h3>
-            <button class="modal__close" @click="selected = null">
+            <button class="modal__close" @click="closeModal">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
           <div class="modal__body">
+
+            <!-- Document Viewer -->
+            <div class="document-viewer">
+              <div class="document-viewer__label">Submitted Document</div>
+              <div v-if="documentLoading" class="document-viewer__loading">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading document...
+              </div>
+              <div v-else-if="documentUrl" class="document-viewer__content">
+                <img
+                  v-if="isImage"
+                  :src="documentUrl"
+                  alt="KYC Document"
+                  class="document-viewer__img"
+                  @error="documentError = true"
+                />
+                <iframe
+                  v-else-if="isPdf"
+                  :src="documentUrl"
+                  class="document-viewer__pdf"
+                  frameborder="0"
+                ></iframe>
+                <div v-else class="document-viewer__error">
+                  <i class="fa-solid fa-file"></i>
+                  <a :href="documentUrl" target="_blank" class="document-viewer__link">
+                    Open Document <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </div>
+              </div>
+              <div v-else class="document-viewer__error">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Document unavailable</span>
+              </div>
+            </div>
+
+            <!-- Metadata -->
             <div class="review-grid">
               <div class="review-field">
                 <span class="review-field__label">Name</span>
@@ -78,7 +113,7 @@
               </div>
               <div class="review-field">
                 <span class="review-field__label">Email</span>
-                <span class="review-field__value">{{ selected.user?.email }}</span>
+                <span class="review-field__value">{{ selected.user?.email || '—' }}</span>
               </div>
               <div class="review-field">
                 <span class="review-field__label">Country</span>
@@ -98,10 +133,16 @@
               </div>
             </div>
 
+            <!-- Rejection reason -->
             <div v-if="rejectMode" class="reject-form">
-              <label>Rejection Reason</label>
-              <textarea v-model="rejectReason" placeholder="Explain why the document was rejected..." rows="3"></textarea>
+              <label>Rejection Reason <span class="required">*</span></label>
+              <textarea
+                v-model="rejectReason"
+                placeholder="Explain why the document was rejected..."
+                rows="3"
+              ></textarea>
             </div>
+
           </div>
           <div class="modal__footer">
             <template v-if="!rejectMode">
@@ -133,25 +174,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AdminLayout from '@/components/AdminLayout.vue'
 import { adminApi } from '@/api/admin'
 import { useUiStore } from '@/stores/ui'
 
-const ui           = useUiStore()
-const records      = ref(null)
-const selected     = ref(null)
-const loading      = ref(false)
-const actionLoading= ref(false)
-const rejectMode   = ref(false)
-const rejectReason = ref('')
+const ui            = useUiStore()
+const records       = ref(null)
+const selected      = ref(null)
+const loading       = ref(false)
+const actionLoading = ref(false)
+const rejectMode    = ref(false)
+const rejectReason  = ref('')
+const documentUrl   = ref(null)
+const documentLoading = ref(false)
+const documentError = ref(false)
+
+const isImage = computed(() => {
+  if (!selected.value?.file_path) return false
+  return /\.(jpg|jpeg|png|webp)$/i.test(selected.value.file_path)
+})
+
+const isPdf = computed(() => {
+  if (!selected.value?.file_path) return false
+  return /\.pdf$/i.test(selected.value.file_path)
+})
 
 function formatDocType(type) {
-  return { national_id: 'National ID', passport: 'Passport', drivers_license: "Driver's License" }[type] || type
+  return {
+    national_id: 'National ID',
+    passport: 'Passport',
+    drivers_license: "Driver's License",
+    utility_bill: 'Utility Bill',
+  }[type] || type
 }
 
 function formatDate(d) {
-  return d ? new Date(d).toLocaleString('en', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
+  return d ? new Date(d).toLocaleString('en', {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }) : ''
 }
 
 async function load() {
@@ -165,9 +227,30 @@ async function load() {
 }
 
 async function openRecord(record) {
-  rejectMode.value  = false
+  rejectMode.value   = false
   rejectReason.value = ''
-  selected.value    = record
+  documentUrl.value  = null
+  documentError.value = false
+  selected.value     = record
+
+  // Fetch full record with document_url
+  documentLoading.value = true
+  try {
+    const { data } = await adminApi.kycShow(record.id)
+    selected.value   = { ...data.record, user: data.user }
+    documentUrl.value = data.record.document_url || null
+  } catch (e) {
+    ui.error('Failed to load document')
+  } finally {
+    documentLoading.value = false
+  }
+}
+
+function closeModal() {
+  selected.value     = null
+  rejectMode.value   = false
+  rejectReason.value = ''
+  documentUrl.value  = null
 }
 
 async function approve() {
@@ -175,7 +258,7 @@ async function approve() {
   try {
     await adminApi.kycApprove(selected.value.id)
     ui.success('KYC approved successfully')
-    selected.value = null
+    closeModal()
     await load()
   } catch (e) {
     ui.error(e.response?.data?.message || 'Approval failed')
@@ -190,7 +273,7 @@ async function reject() {
   try {
     await adminApi.kycReject(selected.value.id, rejectReason.value)
     ui.success('KYC rejected')
-    selected.value = null
+    closeModal()
     await load()
   } catch (e) {
     ui.error(e.response?.data?.message || 'Rejection failed')
@@ -269,6 +352,48 @@ onMounted(load)
 .table-empty i { font-size: 32px; color: #d1fae5; }
 .table-empty p  { font-size: 14px; }
 
+/* Document Viewer */
+.document-viewer {
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.document-viewer__label {
+  padding: 10px 16px;
+  font-size: 11px; font-weight: 700;
+  color: #64748b; text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+.document-viewer__loading {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.document-viewer__content { background: #000; }
+.document-viewer__img {
+  width: 100%; max-height: 340px;
+  object-fit: contain; display: block;
+}
+.document-viewer__pdf {
+  width: 100%; height: 340px; display: block;
+}
+.document-viewer__error {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.document-viewer__error i { font-size: 28px; color: #fbbf24; }
+.document-viewer__link {
+  color: #2563eb; font-size: 14px; font-weight: 600;
+  text-decoration: none; display: flex; align-items: center; gap: 6px;
+}
+
 /* Modal */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(15,23,42,0.5);
@@ -277,11 +402,13 @@ onMounted(load)
 }
 .modal {
   background: #fff; border-radius: 16px; width: 100%;
-  max-width: 520px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  max-width: 560px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 .modal__header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 24px; border-bottom: 1px solid #f1f5f9;
+  position: sticky; top: 0; background: #fff; z-index: 1;
 }
 .modal__header h3 { font-size: 16px; font-weight: 700; }
 .modal__close {
@@ -293,6 +420,7 @@ onMounted(load)
 .modal__footer {
   padding: 16px 24px; border-top: 1px solid #f1f5f9;
   display: flex; justify-content: flex-end; gap: 10px;
+  position: sticky; bottom: 0; background: #fff;
 }
 
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -301,10 +429,12 @@ onMounted(load)
 
 .reject-form { margin-top: 20px; }
 .reject-form label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.reject-form .required { color: var(--danger); }
 .reject-form textarea {
   width: 100%; padding: 12px; border: 1px solid #e2e8f0;
   border-radius: 10px; font-size: 14px; font-family: inherit;
   resize: vertical; outline: none; transition: border-color 0.15s;
+  box-sizing: border-box;
 }
 .reject-form textarea:focus { border-color: var(--accent); }
 
@@ -316,7 +446,6 @@ onMounted(load)
 }
 .btn-success:hover:not(:disabled) { background: #15803d; }
 .btn-success:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .btn-danger { padding: 10px 20px; background: var(--danger); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-danger-outline { padding: 10px 20px; background: #fff; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
