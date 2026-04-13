@@ -17,6 +17,7 @@ const router = createRouter({
     // ── Legal ─────────────────────────────────────────────────────────────────
     { path: '/privacy', name: 'privacy', component: () => import('@/views/legal/PrivacyView.vue'), meta: { public: true } },
     { path: '/terms',   name: 'terms',   component: () => import('@/views/legal/TermsView.vue'),   meta: { public: true } },
+    { path: '/contact', name: 'contact', component: () => import('@/views/legal/ContactView.vue'), meta: { public: true } },
 
     // ── Customer ─────────────────────────────────────────────────────────────
     { path: '/dashboard', name: 'dashboard', component: () => import('@/views/dashboard/DashboardView.vue'),            meta: { requiresAuth: true } },

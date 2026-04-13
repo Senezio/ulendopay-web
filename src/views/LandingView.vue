@@ -170,9 +170,9 @@
           <span>Ulendo Pay</span>
         </div>
         <div class="footer__links">
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Contact</a>
+          <RouterLink to="/privacy">Privacy Policy</RouterLink>
+          <RouterLink to="/terms">Terms of Service</RouterLink>
+          <RouterLink to="/contact">Contact</RouterLink>
         </div>
         <div class="footer__copy">© {{ new Date().getFullYear() }} Ulendo Pay. All rights reserved.</div>
       </div>
