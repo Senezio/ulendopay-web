@@ -4,7 +4,7 @@
       <button @click="isMenuOpen = true" class="menu-trigger">
         <i class="fa-solid fa-bars"></i>
       </button>
-      <div class="mobile-logo">Ulendo PAY</div>
+      <div class="mobile-logo"><img src="/logo.png" alt="UlendoPay" style="height: 40px; width: auto; object-fit: contain;"></div>
     </header>
 
     <div v-if="isMenuOpen" class="sidebar-overlay md:hidden" @click="isMenuOpen = false"></div>
