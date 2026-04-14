@@ -3,7 +3,7 @@
     <nav class="legal-nav">
       <div class="nav-content">
         <RouterLink to="/" class="logo">
-          <img src="/logo.png" alt="Logo" class="h-8 w-auto">
+          <img src="/logo.png" alt="Logo" style="height: 32px; width: auto; display: block;">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
         <RouterLink to="/login" class="back-link">Sign In</RouterLink>

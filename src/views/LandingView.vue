@@ -166,7 +166,7 @@
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
-          <img src="/logo.png" alt="Logo" class="h-8 w-auto">
+          <img src="/logo.png" alt="Logo" style="height: 32px; width: auto; display: block;">
           <span>Ulendo Pay</span>
         </div>
         <div class="footer__links">
