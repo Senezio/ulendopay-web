@@ -7,8 +7,8 @@
         <i class="fa-solid fa-bars"></i>
       </button>
       <div class="mobile-brand">
-        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <span>Admin Console</span>
+        <img src="/logo.png" alt="UlendoPay" style="height: 32px; width: auto;">
+        <span>Admin Dashboard</span>
       </div>
       <div class="mobile-user">
         <i class="fa-solid fa-user-tie"></i>
@@ -20,10 +20,10 @@
 
     <aside class="admin-sidebar" :class="{ open: sidebarOpen }">
       <div class="admin-sidebar__brand">
-        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <img src="/logo.png" alt="UlendoPay" style="height: 36px; width: auto; filter: brightness(0) invert(1);">
         <div>
-          <div class="brand-name">Ulendo Pay</div>
-          <div class="brand-sub">Admin Console</div>
+          <div class="brand-name">UlendoPay</div>
+          <div class="brand-sub">Admin Dashboard</div>
         </div>
         <button class="sidebar-close" @click="sidebarOpen = false">
           <i class="fa-solid fa-xmark"></i>
