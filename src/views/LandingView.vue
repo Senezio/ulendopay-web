@@ -6,7 +6,7 @@
       <div class="navbar__inner">
         <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
-          <img src="/logo.png" alt="Logo" style="height: 32px; width: auto; display: block;">
+          <img src="/logo.png" alt="Logo" style="height: 40px; width: auto; display: block;">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
 
