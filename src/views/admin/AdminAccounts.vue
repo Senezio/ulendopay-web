@@ -367,16 +367,22 @@ async function load() {
 }
 
 async function openLedger(acc) {
-  ledgerAccount.value = acc
+  ledgerAccount.value = { ...acc, total_debits: 0, total_credits: 0 }
   ledgerEntries.value = []
   ledgerLoading.value = true
   try {
     const { data } = await adminApi.accountLedger(acc.id)
     ledgerEntries.value = data.entries
+    ledgerAccount.value = {
+      ...acc,
+      total_debits:  data.total_debits,
+      total_credits: data.total_credits,
+    }
   } catch (e) {
     ui.error('Failed to load ledger')
   } finally {
-    ledgerLoading.value = false }
+    ledgerLoading.value = false
+  }
 }
 
 function openAdjust(acc) {
