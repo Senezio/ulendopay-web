@@ -39,7 +39,7 @@
           <p class="auth-alt">Already have an account? <RouterLink to="/login">Sign in</RouterLink></p>
           <p class="auth-terms">
             By creating an account you agree to our
-            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            <RouterLink to="/terms">Terms of Service</RouterLink> and <RouterLink to="/privacy">Privacy Policy</RouterLink>.
           </p>
         </template>
 
