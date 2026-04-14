@@ -5,7 +5,7 @@
       <!-- Logo -->
       <div class="auth-brand fade-up">
         <RouterLink to="/" class="brand-link">
-          <div class="brand-mark">U</div>
+          <img src="/logo.png" alt="Logo" class="h-12 w-auto mb-4">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
       </div>

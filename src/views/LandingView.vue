@@ -6,7 +6,7 @@
       <div class="navbar__inner">
         <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
-          <div class="navbar__logo-mark">U</div>
+          <img src="/logo.png" alt="Logo" class="h-8 w-auto">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
 
@@ -166,7 +166,7 @@
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
-          <div class="navbar__logo-mark navbar__logo-mark--sm">U</div>
+          <img src="/logo.png" alt="Logo" class="h-6 w-auto">
           <span>Ulendo Pay</span>
         </div>
         <div class="footer__links">
