@@ -7,7 +7,7 @@
         <i class="fa-solid fa-bars"></i>
       </button>
       <div class="mobile-brand">
-        <img src="/logo.png" alt="UlendoPay" style="height: 32px; width: auto;">
+        <img src="/logo.png" alt="UlendoPay" style="height: 28px; width: auto; border-radius: 6px;">
         <span>Admin Dashboard</span>
       </div>
       <div class="mobile-user">
@@ -20,7 +20,7 @@
 
     <aside class="admin-sidebar" :class="{ open: sidebarOpen }">
       <div class="admin-sidebar__brand">
-        <img src="/logo.png" alt="UlendoPay" style="height: 36px; width: auto; filter: brightness(0) invert(1);">
+        <img src="/logo.png" alt="UlendoPay" style="height: 36px; width: auto; border-radius: 8px; background: #fff; padding: 3px;">
         <div>
           <div class="brand-name">UlendoPay</div>
           <div class="brand-sub">Admin Dashboard</div>
@@ -140,11 +140,7 @@ async function handleLogout() {
   display: flex; align-items: center; gap: 10px;
   color: #fff; font-weight: 700; font-size: 15px;
 }
-.mobile-brand .brand-icon {
-  width: 28px; height: 28px; background: var(--accent);
-  border-radius: 7px; display: flex; align-items: center;
-  justify-content: center; color: #fff; font-size: 13px;
-}
+.mobile-brand img { border-radius: 6px; background: #fff; padding: 2px; }
 .mobile-user {
   width: 36px; height: 36px; background: #1e293b;
   border-radius: 8px; display: flex; align-items: center;
