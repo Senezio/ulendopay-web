@@ -11,7 +11,7 @@
 
     <aside class="sidebar" :class="{ 'sidebar--open': isMenuOpen }">
       <div class="sidebar__logo">
-        <img src="/logo.png" alt="Logo" class="h-8 w-auto">
+        <img src="/logo.png" alt="Logo" style="height: 32px; width: auto; display: block;">
         <div>
           <div class="logo-name">Ulendo</div>
           <div class="logo-sub mono">PAY</div>
