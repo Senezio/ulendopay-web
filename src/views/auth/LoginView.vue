@@ -106,6 +106,13 @@ async function handleCredentials() {
     const { data } = await client.post('/auth/login', payload)
     userId.value = data.user_id
     step.value = 'otp'
+
+// Local bypass: skip OTP if backend already authenticated
+if (data.next_step === 'dashboard') {
+  auth.setSession(data.token, data.user)
+  router.push(auth.isStaff ? '/admin' : '/dashboard')
+  return
+}
   } catch (err) {
     error.value = err.response?.data?.message || 'Check your credentials and try again'
   } finally { loading.value = false }
