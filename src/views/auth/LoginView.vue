@@ -103,16 +103,17 @@ async function handleCredentials() {
     const payload = method.value === 'phone_pin'
       ? { method: method.value, phone: form.value.phone, pin: form.value.pin }
       : { method: method.value, email: form.value.email, password: form.value.password }
+    
     const { data } = await client.post('/auth/login', payload)
+
+    if (data.next_step === 'dashboard') {
+      auth.setSession(data.token, data.user)
+      router.push(auth.isStaff ? '/admin' : '/dashboard')
+      return
+    }
+
     userId.value = data.user_id
     step.value = 'otp'
-
-// Local bypass: skip OTP if backend already authenticated
-if (data.next_step === 'dashboard') {
-  auth.setSession(data.token, data.user)
-  router.push(auth.isStaff ? '/admin' : '/dashboard')
-  return
-}
   } catch (err) {
     error.value = err.response?.data?.message || 'Check your credentials and try again'
   } finally { loading.value = false }
