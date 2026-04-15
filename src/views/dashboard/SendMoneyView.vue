@@ -26,14 +26,14 @@
             <div class="field">
               <label>From</label>
               <select v-model="quoteForm.from_currency">
-                <option v-for="c in currencies" :key="c">{{ c }}</option>
+                <option v-for="c in sendCurrencies" :key="c">{{ c }}</option>
               </select>
             </div>
             <div class="currency-arrow">→</div>
             <div class="field">
               <label>To</label>
               <select v-model="quoteForm.to_currency">
-                <option v-for="c in currencies" :key="c">{{ c }}</option>
+                <option v-for="c in receiveCurrencies" :key="c">{{ c }}</option>
               </select>
             </div>
           </div>
@@ -71,7 +71,7 @@
           <div class="field">
             <label>Mobile Network</label>
             <select v-model="recipientForm.mobile_network">
-              <option v-for="n in networks" :key="n">{{ n }}</option>
+              <option v-for="n in availableNetworks" :key="n">{{ n }}</option>
             </select>
           </div>
           <UField label="Mobile Number" type="tel" v-model="recipientForm.mobile_number" placeholder="+255 XXX XXX XXX" />
@@ -116,17 +116,109 @@ import UField  from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
 import UError  from '@/components/ui/UError.vue'
 import client from '@/api/client'
+import { useAuthStore } from '@/stores/auth'
 
+const auth = useAuthStore()
+
+// ---------------------------------------------------------------------------
+// Currency / network maps — aligned with PawapayPartner.php active-conf
+// 2026-04-15 (17 active countries)
+// ---------------------------------------------------------------------------
+const CURRENCY_LABELS = {
+  XOF: 'XOF – West Africa (Benin / Burkina Faso / Côte d\'Ivoire / Senegal)',
+  XAF: 'XAF – Central Africa (Cameroon / Congo / Gabon)',
+  CDF: 'CDF – Congolese Franc (DR Congo)',
+  USD: 'USD – US Dollar (DR Congo)',
+  GHS: 'GHS – Ghanaian Cedi',
+  KES: 'KES – Kenyan Shilling',
+  MWK: 'MWK – Malawian Kwacha',
+  MZN: 'MZN – Mozambican Metical',
+  RWF: 'RWF – Rwandan Franc',
+  SLE: 'SLE – Sierra Leonean Leone',
+  TZS: 'TZS – Tanzanian Shilling',
+  UGX: 'UGX – Ugandan Shilling',
+  ZMW: 'ZMW – Zambian Kwacha',
+  // Non-pawaPay send-side currencies kept for corridor flexibility
+  ZAR: 'ZAR – South African Rand',
+  BWP: 'BWP – Botswana Pula',
+  NGN: 'NGN – Nigerian Naira',
+}
+
+// Networks available per receive currency, matching correspondent keys in
+// PawapayPartner.php resolveCorrespondent()
+const NETWORKS_BY_CURRENCY = {
+  XOF: ['MOOV', 'MTN', 'MOOV_BFA', 'MTN_CIV', 'ORANGE_CIV', 'FREE', 'ORANGE_SEN'],
+  XAF: ['MTN', 'ORANGE_CMR', 'AIRTEL_COG', 'MTN_COG', 'AIRTEL_GAB'],
+  CDF: ['AIRTEL', 'ORANGE', 'VODACOM'],
+  USD: ['AIRTEL', 'ORANGE', 'VODACOM'],
+  GHS: ['AIRTELTIGO', 'MTN', 'VODAFONE'],
+  KES: ['SAFARICOM'],
+  MZN: ['VODACOM'],
+  MWK: ['AIRTEL', 'TNM'],
+  RWF: ['AIRTEL', 'MTN'],
+  SLE: ['ORANGE'],
+  TZS: ['AIRTEL', 'HALOTEL', 'TIGO'],
+  UGX: ['AIRTEL', 'MTN'],
+  ZMW: ['AIRTEL', 'MTN', 'ZAMTEL'],
+  // Fallback for non-pawaPay currencies
+  ZAR: ['Vodacom', 'MTN', 'Cell C'],
+  BWP: ['Orange', 'Mascom'],
+  NGN: ['MTN', 'Airtel', 'Glo', '9mobile'],
+}
+
+// All currencies available to receive (pawaPay corridors)
+const allCurrencies = Object.keys(CURRENCY_LABELS)
+
+// ---------------------------------------------------------------------------
+// Derive the user's home currency from their profile, default to MWK
+// Assumes auth.user.currency is set by your backend (e.g. "MWK")
+// ---------------------------------------------------------------------------
+const userCurrency = computed(() => auth.user?.currency || 'MWK')
+
+// Send side: always include the user's own currency first, then the rest
+const sendCurrencies = computed(() => [
+  userCurrency.value,
+  ...allCurrencies.filter(c => c !== userCurrency.value),
+])
+
+// Receive side: exclude whatever the user has selected as from_currency
+const receiveCurrencies = computed(() =>
+  allCurrencies.filter(c => c !== quoteForm.value.from_currency)
+)
+
+// Networks filtered to the selected destination currency
+const availableNetworks = computed(() =>
+  NETWORKS_BY_CURRENCY[quoteForm.value.to_currency] ?? []
+)
+
+// ---------------------------------------------------------------------------
+// Steps
+// ---------------------------------------------------------------------------
 const steps       = ['Quote', 'Recipient', 'Confirm', 'Done']
 const currentStep = ref('Quote')
 const stepIndex   = computed(() => steps.indexOf(currentStep.value))
 
-const currencies = ['MWK','KES','TZS','ZMW','ZAR','MZN','BWP','NGN','GHS','ZWG']
-const networks   = ['Airtel','TNM','M-Pesa','MTN','Vodacom','Zamtel','Tigo']
+// ---------------------------------------------------------------------------
+// Forms
+// ---------------------------------------------------------------------------
+const quoteForm = ref({
+  from_currency: userCurrency.value,
+  to_currency:   'TZS',
+  send_amount:   '',
+})
 
-const quoteForm = ref({ from_currency: 'MWK', to_currency: 'TZS', send_amount: '' })
-const recipientForm = ref({ full_name: '', phone: '', country_code: 'TZA', payment_method: 'mobile_money', mobile_network: '', mobile_number: '' })
+const recipientForm = ref({
+  full_name:      '',
+  phone:          '',
+  country_code:   'TZA',
+  payment_method: 'mobile_money',
+  mobile_network: '',
+  mobile_number:  '',
+})
 
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
 const quote       = ref(null)
 const rateLock    = ref(null)
 const transaction = ref(null)
@@ -135,6 +227,9 @@ const loading     = ref(false)
 const countdown   = ref(0)
 let timer = null
 
+// ---------------------------------------------------------------------------
+// Confirm summary rows
+// ---------------------------------------------------------------------------
 const confirmRows = computed(() => [
   ['You send',      `${Number(quoteForm.value.send_amount).toLocaleString()} ${quoteForm.value.from_currency}`],
   ['Fee',           `${quote.value?.fee_amount} ${quoteForm.value.from_currency}`],
@@ -144,6 +239,9 @@ const confirmRows = computed(() => [
   ['Via',           recipientForm.value.mobile_network],
 ])
 
+// ---------------------------------------------------------------------------
+// Handlers
+// ---------------------------------------------------------------------------
 async function handleQuote() {
   if (quote.value) { currentStep.value = 'Recipient'; return }
   error.value = ''
@@ -152,9 +250,9 @@ async function handleQuote() {
     const { data: rl } = await client.post('/rate-locks', quoteForm.value)
     rateLock.value = rl.rate_lock
     quote.value = {
-      exchange_rate: rl.rate_lock.locked_rate,
-      fee_amount: rl.rate_lock.fee_amount,
-      receive_amount: rl.rate_lock.receive_amount
+      exchange_rate:  rl.rate_lock.locked_rate,
+      fee_amount:     rl.rate_lock.fee_amount,
+      receive_amount: rl.rate_lock.receive_amount,
     }
     countdown.value = rl.rate_lock.expires_in_seconds || 600
     if (timer) clearInterval(timer)
@@ -170,7 +268,7 @@ async function handleSend() {
   loading.value = true
   try {
     const { data: rd } = await client.post('/recipients', recipientForm.value)
-    const { data } = await client.post('/transactions', {
+    const { data }     = await client.post('/transactions', {
       idempotency_key: `send-${Date.now()}`,
       rate_lock_id:    rateLock.value.id,
       recipient_id:    rd.recipient.id,
@@ -188,8 +286,19 @@ function reset() {
   currentStep.value = 'Quote'
   quote.value = rateLock.value = transaction.value = null
   error.value = ''
-  quoteForm.value = { from_currency: 'MWK', to_currency: 'TZS', send_amount: '' }
-  recipientForm.value = { full_name: '', phone: '', country_code: 'TZA', payment_method: 'mobile_money', mobile_network: '', mobile_number: '' }
+  quoteForm.value = {
+    from_currency: userCurrency.value,
+    to_currency:   'TZS',
+    send_amount:   '',
+  }
+  recipientForm.value = {
+    full_name:      '',
+    phone:          '',
+    country_code:   'TZA',
+    payment_method: 'mobile_money',
+    mobile_network: '',
+    mobile_number:  '',
+  }
 }
 
 onUnmounted(() => { if (timer) clearInterval(timer) })
