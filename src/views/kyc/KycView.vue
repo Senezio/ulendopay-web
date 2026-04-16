@@ -17,7 +17,9 @@
       </div>
 
       <div v-if="auth.user?.kyc_status === 'verified'" class="verified-card">
-        <span>✅</span>
+        <div class="verified-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
         <h2>You're verified!</h2>
         <p>Your identity has been verified. You can send money freely.</p>
       </div>
@@ -195,7 +197,13 @@ async function handleSubmit() {
   text-align: center; padding: 48px; background: var(--bg-card);
   border-radius: 14px; border: 1px solid var(--border); max-width: 480px;
 }
-.verified-card span { font-size: 44px; display: block; margin-bottom: 14px; }
+.verified-card .verified-icon { 
+  font-size: 48px; 
+  color: var(--accent); 
+  margin-bottom: 16px; 
+  display: flex; 
+  justify-content: center; 
+}
 .verified-card h2   { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 .verified-card p    { color: var(--text-secondary); font-size: 14px; }
 

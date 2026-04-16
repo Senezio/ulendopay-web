@@ -69,6 +69,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
+import { useAuthStore } from '@/stores/auth'
 import client from '@/api/client'
 import UField  from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
@@ -76,6 +77,7 @@ import UError  from '@/components/ui/UError.vue'
 
 const router  = useRouter()
 const ui      = useUiStore()
+const auth    = useAuthStore()
 const step    = ref('form')
 const userId  = ref(null)
 const otp     = ref('')
@@ -99,6 +101,13 @@ async function handleRegister() {
   loading.value = true
   try {
     const { data } = await client.post('/auth/register', form.value)
+
+    if (data.next_step === 'dashboard') {
+      auth.setSession(data.token, data.user)
+      router.push(auth.isStaff ? '/admin' : '/dashboard')
+      return
+    }
+
     userId.value = data.user_id
     step.value = 'otp'
   } catch (err) {
