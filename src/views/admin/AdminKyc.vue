@@ -240,7 +240,7 @@ async function openRecord(record) {
     selected.value   = { ...data.record, user: data.user }
     if (data.record.document_url) {
       const url = new URL(data.record.document_url);
-      documentUrl.value = url.pathname + url.search;
+      documentUrl.value = data.record.document_url;
     } else {
       documentUrl.value = null;
     }
@@ -381,11 +381,11 @@ onMounted(load)
 }
 .document-viewer__content { background: #000; }
 .document-viewer__img {
-  width: 100%; max-height: 340px;
+  width: 100%; max-height: 500px;
   object-fit: contain; display: block;
 }
 .document-viewer__pdf {
-  width: 100%; height: 340px; display: block;
+  width: 100%; height: 500px; display: block;
 }
 .document-viewer__error {
   padding: 40px;
