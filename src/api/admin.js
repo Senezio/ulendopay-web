@@ -26,6 +26,8 @@ export const adminApi = {
 
   // Partners
   partners: () => client.get('/admin/partners'),
+  partnerUpdate: (id, data) => client.put(`/admin/partners/${id}`, data),
+  partnerCreate: (data) => client.post('/admin/partners', data),
   partnerToggle: (id) => client.post(`/admin/partners/${id}/toggle`),
   corridorUpdate: (id, data) => client.put(`/admin/corridors/${id}`, data),
   corridorToggle: (id) => client.post(`/admin/corridors/${id}/toggle`),
