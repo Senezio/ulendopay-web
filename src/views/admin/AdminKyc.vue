@@ -240,7 +240,7 @@ async function openRecord(record) {
     selected.value   = { ...data.record, user: data.user }
     if (data.record.document_url) {
       const url = new URL(data.record.document_url);
-      documentUrl.value = ;
+      documentUrl.value = '/api' + url.pathname + url.search;
     } else {
       documentUrl.value = null;
     }
