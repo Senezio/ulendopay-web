@@ -182,9 +182,7 @@ const sendCurrencies = computed(() => [
 ])
 
 // Receive side: exclude whatever the user has selected as from_currency
-const receiveCurrencies = computed(() =>
-  allCurrencies.filter(c => c !== quoteForm.value.from_currency)
-)
+const receiveCurrencies = computed(() => allCurrencies)
 
 // Networks filtered to the selected destination currency
 const availableNetworks = computed(() =>
@@ -203,7 +201,7 @@ const stepIndex   = computed(() => steps.indexOf(currentStep.value))
 // ---------------------------------------------------------------------------
 const quoteForm = ref({
   from_currency: userCurrency.value,
-  to_currency:   'TZS',
+  to_currency:   userCurrency.value,
   send_amount:   '',
 })
 
@@ -288,7 +286,7 @@ function reset() {
   error.value = ''
   quoteForm.value = {
     from_currency: userCurrency.value,
-    to_currency:   'TZS',
+    to_currency:   userCurrency.value,
     send_amount:   '',
   }
   recipientForm.value = {
