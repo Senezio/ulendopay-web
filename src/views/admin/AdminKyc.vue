@@ -189,16 +189,10 @@ const rejectReason  = ref('')
 const documentUrl   = ref(null)
 const documentLoading = ref(false)
 const documentError = ref(false)
+const documentMime  = ref(null)
 
-const isImage = computed(() => {
-  if (!selected.value?.file_path) return false
-  return /\.(jpg|jpeg|png|webp)$/i.test(selected.value.file_path)
-})
-
-const isPdf = computed(() => {
-  if (!selected.value?.file_path) return false
-  return /\.pdf$/i.test(selected.value.file_path)
-})
+const isImage = computed(() => documentMime.value?.startsWith('image/'))
+const isPdf   = computed(() => documentMime.value === 'application/pdf')
 
 function formatDocType(type) {
   return {
@@ -240,8 +234,14 @@ async function openRecord(record) {
     selected.value   = { ...data.record, user: data.user }
     if (data.record.document_url) {
       try {
-        const blob = await adminApi.kycDocument(data.record.document_url)
-        documentUrl.value = URL.createObjectURL(blob.data)
+        const res  = await adminApi.kycDocument(data.record.document_url)
+        documentMime.value = res.data.type
+        const blobUrl = URL.createObjectURL(res.data)
+        if (res.data.type === 'application/pdf') {
+          documentUrl.value = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(blobUrl)
+        } else {
+          documentUrl.value = blobUrl
+        }
       } catch (e) {
         documentUrl.value = null
       }
