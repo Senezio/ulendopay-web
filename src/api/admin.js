@@ -42,6 +42,9 @@ export const adminApi = {
   staffCreate: (data) => client.post('/admin/staff', data),
   analytics: (days) => client.get('/admin/analytics', { params: { days } }),
 
+  // KYC Document (fetched as blob to avoid direct IP access)
+  kycDocument: (url) => client.get(url.replace(/.*\/api\/v1/, ''), { responseType: 'blob' }),
+
   // System Accounts
   systemAccounts: ()         => client.get('/admin/accounts'),
   accountLedger:  (id)       => client.get(`/admin/accounts/${id}/ledger`),
