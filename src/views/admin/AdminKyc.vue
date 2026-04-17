@@ -236,12 +236,7 @@ async function openRecord(record) {
       try {
         const res  = await adminApi.kycDocument(data.record.document_url)
         documentMime.value = res.data.type
-        const blobUrl = URL.createObjectURL(res.data)
-        if (res.data.type === 'application/pdf') {
-          documentUrl.value = 'https://docs.google.com/viewer?embedded=true&url=' + encodeURIComponent(blobUrl)
-        } else {
-          documentUrl.value = blobUrl
-        }
+        documentUrl.value  = URL.createObjectURL(res.data)
       } catch (e) {
         documentUrl.value = null
       }
