@@ -20,7 +20,6 @@ exports.handler = async (event) => {
 
   const path = event.path.replace(/^\/\.netlify\/functions\/api-proxy\/?/, '').replace(/^\/api\/?/, '');
 
-  // Build query string from parameters
   const queryString = event.queryStringParameters
     ? '?' + new URLSearchParams(event.queryStringParameters).toString()
     : '';
@@ -50,17 +49,25 @@ exports.handler = async (event) => {
 
   try {
     const response = await fetch(targetUrl, options);
-    const responseBody = await response.text();
+    const contentType = response.headers.get('Content-Type') || 'application/json';
+
+    const isBinary = /^(image|application\/pdf|application\/octet-stream)/.test(contentType);
+
+    const body = isBinary
+      ? (await response.buffer()).toString('base64')
+      : await response.text();
 
     return {
       statusCode: response.status,
       headers: {
-        'Content-Type': response.headers.get('Content-Type') || 'application/json',
+        'Content-Type': contentType,
+        'Content-Disposition': response.headers.get('Content-Disposition') || '',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Idempotency-Key',
       },
-      body: responseBody,
+      isBase64Encoded: isBinary,
+      body,
     };
   } catch (error) {
     return {
