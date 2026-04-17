@@ -238,12 +238,7 @@ async function openRecord(record) {
   try {
     const { data } = await adminApi.kycShow(record.id)
     selected.value   = { ...data.record, user: data.user }
-    if (data.record.document_url) {
-      const url = new URL(data.record.document_url);
-      const url = new URL(data.record.document_url); documentUrl.value = url.pathname + url.search;
-    } else {
-      documentUrl.value = null;
-    }
+    documentUrl.value = data.record.document_url ?? null;
   } catch (e) {
     ui.error('Failed to load document')
   } finally {
