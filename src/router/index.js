@@ -38,7 +38,13 @@ const router = createRouter({
     { path: '/admin/analytics', name: 'admin-analytics', component: () => import('@/views/admin/AdminAnalytics.vue'), meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/staff',        name: 'admin-staff',        component: () => import('@/views/admin/AdminStaff.vue'),       meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
     { path: '/admin/partners',     name: 'admin-partners',     component: () => import('@/views/admin/AdminPartners.vue'),    meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
-    { path: '/admin/accounts',     name: 'admin-accounts',     component: () => import('@/views/admin/AdminAccounts.vue'),    meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
+    {
+  path: '/admin/settings',
+  name: 'admin-settings',
+  component: () => import('@/views/admin/AdminSettings.vue'),
+  meta: { requiresAuth: true, requiresStaff: true }
+},
+{ path: '/admin/accounts',     name: 'admin-accounts',     component: () => import('@/views/admin/AdminAccounts.vue'),    meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
 
     // ── 404 ──────────────────────────────────────────────────────────────────
     { path: '/:pathMatch(.*)*', redirect: '/' },
