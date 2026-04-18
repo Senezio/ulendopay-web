@@ -23,7 +23,8 @@
           <i class="fa-solid fa-spinner fa-spin"></i> Loading...
         </div>
 
-        <table v-else-if="records?.data?.length" class="admin-table">
+        <div class="table-scroll" v-else-if="records?.data?.length">
+        <table class="admin-table">
           <thead>
             <tr>
               <th>User</th>
@@ -54,6 +55,7 @@
             </tr>
           </tbody>
         </table>
+      </div>
 
         <div v-else class="table-empty">
           <i class="fa-solid fa-circle-check"></i>
@@ -454,4 +456,14 @@ onMounted(load)
 .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-danger-outline { padding: 10px 20px; background: #fff; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .btn-ghost { padding: 10px 20px; background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll table {
+  min-width: 700px;
+}
+
 </style>
