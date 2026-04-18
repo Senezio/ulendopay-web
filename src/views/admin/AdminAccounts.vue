@@ -42,7 +42,8 @@
         <i class="fa-solid fa-spinner fa-spin"></i> Loading accounts...
       </div>
 
-      <div v-else class="accounts-table">
+      <div v-else class="accounts-table-wrap">
+      <div class="accounts-table">
         <div class="table-head">
           <span>Account</span>
           <span>Type</span>
@@ -98,6 +99,7 @@
         <div v-if="filteredAccounts.length === 0" class="table-empty">
           No {{ activeTab === 'all' ? '' : activeTab }} accounts found
         </div>
+      </div>
       </div>
 
       <!-- ── Ledger Modal ─────────────────────────────────────────────── -->
@@ -582,10 +584,11 @@ onMounted(load)
   .modal { border-radius: 16px; }
 }
 
+.accounts-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.accounts-table { min-width: 700px; }
+
 @media (max-width: 768px) {
   .summary-grid { grid-template-columns: 1fr 1fr; }
-  .table-head   { display: none; }
-  .table-row    { grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; }
   .ledger-head  { display: none; }
   .ledger-row   { grid-template-columns: 1fr 1fr; gap: 8px; }
   .ledger-balance-bar { grid-template-columns: 1fr 1fr; }
