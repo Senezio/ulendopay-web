@@ -65,10 +65,10 @@
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/partners" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/partners') }" @click="sidebarOpen = false">
           <i class="fa-solid fa-handshake"></i>Partners
         
+        </RouterLink>
         <RouterLink to="/admin/settings" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/settings') }" @click="sidebarOpen = false">
           <i class="fa-solid fa-gear"></i>Settings
         </RouterLink>
-</RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/accounts" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/accounts') }" @click="sidebarOpen = false">
           <i class="fa-solid fa-building-columns"></i>Accounts
         </RouterLink>
