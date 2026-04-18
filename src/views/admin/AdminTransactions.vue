@@ -33,8 +33,21 @@
       </div>
 
       <template v-else>
-        <div class="tx-cards">
-          <div v-for="tx in transactions.data" :key="tx.id" class="tx-card">
+        <div class="table-scroll" v-else>
+        <table class="tx-table">
+          <thead>
+            <tr>
+              <th>Corridor</th>
+              <th>Sent</th>
+              <th>Received</th>
+              <th>Status</th>
+              <th>Reference</th>
+              <th>User</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="tx in transactions.data" :key="tx.id">
             <div class="tx-card__top">
               <div class="tx-card__corridor">
                 <span class="corridor-from">{{ tx.send_currency }}</span>
@@ -154,4 +167,46 @@ onMounted(load)
 .pagination { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 16px; font-size: 13px; color: #64748b; }
 .pagination button { width: 34px; height: 34px; border: 1px solid #e2e8f0; background: #fff; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
+
+<style scoped>
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tx-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tx-table td {
+  padding: 12px;
+  font-size: 13px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tx-table tr:hover td {
+  background: #fafafa;
+}
+
 </style>
