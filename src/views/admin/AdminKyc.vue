@@ -88,12 +88,9 @@
                   class="document-viewer__img"
                   @error="documentError = true"
                 />
-                <iframe
-                  v-else-if="isPdf"
-                  :src="documentUrl"
-                  class="document-viewer__pdf"
-                  frameborder="0"
-                ></iframe>
+                <div v-else-if="isPdf" class="document-viewer__pdf-wrap">
+                  <canvas ref="pdfCanvas" class="document-viewer__pdf-canvas"></canvas>
+                </div>
                 <div v-else class="document-viewer__error">
                   <i class="fa-solid fa-file"></i>
                   <a :href="documentUrl" target="_blank" class="document-viewer__link">
@@ -176,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import AdminLayout from '@/components/AdminLayout.vue'
 import { adminApi } from '@/api/admin'
 import { useUiStore } from '@/stores/ui'
@@ -189,12 +186,35 @@ const actionLoading = ref(false)
 const rejectMode    = ref(false)
 const rejectReason  = ref('')
 const documentUrl   = ref(null)
+const pdfCanvas     = ref(null)
 const documentLoading = ref(false)
 const documentError = ref(false)
 const documentMime  = ref(null)
 
 const isImage = computed(() => documentMime.value?.startsWith('image/'))
 const isPdf   = computed(() => documentMime.value === 'application/pdf')
+
+async function renderPdf(blobUrl) {
+  await nextTick()
+  if (!pdfCanvas.value) return
+  try {
+    const pdfjs = window.pdfjsLib
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+    const pdf = await pdfjs.getDocument(blobUrl).promise
+    const page = await pdf.getPage(1)
+    const viewport = page.getViewport({ scale: 1.5 })
+    const canvas = pdfCanvas.value
+    canvas.width = viewport.width
+    canvas.height = viewport.height
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
+  } catch (e) {
+    console.error('PDF render failed', e)
+  }
+}
+
+watch([isPdf, documentUrl], async ([pdf, url]) => {
+  if (pdf && url) await renderPdf(url)
+})
 
 function formatDocType(type) {
   return {
@@ -387,6 +407,13 @@ onMounted(load)
 }
 .document-viewer__pdf {
   width: 100%; height: 500px; display: block;
+}
+.document-viewer__pdf-wrap {
+  background: #525659; padding: 12px;
+  display: flex; justify-content: center; overflow-y: auto; max-height: 500px;
+}
+.document-viewer__pdf-canvas {
+  max-width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .document-viewer__error {
   padding: 40px;
