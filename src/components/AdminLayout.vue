@@ -215,12 +215,12 @@ async function handleLogout() {
 }
 .footer-btn:hover { background: #334155; color: #e2e8f0; }
 
-.admin-main { margin-left: 240px; flex: 1; min-height: 100vh; }
+.admin-main { margin-left: 240px; flex: 1; min-height: 100vh; width: calc(100% - 240px); overflow-x: hidden; }
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .admin-mobile-header { display: flex; }
-  .admin-main { margin-left: 0; padding-top: 56px; }
+  .admin-main { margin-left: 0; padding-top: 56px; width: 100%; }
   .admin-sidebar { transform: translateX(-100%); }
   .admin-sidebar.open { transform: translateX(0); }
   .sidebar-overlay { display: block; }
