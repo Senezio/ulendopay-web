@@ -222,7 +222,7 @@ function modalRows(item) {
     ['Initiated',  formatDateTime(item.initiated_at)],
     ['Completed',  item.completed_at  ? formatDateTime(item.completed_at) : null],
     ['Failed at',  item.failed_at     ? formatDateTime(item.failed_at)    : null],
-    ['Reason',     item.failure_reason],
+    ['Reason', friendlyError(item.failure_reason)],
   ]
   return [
     ['Reference',      item.reference],
@@ -231,7 +231,7 @@ function modalRows(item) {
     ['Exchange rate',  item.locked_rate    ? `1 ${item.send_currency} = ${item.locked_rate} ${item.receive_currency}` : null],
     ['Fee',            item.fee_amount     ? `${fmt(item.fee_amount)} ${item.send_currency}`        : null],
     ['Partner ref',    item.partner_reference],
-    ['Failure reason', item.failure_reason],
+    ['Failure reason', friendlyError(item.failure_reason)],
     ['Escrowed at',    item.escrowed_at  ? formatDateTime(item.escrowed_at)  : null],
     ['Completed at',   item.completed_at ? formatDateTime(item.completed_at) : null],
     ['Refunded at',    item.refunded_at  ? formatDateTime(item.refunded_at)  : null],
@@ -243,6 +243,27 @@ const fmtInt     = (v) => Math.floor(Number(v || 0)).toLocaleString('en')
 const fmtDec     = (v) => Number(v || 0).toFixed(2).split('.')[1]
 const formatDate     = (d) => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })
 const formatDateTime = (d) => d ? new Date(d).toLocaleString('en', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null
+
+function friendlyError(code) {
+  if (!code) return null
+  const map = {
+    'AMOUNT_TOO_LARGE':      'Amount exceeds the maximum allowed. Please try a smaller amount.',
+    'AMOUNT_TOO_SMALL':      'Amount is below the minimum allowed.',
+    'INSUFFICIENT_FUNDS':    'Insufficient funds in your mobile wallet. Please top up and try again.',
+    'INVALID_MSISDN':        'The phone number is invalid. Please check and try again.',
+    'LIMIT_REACHED':         'Your daily or monthly transaction limit has been reached.',
+    'PAYER_LIMIT_REACHED':   'Transaction limit reached. Please try again tomorrow.',
+    'NOT_ALLOWED':           'This transaction is not permitted on your account.',
+    'NOT_ALLOWED_COUNTRY':   'Transactions from your country are not currently supported.',
+    'PAYEE_REJECTED':        'Payment declined by your mobile network. Please contact your provider.',
+    'SERVICE_UNAVAILABLE':   'Payment service temporarily unavailable. Please try again shortly.',
+    'SYSTEM_ERROR':          'A temporary error occurred. Please try again.',
+    'TIMED_OUT':             'Payment request timed out. Please try again.',
+    'REQUEST_CANCELLED':     'Payment was cancelled. Please try again.',
+    'UNSPECIFIED_REJECTION': 'Payment was declined. Please try again or contact support.',
+  }
+  return map[code] || 'Payment could not be processed. Please try again or contact support.'
+}
 </script>
 
 <style scoped>
