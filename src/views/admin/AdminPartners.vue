@@ -316,7 +316,8 @@ onMounted(load)
 </script>
 
 <style scoped>
-.admin-page { padding: 24px 20px; max-width: 1100px; }
+.admin-page { padding: 16px; max-width: 1100px; }
+@media (min-width: 768px) { .admin-page { padding: 24px 20px; } }
 .page-header {
   display: flex; justify-content: space-between;
   align-items: flex-start; margin-bottom: 24px; gap: 12px;
@@ -403,7 +404,7 @@ onMounted(load)
 
 /* Table */
 .table-wrap { overflow-x: auto; }
-.data-table { width: 100%; border-collapse: collapse; }
+.data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
 .data-table th {
   padding: 9px 14px; text-align: left; font-size: 10px;
   font-weight: 700; color: #94a3b8; text-transform: uppercase;

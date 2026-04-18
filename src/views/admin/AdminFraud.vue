@@ -24,7 +24,8 @@
           <i class="fa-solid fa-spinner fa-spin"></i> Loading...
         </div>
 
-        <table v-else-if="alerts?.data?.length" class="admin-table">
+        <div v-else-if="alerts?.data?.length" class="table-wrap">
+        <table class="admin-table">
           <thead>
             <tr>
               <th>User</th>
@@ -118,6 +119,7 @@
             </template>
           </tbody>
         </table>
+        </div>
 
         <div v-else class="table-empty">
           <i class="fa-solid fa-shield-halved"></i>
@@ -287,7 +289,8 @@ onMounted(load)
 </script>
 
 <style scoped>
-.admin-page { padding: 32px; max-width: 1200px; }
+.admin-page { padding: 16px; max-width: 1200px; }
+@media (min-width: 768px) { .admin-page { padding: 32px; } }
 .admin-page__header { margin-bottom: 24px; }
 .admin-page__header h1 { font-size: 24px; font-weight: 800; color: #0f172a; }
 .admin-page__header p  { font-size: 13px; color: #64748b; margin-top: 4px; }
@@ -316,7 +319,8 @@ onMounted(load)
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
 
-.admin-table { width: 100%; border-collapse: collapse; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.admin-table { width: 100%; border-collapse: collapse; min-width: 700px; }
 .admin-table th {
   padding: 12px 20px; text-align: left; font-size: 11px;
   font-weight: 700; color: #64748b; text-transform: uppercase;
