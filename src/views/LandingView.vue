@@ -79,10 +79,10 @@
     </section>
 
     <!-- ── How it works ──────────────────────────────────────────────────── -->
-    <section id="how-it-works" class="section reveal">
+    <section id="how-it-works" class="section reveal reveal--left">
       <div class="container">
-        <div class="section__label">HOW IT WORKS</div>
-        <h2 class="section__title">Three steps to send money</h2>
+        <div class="section__label reveal reveal--scale">HOW IT WORKS</div>
+        <h2 class="section__title reveal reveal--scale">Three steps to send money</h2>
         <div class="steps-grid stagger-children">
           <div v-for="(step, i) in steps" :key="step.title" class="step-card stagger-item">
             <div class="step-card__num">{{ String(i + 1).padStart(2, '0') }}</div>
@@ -94,10 +94,10 @@
     </section>
 
     <!-- ── Features ──────────────────────────────────────────────────────── -->
-    <section id="features" class="section section--alt reveal">
+    <section id="features" class="section section--alt reveal reveal--right">
       <div class="container">
-        <div class="section__label">FEATURES</div>
-        <h2 class="section__title">Built for real transfers</h2>
+        <div class="section__label reveal reveal--scale">FEATURES</div>
+        <h2 class="section__title reveal reveal--scale">Built for real transfers</h2>
         <div class="features-grid stagger-children">
           <div v-for="f in features" :key="f.title" class="feature-card stagger-item">
             <div class="feature-card__icon"><i :class="f.iconClass"></i></div>
@@ -109,11 +109,11 @@
     </section>
 
     <!-- ── Security ──────────────────────────────────────────────────────── -->
-    <section id="security" class="section reveal">
+    <section id="security" class="section reveal reveal--left">
       <div class="container security-grid">
         <div class="security__text">
-          <div class="section__label">SECURITY</div>
-          <h2 class="section__title">Your money is protected</h2>
+          <div class="section__label reveal reveal--scale">SECURITY</div>
+          <h2 class="section__title reveal reveal--scale">Your money is protected</h2>
           <p class="security__body">
             Every transaction on Ulendo Pay goes through multiple layers of verification.
             Your PIN is never stored in plain text. All sensitive data is encrypted at rest
@@ -197,8 +197,8 @@ const scrolled = ref(false)
 function onScroll() {
   scrolled.value = window.scrollY > 20
 
-  // Reveal sections
-  document.querySelectorAll('.reveal').forEach(el => {
+  // Reveal sections with direction variants
+  document.querySelectorAll('.reveal, .reveal--left, .reveal--right, .reveal--scale').forEach(el => {
     const rect = el.getBoundingClientRect()
     if (rect.top < window.innerHeight - 60) {
       el.classList.add('revealed')
@@ -540,12 +540,39 @@ const securityPoints = [
 /* ── Scroll reveal animations ──────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal.revealed {
   opacity: 1;
   transform: translateY(0);
+}
+.reveal--left {
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal--left.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal--right {
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal--right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+.reveal--scale {
+  opacity: 0;
+  transform: scale(0.92) translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal--scale.revealed {
+  opacity: 1;
+  transform: scale(1) translateY(0);
 }
 
 /* CTA section background */
@@ -778,23 +805,28 @@ const securityPoints = [
 /* ── Hero entrance animations ──────────────────────────────────────────── */
 .hero-animate {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transform: translateY(40px);
+  filter: blur(4px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.9s ease;
 }
 .hero-animate.hero-in {
   opacity: 1;
   transform: translateY(0);
+  filter: blur(0);
 }
 
 /* ── Stagger animations ─────────────────────────────────────────────────── */
 .stagger-item {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(40px) scale(0.97);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .stagger-item.stagger-in {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 /* ── Feature card hover ─────────────────────────────────────────────────── */
