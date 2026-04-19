@@ -48,12 +48,17 @@
 
         <template v-else>
           <div class="auth-head">
-            <div class="otp-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="otp-icon">
+              <i :class="isTotpStep ? 'fa-solid fa-shield-halved' : 'fa-solid fa-mobile-screen-button'"></i>
+            </div>
             <h1>Verify your identity</h1>
-            <p>We sent a 6-digit code to your phone. Enter it below.</p>
+            <p v-if="isTotpStep">Enter the 6-digit code from your authenticator app.</p>
+            <p v-else>We sent a 6-digit code to your phone. Enter it below.</p>
           </div>
           <form @submit.prevent="handleOtp">
-            <UField label="Verification Code" type="text" v-model="otp"
+            <UField
+              :label="isTotpStep ? 'Authenticator Code' : 'Verification Code'"
+              type="text" v-model="otp"
               placeholder="000000" maxlength="6" class="otp-field" />
             <UError v-if="error" :message="error" />
             <UButton :loading="loading">Verify & Sign In</UButton>
@@ -86,8 +91,9 @@ const auth    = useAuthStore()
 const step    = ref('credentials')
 const method  = ref('phone_pin')
 const form    = ref({ phone: '', pin: '', email: '', password: '' })
-const userId  = ref(null)
-const otp     = ref('')
+const userId    = ref(null)
+const isTotpStep = ref(false)
+const otp       = ref('')
 const error   = ref('')
 const loading = ref(false)
 
@@ -112,8 +118,9 @@ async function handleCredentials() {
       return
     }
 
-    userId.value = data.user_id
-    step.value = 'otp'
+    userId.value    = data.user_id
+    isTotpStep.value = data.next_step === 'verify_totp'
+    step.value      = 'otp'
   } catch (err) {
     error.value = err.response?.data?.message || 'Check your credentials and try again'
   } finally { loading.value = false }
@@ -123,7 +130,11 @@ async function handleOtp() {
   error.value = ''
   loading.value = true
   try {
-    const { data } = await client.post('/auth/verify-login', { user_id: userId.value, otp: otp.value })
+    const endpoint = isTotpStep.value ? '/auth/verify-totp' : '/auth/verify-login'
+    const payload  = isTotpStep.value
+      ? { user_id: userId.value, code: otp.value }
+      : { user_id: userId.value, otp: otp.value }
+    const { data } = await client.post(endpoint, payload)
     auth.setSession(data.token, data.user)
     router.push(auth.isStaff ? '/admin' : '/dashboard')
   } catch (err) {
