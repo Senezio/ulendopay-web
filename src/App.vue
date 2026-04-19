@@ -4,7 +4,15 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
 import ToastContainer from '@/components/ui/ToastContainer.vue'
+import { useUiStore } from '@/stores/ui'
+
+const ui = useUiStore()
+
+onMounted(() => {
+  ui.initTheme()
+})
 </script>
 
 <style>
@@ -15,6 +23,8 @@ import ToastContainer from '@/components/ui/ToastContainer.vue'
   --bg:             #ffffff;
   --bg-alt:         #f9fafb;
   --bg-elevated:    #f3f4f6;
+  --bg-card:        #ffffff;
+  --bg-secondary:   #ffffff;
   --border:         #e5e7eb;
   --border-focus:   #e85d04;
   --text-primary:   #111827;
@@ -23,13 +33,57 @@ import ToastContainer from '@/components/ui/ToastContainer.vue'
   --accent:         #e85d04;
   --accent-hover:   #d05204;
   --accent-dim:     #fff3ec;
+  --accent-amber:   #b45309;
   --danger:         #dc2626;
   --danger-bg:      #fef2f2;
   --success:        #16a34a;
   --success-bg:     #f0fdf4;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --accent-amber: #b45309;
+}
+
+/* ── Dark mode ───────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg:             #0f1117;
+  --bg-alt:         #141720;
+  --bg-elevated:    #1c2030;
+  --bg-card:        #1a1f2e;
+  --bg-secondary:   #1a1f2e;
+  --border:         #2a3044;
+  --border-focus:   #e85d04;
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --accent:         #e85d04;
+  --accent-hover:   #f06820;
+  --accent-dim:     #2a1a0e;
+  --accent-amber:   #f59e0b;
+  --danger:         #f87171;
+  --danger-bg:      #2d1515;
+  --success:        #4ade80;
+  --success-bg:     #0f2d1a;
+}
+
+/* ── System preference (when no manual override) ─────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:             #0f1117;
+    --bg-alt:         #141720;
+    --bg-elevated:    #1c2030;
+    --bg-card:        #1a1f2e;
+    --bg-secondary:   #1a1f2e;
+    --border:         #2a3044;
+    --border-focus:   #e85d04;
+    --text-primary:   #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted:     #64748b;
+    --accent:         #e85d04;
+    --accent-hover:   #f06820;
+    --accent-dim:     #2a1a0e;
+    --accent-amber:   #f59e0b;
+    --danger:         #f87171;
+    --danger-bg:      #2d1515;
+    --success:        #4ade80;
+    --success-bg:     #0f2d1a;
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

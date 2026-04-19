@@ -20,4 +20,14 @@ export const authApi = {
   twoFactorSetup:  ()       => client.get('/auth/2fa/setup'),
   twoFactorEnable: (code)   => client.post('/auth/2fa/enable', { code }),
   twoFactorDisable:(code)   => client.post('/auth/2fa/disable', { code }),
+  verifyPin:       (pin)    => client.post('/auth/verify-pin', { pin }),
+  verifyEmail:     (data)   => client.post('/auth/verify-email', data),
+
+  // Sessions
+  sessions:        ()       => client.get('/auth/sessions'),
+  revokeSession:   (id)     => client.delete(`/auth/sessions/${id}`),
+  revokeAllSessions: ()     => client.delete('/auth/sessions'),
+
+  // Audit log
+  auditLog:        ()       => client.get('/auth/audit-log'),
 }

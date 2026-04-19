@@ -90,7 +90,7 @@
             </div>
           </div>
           <UError v-if="error" :message="error" />
-          <UButton :loading="loading" @click="handleSend">Confirm & Send</UButton>
+          <UButton :loading="loading" @click="openPinModal">Confirm & Send</UButton>
           <button class="btn-back" @click="currentStep = 'Recipient'">← Back</button>
         </template>
 
@@ -106,6 +106,72 @@
 
       </div>
     </div>
+
+    <!-- ── PIN Confirmation Modal ──────────────────────────────────────── -->
+    <Teleport to="body">
+      <div v-if="pinModal.open" class="modal-overlay" @click.self="closePinModal">
+        <div class="modal">
+          <div class="modal__header">
+            <div class="modal__icon">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+              <div class="modal__title">Confirm with PIN</div>
+              <div class="modal__subtitle">Enter your 4-digit PIN to authorise this transfer</div>
+            </div>
+            <button class="modal__close" @click="closePinModal">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="modal__body">
+            <!-- Transfer summary -->
+            <div class="pin-summary">
+              <div class="pin-summary__row">
+                <span>Sending</span>
+                <span class="pin-summary__value">{{ Number(quoteForm.send_amount).toLocaleString() }} {{ quoteForm.from_currency }}</span>
+              </div>
+              <div class="pin-summary__row">
+                <span>To</span>
+                <span class="pin-summary__value">{{ recipientForm.full_name }}</span>
+              </div>
+              <div class="pin-summary__row pin-summary__row--accent">
+                <span>They receive</span>
+                <span class="pin-summary__value accent">{{ quote?.receive_amount }} {{ quoteForm.to_currency }}</span>
+              </div>
+            </div>
+
+            <!-- PIN dots input -->
+            <div class="pin-input-group">
+              <input
+                v-for="(_, i) in 4" :key="i"
+                :ref="el => { if (el) pinRefs[i] = el }"
+                class="pin-box"
+                type="password"
+                inputmode="numeric"
+                maxlength="1"
+                :value="pinModal.digits[i] || ''"
+                @input="onPinInput($event, i)"
+                @keydown="onPinKeydown($event, i)"
+                @paste="onPinPaste($event)"
+              />
+            </div>
+
+            <div v-if="pinModal.error" class="modal__error">{{ pinModal.error }}</div>
+
+            <button
+              class="modal__btn modal__btn--primary"
+              :disabled="pinModal.loading || pinModal.digits.join('').length < 4"
+              @click="submitWithPin"
+            >
+              <i v-if="pinModal.loading" class="fa-solid fa-spinner fa-spin"></i>
+              <span v-else><i class="fa-solid fa-paper-plane"></i> Send Money</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
   </AppLayout>
 </template>
 
@@ -121,8 +187,7 @@ import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore()
 
 // ---------------------------------------------------------------------------
-// Currency / network maps — aligned with PawapayPartner.php active-conf
-// 2026-04-15 (17 active countries)
+// Currency / network maps
 // ---------------------------------------------------------------------------
 const CURRENCY_LABELS = {
   XOF: 'XOF – West Africa (Benin / Burkina Faso / Côte d\'Ivoire / Senegal)',
@@ -138,14 +203,11 @@ const CURRENCY_LABELS = {
   TZS: 'TZS – Tanzanian Shilling',
   UGX: 'UGX – Ugandan Shilling',
   ZMW: 'ZMW – Zambian Kwacha',
-  // Non-pawaPay send-side currencies kept for corridor flexibility
   ZAR: 'ZAR – South African Rand',
   BWP: 'BWP – Botswana Pula',
   NGN: 'NGN – Nigerian Naira',
 }
 
-// Networks available per receive currency, matching correspondent keys in
-// PawapayPartner.php resolveCorrespondent()
 const NETWORKS_BY_CURRENCY = {
   XOF: ['MOOV', 'MTN', 'MOOV_BFA', 'MTN_CIV', 'ORANGE_CIV', 'FREE', 'ORANGE_SEN'],
   XAF: ['MTN', 'ORANGE_CMR', 'AIRTEL_COG', 'MTN_COG', 'AIRTEL_GAB'],
@@ -160,34 +222,16 @@ const NETWORKS_BY_CURRENCY = {
   TZS: ['AIRTEL', 'HALOTEL', 'TIGO'],
   UGX: ['AIRTEL', 'MTN'],
   ZMW: ['AIRTEL', 'MTN', 'ZAMTEL'],
-  // Fallback for non-pawaPay currencies
   ZAR: ['Vodacom', 'MTN', 'Cell C'],
   BWP: ['Orange', 'Mascom'],
   NGN: ['MTN', 'Airtel', 'Glo', '9mobile'],
 }
 
-// All currencies available to receive (pawaPay corridors)
-const allCurrencies = Object.keys(CURRENCY_LABELS)
-
-// ---------------------------------------------------------------------------
-// Derive the user's home currency from their profile, default to MWK
-// Assumes auth.user.currency is set by your backend (e.g. "MWK")
-// ---------------------------------------------------------------------------
-const userCurrency = computed(() => auth.user?.currency || 'MWK')
-
-// Send side: always include the user's own currency first, then the rest
-const sendCurrencies = computed(() => [
-  userCurrency.value,
-  ...allCurrencies.filter(c => c !== userCurrency.value),
-])
-
-// Receive side: exclude whatever the user has selected as from_currency
+const allCurrencies   = Object.keys(CURRENCY_LABELS)
+const userCurrency    = computed(() => auth.user?.currency || 'MWK')
+const sendCurrencies  = computed(() => [userCurrency.value, ...allCurrencies.filter(c => c !== userCurrency.value)])
 const receiveCurrencies = computed(() => allCurrencies)
-
-// Networks filtered to the selected destination currency
-const availableNetworks = computed(() =>
-  NETWORKS_BY_CURRENCY[quoteForm.value.to_currency] ?? []
-)
+const availableNetworks = computed(() => NETWORKS_BY_CURRENCY[quoteForm.value.to_currency] ?? [])
 
 // ---------------------------------------------------------------------------
 // Steps
@@ -238,7 +282,7 @@ const confirmRows = computed(() => [
 ])
 
 // ---------------------------------------------------------------------------
-// Handlers
+// Quote & send handlers
 // ---------------------------------------------------------------------------
 async function handleQuote() {
   if (quote.value) { currentStep.value = 'Recipient'; return }
@@ -277,6 +321,7 @@ async function handleSend() {
     if (timer) clearInterval(timer)
   } catch (err) {
     error.value = err.response?.data?.message || 'Transfer failed'
+    closePinModal()
   } finally { loading.value = false }
 }
 
@@ -284,22 +329,86 @@ function reset() {
   currentStep.value = 'Quote'
   quote.value = rateLock.value = transaction.value = null
   error.value = ''
-  quoteForm.value = {
-    from_currency: userCurrency.value,
-    to_currency:   userCurrency.value,
-    send_amount:   '',
-  }
-  recipientForm.value = {
-    full_name:      '',
-    phone:          '',
-    country_code:   'TZA',
-    payment_method: 'mobile_money',
-    mobile_network: '',
-    mobile_number:  '',
-  }
+  quoteForm.value = { from_currency: userCurrency.value, to_currency: userCurrency.value, send_amount: '' }
+  recipientForm.value = { full_name: '', phone: '', country_code: 'TZA', payment_method: 'mobile_money', mobile_network: '', mobile_number: '' }
 }
 
 onUnmounted(() => { if (timer) clearInterval(timer) })
+
+// ---------------------------------------------------------------------------
+// PIN modal
+// ---------------------------------------------------------------------------
+const pinRefs = ref([])
+const pinModal = ref({
+  open: false,
+  digits: [],
+  loading: false,
+  error: '',
+})
+
+function openPinModal() {
+  pinModal.value = { open: true, digits: [], loading: false, error: '' }
+  // Focus first PIN box after modal renders
+  setTimeout(() => pinRefs.value[0]?.focus(), 100)
+}
+
+function closePinModal() {
+  pinModal.value.open = false
+  pinModal.value.digits = []
+  pinModal.value.error = ''
+}
+
+function onPinInput(event, index) {
+  const val = event.target.value.replace(/\D/g, '').slice(-1)
+  pinModal.value.digits[index] = val
+  event.target.value = val
+  if (val && index < 3) pinRefs.value[index + 1]?.focus()
+  // Auto-submit when all 4 digits entered
+  if (pinModal.value.digits.join('').length === 4) {
+    submitWithPin()
+  }
+}
+
+function onPinKeydown(event, index) {
+  if (event.key === 'Backspace' && !pinModal.value.digits[index] && index > 0) {
+    pinRefs.value[index - 1]?.focus()
+  }
+}
+
+function onPinPaste(event) {
+  event.preventDefault()
+  const digits = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4).split('')
+  digits.forEach((d, i) => {
+    pinModal.value.digits[i] = d
+    if (pinRefs.value[i]) pinRefs.value[i].value = d
+  })
+  pinRefs.value[Math.min(digits.length, 3)]?.focus()
+}
+
+async function submitWithPin() {
+  const pin = pinModal.value.digits.join('')
+  if (pin.length < 4) return
+
+  pinModal.value.loading = true
+  pinModal.value.error   = ''
+
+  try {
+    // Step 1: verify PIN
+    await client.post('/auth/verify-pin', { pin })
+    // Step 2: PIN correct — proceed with transfer
+    await handleSend()
+    closePinModal()
+  } catch (err) {
+    const errors = err.response?.data?.errors
+    pinModal.value.error = errors?.pin?.[0] || err.response?.data?.message || 'Incorrect PIN.'
+    // Clear digits so user can re-enter
+    pinModal.value.digits = []
+    pinRefs.value.forEach(el => { if (el) el.value = '' })
+    pinRefs.value[0]?.focus()
+  } finally {
+    pinModal.value.loading = false
+  }
+}
 </script>
 
 <style scoped>
@@ -359,7 +468,6 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
   width: 60px; height: 60px; border-radius: 50%; background: var(--accent);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 16px; font-size: 24px; color: #000; font-weight: 700;
-  animation: pulse-green 2s infinite;
 }
 .done-state h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
 .done-state p  { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
@@ -370,4 +478,106 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
   border: none; color: var(--text-secondary); font-size: 13px;
   cursor: pointer; font-family: 'Sora', sans-serif;
 }
+
+/* ── Modal ───────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 1000; backdrop-filter: blur(2px);
+  animation: overlay-in 0.2s ease;
+}
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: var(--bg-card);
+  border-radius: 24px 24px 0 0;
+  width: 100%; max-width: 480px;
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal__header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.modal__icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: rgba(232,93,4,0.12); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.modal__title    { font-size: 16px; font-weight: 700; }
+.modal__subtitle { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.modal__close {
+  margin-left: auto; width: 32px; height: 32px; border-radius: 99px;
+  border: none; background: var(--bg-elevated); color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 13px; flex-shrink: 0;
+}
+
+.modal__body {
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.modal__error {
+  font-size: 13px; color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: 10px; padding: 10px 12px;
+}
+
+/* Transfer summary inside modal */
+.pin-summary {
+  background: var(--bg-elevated);
+  border-radius: 12px; overflow: hidden;
+}
+.pin-summary__row {
+  display: flex; justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.pin-summary__row:last-child { border-bottom: none; }
+.pin-summary__row span:first-child { color: var(--text-secondary); }
+.pin-summary__value { font-weight: 600; }
+.pin-summary__row--accent .pin-summary__value { color: var(--accent); }
+
+/* PIN digit boxes */
+.pin-input-group {
+  display: flex; gap: 12px; justify-content: center;
+}
+.pin-box {
+  width: 56px; height: 64px;
+  border-radius: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-elevated);
+  text-align: center;
+  font-size: 24px; font-weight: 700;
+  color: var(--text-primary);
+  font-family: monospace;
+  outline: none;
+  transition: border-color 0.15s, transform 0.1s;
+  -webkit-appearance: none;
+  -webkit-text-security: disc;
+}
+.pin-box:focus {
+  border-color: var(--accent);
+  transform: scale(1.05);
+  background: var(--bg-card);
+}
+
+/* Modal button */
+.modal__btn {
+  width: 100%; height: 52px; border-radius: 14px; border: none;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; font-family: inherit;
+  transition: opacity 0.15s;
+}
+.modal__btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.modal__btn--primary { background: var(--accent); color: #fff; }
+.modal__btn--primary:active:not(:disabled) { opacity: 0.88; }
 </style>

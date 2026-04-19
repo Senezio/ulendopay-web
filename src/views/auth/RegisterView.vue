@@ -19,6 +19,7 @@
           <form @submit.prevent="handleRegister">
             <UField label="Full Name" v-model="form.name" placeholder="e.g. Alinafe Banda" />
             <UField label="Phone Number" type="tel" v-model="form.phone" placeholder="+265 XXX XXX XXX" />
+            <UField label="Email Address (optional)" type="email" v-model="form.email" placeholder="name@email.com" />
 
             <div class="field">
               <label>Country</label>
@@ -43,7 +44,7 @@
           </p>
         </template>
 
-        <template v-else>
+        <template v-else-if="step === 'otp'">
           <div class="auth-head">
             <div class="otp-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
             <h1>Verify your phone</h1>
@@ -59,6 +60,23 @@
             </button>
           </form>
         </template>
+
+        <template v-else-if="step === 'email_otp'">
+          <div class="auth-head">
+            <div class="otp-icon"><i class="fa-solid fa-envelope"></i></div>
+            <h1>Verify your email</h1>
+            <p>We sent a 6-digit code to <strong>{{ form.email }}</strong>. Enter it below.</p>
+          </div>
+          <form @submit.prevent="handleEmailVerify">
+            <UField label="Verification Code" type="text" v-model="emailOtp"
+              placeholder="000000" maxlength="6" class="otp-field" />
+            <UError v-if="error" :message="error" />
+            <UButton :loading="loading">Verify Email</UButton>
+            <button type="button" class="btn-text" @click="skipEmailVerification">
+              Skip for now →
+            </button>
+          </form>
+        </template>
       </div>
 
     </div>
@@ -67,6 +85,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { authApi } from '@/api/auth'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
 import { useAuthStore } from '@/stores/auth'
@@ -79,13 +98,14 @@ const router  = useRouter()
 const ui      = useUiStore()
 const auth    = useAuthStore()
 const step    = ref('form')
-const userId  = ref(null)
-const otp     = ref('')
+const userId   = ref(null)
+const otp      = ref('')
+const emailOtp = ref('')
 const error   = ref('')
 const loading = ref(false)
 
 const form = ref({
-  name: '', phone: '', country_code: 'MWI',
+  name: '', phone: '', email: '', country_code: 'MWI',
   pin: '', pin_confirmation: '',
 })
 
@@ -121,11 +141,34 @@ async function handleVerify() {
   loading.value = true
   try {
     await client.post('/auth/verify-phone', { user_id: userId.value, otp: otp.value })
-    ui.success('Phone verified. You can now sign in.')
+    // If email provided, send email OTP next
+    if (form.value.email) {
+      await authApi.verifyEmail({ user_id: userId.value, send: true })
+      step.value = 'email_otp'
+    } else {
+      ui.success('Phone verified. You can now sign in.')
+      router.push('/login')
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Invalid or expired code'
+  } finally { loading.value = false }
+}
+
+async function handleEmailVerify() {
+  error.value = ''
+  loading.value = true
+  try {
+    await authApi.verifyEmail({ user_id: userId.value, otp: emailOtp.value })
+    ui.success('Email verified. You can now sign in.')
     router.push('/login')
   } catch (err) {
     error.value = err.response?.data?.message || 'Invalid or expired code'
   } finally { loading.value = false }
+}
+
+function skipEmailVerification() {
+  ui.success('Account created. You can verify your email later from your profile.')
+  router.push('/login')
 }
 </script>
 

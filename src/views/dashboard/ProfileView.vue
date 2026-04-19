@@ -226,6 +226,99 @@
         </div>
       </div>
 
+      <!-- Active Sessions -->
+      <div class="section fade-up-3">
+        <div class="section__title">Active Sessions</div>
+        <div class="detail-list">
+          <div v-if="sessionsLoading" class="detail-item">
+            <div class="detail-item__icon"><i class="fas fa-spinner fa-spin" /></div>
+            <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
+          </div>
+          <template v-else>
+            <div v-for="s in sessions" :key="s.id" class="detail-item">
+              <div class="detail-item__icon">
+                <i :class="s.is_current ? 'fas fa-mobile-screen-button' : 'fas fa-globe'" />
+              </div>
+              <div class="detail-item__body">
+                <div class="detail-item__label">
+                  {{ s.is_current ? 'This device' : s.name }}
+                  <span v-if="s.is_current" class="badge--current">Current</span>
+                </div>
+                <div class="detail-item__value">
+                  {{ s.last_used_at ? formatDate(s.last_used_at) : 'Just now' }}
+                </div>
+              </div>
+              <button
+                v-if="!s.is_current"
+                class="revoke-btn"
+                :disabled="revokingId === s.id"
+                @click="revokeSession(s.id)"
+              >
+                <i v-if="revokingId === s.id" class="fas fa-spinner fa-spin" />
+                <span v-else>Revoke</span>
+              </button>
+            </div>
+            <div v-if="sessions.length > 1" class="detail-item detail-item--action" @click="revokeAll">
+              <div class="detail-item__icon"><i class="fas fa-shield-xmark" /></div>
+              <div class="detail-item__body">
+                <div class="detail-item__label">Sign out all other devices</div>
+              </div>
+              <i class="fas fa-chevron-right detail-item__chevron" />
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="section fade-up-3">
+        <div class="section__title">Recent Activity</div>
+        <div class="detail-list">
+          <div v-if="auditLoading" class="detail-item">
+            <div class="detail-item__icon"><i class="fas fa-spinner fa-spin" /></div>
+            <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
+          </div>
+          <div v-else-if="!auditLogs.length" class="detail-item">
+            <div class="detail-item__icon"><i class="fas fa-clock-rotate-left" /></div>
+            <div class="detail-item__body"><div class="detail-item__label">No activity yet</div></div>
+          </div>
+          <div v-for="log in auditLogs" :key="log.created_at + log.action" class="detail-item">
+            <div class="detail-item__icon" :class="auditIconBg(log.action)">
+              <i :class="auditIcon(log.action)" />
+            </div>
+            <div class="detail-item__body">
+              <div class="detail-item__label">{{ formatDate(log.created_at) }}</div>
+              <div class="detail-item__value">{{ auditLabel(log.action) }}</div>
+            </div>
+            <div v-if="log.ip_address" class="detail-item__meta">{{ log.ip_address }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div class="section fade-up-3">
+        <div class="section__title">Appearance</div>
+        <div class="detail-list">
+          <div class="detail-item">
+            <div class="detail-item__icon"><i class="fas fa-circle-half-stroke" /></div>
+            <div class="detail-item__body">
+              <div class="detail-item__label">Theme</div>
+              <div class="detail-item__value">{{ themeLabel }}</div>
+            </div>
+            <div class="theme-toggle">
+              <button
+                v-for="t in themeOptions" :key="t.value"
+                class="theme-btn"
+                :class="{ active: ui.theme === t.value }"
+                @click="ui.setTheme(t.value)"
+                :title="t.label"
+              >
+                <i :class="t.icon" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Logout -->
       <div class="fade-up-3">
         <button class="logout-btn" @click="handleLogout">
@@ -243,10 +336,24 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppLayout from '@/components/AppLayout.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useUiStore } from '@/stores/ui'
 import { authApi } from '@/api/auth'
 
 const auth   = useAuthStore()
+const ui     = useUiStore()
 const router = useRouter()
+
+const themeOptions = [
+  { value: 'system', label: 'System', icon: 'fas fa-circle-half-stroke' },
+  { value: 'light',  label: 'Light',  icon: 'fas fa-sun' },
+  { value: 'dark',   label: 'Dark',   icon: 'fas fa-moon' },
+]
+
+const themeLabel = computed(() => {
+  if (ui.theme === 'dark')   return 'Dark'
+  if (ui.theme === 'light')  return 'Light'
+  return 'System default'
+})
 
 // Account numbers
 const accounts       = ref([])
@@ -333,13 +440,15 @@ onMounted(async () => {
       authApi.accountNumbers(),
       authApi.twoFactorStatus(),
     ])
-    accounts.value       = accRes.data.accounts
+    accounts.value         = accRes.data.accounts
     twoFactorEnabled.value = tfaRes.data.is_enabled
   } catch (e) {
     console.error(e)
   } finally {
     accountsLoading.value = false
   }
+  loadSessions()
+  loadAuditLog()
 })
 
 const initial = computed(() => auth.user?.name?.[0]?.toUpperCase() || '?')
@@ -393,6 +502,96 @@ const fields = computed(() => [
     icon:  'fas fa-globe-africa',
   },
 ])
+
+// ── Sessions ────────────────────────────────────────────────────────────────
+const sessions    = ref([])
+const sessionsLoading = ref(false)
+const revokingId  = ref(null)
+
+async function loadSessions() {
+  sessionsLoading.value = true
+  try {
+    const { data } = await authApi.sessions()
+    sessions.value = data.sessions
+  } catch { sessions.value = [] }
+  finally { sessionsLoading.value = false }
+}
+
+async function revokeSession(id) {
+  revokingId.value = id
+  try {
+    await authApi.revokeSession(id)
+    sessions.value = sessions.value.filter(s => s.id !== id)
+  } catch (e) {
+    console.error(e)
+  } finally { revokingId.value = null }
+}
+
+async function revokeAll() {
+  try {
+    await authApi.revokeAllSessions()
+    sessions.value = sessions.value.filter(s => s.is_current)
+  } catch (e) { console.error(e) }
+}
+
+// ── Audit log ────────────────────────────────────────────────────────────────
+const auditLogs   = ref([])
+const auditLoading = ref(false)
+
+async function loadAuditLog() {
+  auditLoading.value = true
+  try {
+    const { data } = await authApi.auditLog()
+    auditLogs.value = data.logs
+  } catch { auditLogs.value = [] }
+  finally { auditLoading.value = false }
+}
+
+function formatDate(dt) {
+  if (!dt) return '—'
+  const d = new Date(dt)
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })
+    + ' · ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+}
+
+function auditLabel(action) {
+  const map = {
+    'user.login':            'Signed in',
+    'login.success':         'Signed in',
+    'login.failed':          'Failed sign-in attempt',
+    'user.logout':           'Signed out',
+    'user.pin_reset':        'PIN was reset',
+    'user.password_reset':   'Password was reset',
+    'transaction.refunded':  'Transfer refunded',
+    '2fa.enabled':           '2FA enabled',
+    '2fa.disabled':          '2FA disabled',
+    'kyc.submitted':         'KYC submitted',
+    'kyc.approved':          'KYC approved',
+    'kyc.rejected':          'KYC rejected',
+    'withdrawal.initiated':  'Withdrawal initiated',
+    'topup.initiated':       'Top-up initiated',
+    'pin.changed':           'PIN changed',
+    'password.changed':      'Password changed',
+  }
+  return map[action] || action
+}
+
+function auditIcon(action) {
+  if (action.includes('login') || action.includes('logout')) return 'fas fa-right-to-bracket'
+  if (action.includes('pin'))      return 'fas fa-lock'
+  if (action.includes('password')) return 'fas fa-key'
+  if (action.includes('2fa'))      return 'fas fa-shield-halved'
+  if (action.includes('kyc'))      return 'fas fa-id-card'
+  if (action.includes('refund'))   return 'fas fa-rotate-left'
+  return 'fas fa-clock-rotate-left'
+}
+
+function auditIconBg(action) {
+  if (action.includes('failed')) return 'icon--danger'
+  if (action.includes('login') || action.includes('logout')) return 'icon--info'
+  if (action.includes('2fa') || action.includes('pin') || action.includes('password')) return 'icon--warn'
+  return ''
+}
 
 async function handleLogout() {
   await auth.logout()
@@ -719,4 +918,58 @@ async function handleLogout() {
   .modal-overlay { align-items: center; padding: 20px; }
   .modal { border-radius: 16px; }
 }
+
+/* ── Sessions ────────────────────────────────────────────────────────── */
+.badge--current {
+  display: inline-block;
+  font-size: 10px; font-weight: 600;
+  background: var(--success-bg); color: var(--success);
+  padding: 1px 7px; border-radius: 99px;
+  margin-left: 6px; vertical-align: middle;
+}
+.revoke-btn {
+  font-size: 11px; font-weight: 600;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: none; border-radius: 8px;
+  padding: 4px 10px; cursor: pointer;
+  flex-shrink: 0;
+}
+.revoke-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.detail-item--action { cursor: pointer; }
+.detail-item--action:active { background: var(--bg-alt); }
+.detail-item__chevron { color: var(--text-muted); font-size: 11px; flex-shrink: 0; }
+
+/* ── Audit log ───────────────────────────────────────────────────────── */
+.detail-item__meta {
+  font-size: 11px; color: var(--text-muted);
+  flex-shrink: 0; font-family: monospace;
+}
+.icon--danger { background: var(--danger-bg) !important; color: var(--danger) !important; }
+.icon--info   { background: #eff6ff !important; color: #2563eb !important; }
+.icon--warn   { background: #fffbeb !important; color: #d97706 !important; }
+
+
+/* ── Theme toggle ────────────────────────────────────────────────────── */
+.theme-toggle {
+  display: flex; gap: 4px;
+  background: var(--bg-elevated);
+  border-radius: 10px; padding: 3px;
+  border: 1px solid var(--border);
+}
+.theme-btn {
+  width: 30px; height: 30px;
+  border-radius: 7px; border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.theme-btn.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
 </style>
