@@ -45,20 +45,20 @@
     <section class="hero" :style="{ backgroundImage: `url(${bannerImage})` }">
       <div class="hero__overlay"></div>
       <div class="container hero__content">
-        <div class="hero__tag">Available across Sub-Saharan Africa</div>
-        <h1 class="hero__headline">
+        <div class="hero__tag hero-animate">Available across Sub-Saharan Africa</div>
+        <h1 class="hero__headline hero-animate">
           Send money across Africa.<br />
           <span>Instantly. Securely.</span>
         </h1>
-        <p class="hero__sub">
+        <p class="hero__sub hero-animate">
           Ulendo Pay lets individuals and families send money between African countries
           at official exchange rates — with no hidden fees.
         </p>
-        <div class="hero__actions">
+        <div class="hero__actions hero-animate">
           <RouterLink to="/register" class="btn-primary btn-primary--lg">Create account</RouterLink>
           <RouterLink to="/login"    class="btn-outline btn-outline--lg btn-outline--light">Sign in</RouterLink>
         </div>
-        <div class="hero__disclaimer">
+        <div class="hero__disclaimer hero-animate">
           No subscription required. Free to register.
         </div>
       </div>
@@ -68,7 +68,7 @@
     <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
     <section class="trust-bar reveal">
       <div class="container trust-bar__inner">
-        <div v-for="t in trustPoints" :key="t.label" class="trust-item">
+        <div v-for="t in trustPoints" :key="t.label" class="trust-item stagger-item">
           <span class="trust-item__icon"><i :class="t.iconClass"></i></span>
           <div>
             <div class="trust-item__label">{{ t.label }}</div>
@@ -83,8 +83,8 @@
       <div class="container">
         <div class="section__label">HOW IT WORKS</div>
         <h2 class="section__title">Three steps to send money</h2>
-        <div class="steps-grid">
-          <div v-for="(step, i) in steps" :key="step.title" class="step-card">
+        <div class="steps-grid stagger-children">
+          <div v-for="(step, i) in steps" :key="step.title" class="step-card stagger-item">
             <div class="step-card__num">{{ String(i + 1).padStart(2, '0') }}</div>
             <h3>{{ step.title }}</h3>
             <p>{{ step.desc }}</p>
@@ -98,8 +98,8 @@
       <div class="container">
         <div class="section__label">FEATURES</div>
         <h2 class="section__title">Built for real transfers</h2>
-        <div class="features-grid">
-          <div v-for="f in features" :key="f.title" class="feature-card">
+        <div class="features-grid stagger-children">
+          <div v-for="f in features" :key="f.title" class="feature-card stagger-item">
             <div class="feature-card__icon"><i :class="f.iconClass"></i></div>
             <h3>{{ f.title }}</h3>
             <p>{{ f.desc }}</p>
@@ -196,17 +196,42 @@ const scrolled = ref(false)
 
 function onScroll() {
   scrolled.value = window.scrollY > 20
-  // Trigger reveal animations
+
+  // Reveal sections
   document.querySelectorAll('.reveal').forEach(el => {
     const rect = el.getBoundingClientRect()
-    if (rect.top < window.innerHeight - 80) {
+    if (rect.top < window.innerHeight - 60) {
       el.classList.add('revealed')
     }
   })
+
+  // Staggered children
+  document.querySelectorAll('.stagger-children').forEach(parent => {
+    const rect = parent.getBoundingClientRect()
+    if (rect.top < window.innerHeight - 60) {
+      parent.querySelectorAll('.stagger-item').forEach((el, i) => {
+        setTimeout(() => el.classList.add('stagger-in'), i * 100)
+      })
+    }
+  })
+
+  // Parallax hero
+  const hero = document.querySelector('.hero')
+  if (hero) {
+    const offset = window.scrollY * 0.3
+    hero.style.backgroundPositionY = `calc(50% + ${offset}px)`
+  }
 }
+
 onMounted(() => {
-  window.addEventListener('scroll', onScroll)
-  setTimeout(() => onScroll(), 100)
+  window.addEventListener('scroll', onScroll, { passive: true })
+  // Animate hero content on load
+  setTimeout(() => {
+    document.querySelectorAll('.hero__tag, .hero__headline, .hero__sub, .hero__actions, .hero__disclaimer').forEach((el, i) => {
+      setTimeout(() => el.classList.add('hero-in'), i * 120)
+    })
+  }, 100)
+  setTimeout(() => onScroll(), 200)
 })
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
@@ -749,4 +774,90 @@ const securityPoints = [
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
 }
+
+/* ── Hero entrance animations ──────────────────────────────────────────── */
+.hero-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.hero-animate.hero-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Stagger animations ─────────────────────────────────────────────────── */
+.stagger-item {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.stagger-item.stagger-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Feature card hover ─────────────────────────────────────────────────── */
+.feature-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  border-color: #e85d04 !important;
+}
+
+/* ── Step card hover ────────────────────────────────────────────────────── */
+.step-card {
+  transition: background 0.2s ease !important;
+}
+.step-card:hover .step-card__num {
+  color: #e85d04;
+  transition: color 0.2s ease;
+}
+
+/* ── Security card pulse ────────────────────────────────────────────────── */
+.security__card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+.security__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.1) !important;
+}
+
+/* ── Trust item hover ───────────────────────────────────────────────────── */
+.trust-item {
+  transition: transform 0.2s ease !important;
+}
+.trust-item:hover {
+  transform: translateX(4px);
+}
+
+/* ── CTA button pulse ───────────────────────────────────────────────────── */
+.btn-primary--lg {
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s !important;
+}
+.btn-primary--lg:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(232, 93, 4, 0.35);
+}
+
+/* ── Navbar link underline animation ───────────────────────────────────── */
+.navbar__links a {
+  position: relative;
+}
+.navbar__links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #e85d04;
+  transition: width 0.2s ease;
+}
+.navbar__links a:hover::after {
+  width: 100%;
+}
+
 </style>
