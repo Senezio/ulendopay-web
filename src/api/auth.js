@@ -11,4 +11,13 @@ export const authApi = {
   resetPassword: (data) => client.post('/auth/reset-password', data),
   logout: () => client.post('/auth/logout'),
   me: () => client.get('/auth/me'),
+
+  // Account numbers
+  accountNumbers: () => client.get('/auth/account-numbers'),
+
+  // 2FA
+  twoFactorStatus: ()       => client.get('/auth/2fa/status'),
+  twoFactorSetup:  ()       => client.get('/auth/2fa/setup'),
+  twoFactorEnable: (code)   => client.post('/auth/2fa/enable', { code }),
+  twoFactorDisable:(code)   => client.post('/auth/2fa/disable', { code }),
 }
