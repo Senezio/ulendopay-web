@@ -95,11 +95,11 @@ export const legalData = {
       },
       {
         h: "8. How Transfers Work",
-        p: "When you initiate a transfer, the send amount including fees is immediately deducted from your Ulendo Pay wallet and held in escrow. Your funds are protected in escrow throughout the transfer process using a double-entry accounting ledger. Once the transfer is confirmed by our partner in the destination country, the funds are released and the recipient is notified by SMS. If the transfer cannot be completed after all retry attempts are exhausted, your funds — excluding the platform fee — are automatically returned to your Ulendo Pay wallet. You and the recipient will both receive SMS notifications at each stage of the transfer."
+        p: "When you initiate a transfer, the send amount including fees is immediately deducted from your Ulendo Pay wallet and held in escrow. Your funds are protected in escrow throughout the transfer process using a double-entry accounting ledger. Once the transfer is confirmed by our partner in the destination country, the funds are released and the recipient is notified by SMS. If the transfer cannot be completed after all retry attempts are exhausted, your full escrowed amount is automatically returned to your Ulendo Pay wallet. You and the recipient will both receive SMS notifications at each stage of the transfer."
       },
       {
         h: "9. Failed Transfers and Refunds",
-        p: "If a transfer fails after initiation, the following applies: (a) Your escrowed funds, less the platform fee, are automatically returned to your Ulendo Pay wallet without requiring any action on your part; (b) You will receive an SMS notification confirming the refund and the amount returned; (c) The platform fee is non-refundable as it covers the cost of attempting the transfer; (d) Refunds are processed automatically by our system and should reflect in your wallet promptly. If a refund does not appear within 24 hours of a failed transfer, contact us at support@ulendopay.com with your transaction reference number."
+        p: "If a transfer fails after initiation, your full escrowed amount including any platform fee is automatically returned to your Ulendo Pay wallet without requiring any action on your part. You will receive an SMS notification confirming the refund and the amount returned. Refunds are processed automatically by our system and should reflect in your wallet promptly. If a refund does not appear within 24 hours of a failed transfer, contact us at support@ulendopay.com with your transaction reference number."
       },
       {
         h: "10. Wallet Top-Up and Withdrawals",
