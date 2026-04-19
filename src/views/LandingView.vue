@@ -66,7 +66,7 @@
 
 
     <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
-    <section class="trust-bar">
+    <section class="trust-bar reveal">
       <div class="container trust-bar__inner">
         <div v-for="t in trustPoints" :key="t.label" class="trust-item">
           <span class="trust-item__icon"><i :class="t.iconClass"></i></span>
@@ -79,7 +79,7 @@
     </section>
 
     <!-- ── How it works ──────────────────────────────────────────────────── -->
-    <section id="how-it-works" class="section">
+    <section id="how-it-works" class="section reveal">
       <div class="container">
         <div class="section__label">HOW IT WORKS</div>
         <h2 class="section__title">Three steps to send money</h2>
@@ -94,7 +94,7 @@
     </section>
 
     <!-- ── Features ──────────────────────────────────────────────────────── -->
-    <section id="features" class="section section--alt">
+    <section id="features" class="section section--alt reveal">
       <div class="container">
         <div class="section__label">FEATURES</div>
         <h2 class="section__title">Built for real transfers</h2>
@@ -109,7 +109,7 @@
     </section>
 
     <!-- ── Security ──────────────────────────────────────────────────────── -->
-    <section id="security" class="section">
+    <section id="security" class="section reveal">
       <div class="container security-grid">
         <div class="security__text">
           <div class="section__label">SECURITY</div>
@@ -153,7 +153,7 @@
     </section>
 
     <!-- ── CTA Section ────────────────────────────────────────────────────── -->
-    <section class="cta-section">
+    <section class="cta-section" :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78)), url(${ctaBannerImage})` }">
       <div class="container cta-section__inner">
         <h2>Ready to send money?</h2>
         <p>Join thousands of people already using Ulendo Pay to support their families across Africa.</p>
@@ -188,14 +188,27 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import bannerImage from '../assets/banner.png'
+import bannerImage from '../assets/banner3.png'
+import ctaBannerImage from '../assets/banner2.png'
 
 const menuOpen = ref(false)
 const scrolled = ref(false)
 
-function onScroll() { scrolled.value = window.scrollY > 20 }
-onMounted(()    => window.addEventListener('scroll', onScroll))
-onUnmounted(()  => window.removeEventListener('scroll', onScroll))
+function onScroll() {
+  scrolled.value = window.scrollY > 20
+  // Trigger reveal animations
+  document.querySelectorAll('.reveal').forEach(el => {
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight - 80) {
+      el.classList.add('revealed')
+    }
+  })
+}
+onMounted(() => {
+  window.addEventListener('scroll', onScroll)
+  setTimeout(() => onScroll(), 100)
+})
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 const trustPoints = [
   { iconClass: 'fa-regular fa-clock', label: 'Fast transfers',    desc: 'Most transfers complete within minutes' },
@@ -498,6 +511,24 @@ const securityPoints = [
 /* ── Sections ──────────────────────────────────────────────────────────── */
 .section     { padding: 80px 0; }
 .section--alt { background: #fafafa; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; }
+
+/* ── Scroll reveal animations ──────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CTA section background */
+.cta-section {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
 
 .section__label {
   font-size: 11px;
