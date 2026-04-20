@@ -113,7 +113,6 @@
                 <span>They receive</span>
                 <span class="accent">{{ calcTo }} {{ formatCalc(calcResult.receive_amount) }}</span>
               </div>
-              <div class="calc-breakdown__source">
                 Rate source: {{ calcResult.rate_source }} · Updated daily
               </div>
             </div>
@@ -1090,7 +1089,6 @@ const securityPoints = [
   font-weight: 700; color: #111; font-size: 14px;
 }
 .calc-breakdown__row--total .accent { color: #e85d04; }
-.calc-breakdown__source {
   font-size: 11px; color: #aaa; text-align: right; margin-top: 2px;
 }
 .calc-error {
