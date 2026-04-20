@@ -113,7 +113,7 @@
                 <span>They receive</span>
                 <span class="accent">{{ calcTo }} {{ formatCalc(calcResult.receive_amount) }}</span>
               </div>
-                Rate source: {{ calcResult.rate_source }} · Updated daily
+                Rates updated daily from official central bank sources
               </div>
             </div>
 
