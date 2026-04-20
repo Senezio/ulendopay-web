@@ -336,7 +336,7 @@
       <!-- Logout -->
       <div class="fade-up-3">
         <button class="logout-btn" @click="handleLogout">
-          <i class="fa-sharp-duotone fa-solid fa-sign-out-alt" />
+          <i class="fa-sharp-duotone fa-solid fa-right-from-bracket" />
           Sign Out
         </button>
       </div>

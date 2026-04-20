@@ -89,7 +89,7 @@
                 <label>They receive</label>
                 <div class="calc-input-wrap calc-input-wrap--receive">
                   <div class="calc-receive-amount">
-                    <span v-if="calcLoading"><i class="fa-sharp-duotone fa-solid fa-spinner-third-third fa-spin"></i></span>
+                    <span v-if="calcLoading"><i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i></span>
                     <span v-else-if="calcResult">{{ formatCalc(calcResult.receive_amount) }}</span>
                     <span v-else class="calc-placeholder">—</span>
                   </div>
