@@ -66,6 +66,7 @@ const nav = [
   { to: '/withdraw', icon: 'fa-solid fa-money-bill-transfer', label: 'Withdraw' },
   { to: '/history',   icon: 'fa-solid fa-clock-rotate-left', label: 'History' },
   { to: '/kyc',       icon: 'fa-solid fa-id-card',        label: 'KYC' },
+  { to: '/rewards',   icon: 'fa-solid fa-gift',            label: 'Rewards' },
   { to: '/profile',   icon: 'fa-solid fa-user',           label: 'Profile' },
 ]
 
