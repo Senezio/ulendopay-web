@@ -27,6 +27,7 @@ const router = createRouter({
     { path: '/history',   name: 'history',   component: () => import('@/views/dashboard/TransactionHistoryView.vue'),  meta: { requiresAuth: true } },
     { path: '/profile',   name: 'profile',   component: () => import('@/views/dashboard/ProfileView.vue'),             meta: { requiresAuth: true } },
     { path: '/kyc',       name: 'kyc',       component: () => import('@/views/kyc/KycView.vue'),                       meta: { requiresAuth: true } },
+    { path: '/security',  name: 'security',  component: () => import('@/views/dashboard/SecurityView.vue'),            meta: { requiresAuth: true } },
 
     // ── Admin ─────────────────────────────────────────────────────────────────
     { path: '/admin',              name: 'admin-dashboard',    component: () => import('@/views/admin/AdminDashboard.vue'),   meta: { requiresAuth: true, requiresStaff: true } },

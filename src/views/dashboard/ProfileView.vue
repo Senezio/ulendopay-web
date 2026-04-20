@@ -319,6 +319,20 @@
         </div>
       </div>
 
+      <!-- Security Link -->
+      <div class="section fade-up-3">
+        <div class="detail-list">
+          <RouterLink to="/security" class="detail-item detail-item--link">
+            <div class="detail-item__icon"><i class="fas fa-shield-halved" /></div>
+            <div class="detail-item__body">
+              <div class="detail-item__label">Sessions & Activity</div>
+              <div class="detail-item__value">Manage devices and view account history</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 12px;" />
+          </RouterLink>
+        </div>
+      </div>
+
       <!-- Logout -->
       <div class="fade-up-3">
         <button class="logout-btn" @click="handleLogout">
@@ -814,6 +828,12 @@ async function handleLogout() {
 .badge--danger  { background: var(--danger-bg); color: var(--danger); }
 
 /* ── Logout ──────────────────────────────────────────────────────────── */
+.detail-item--link {
+  text-decoration: none;
+  color: inherit;
+}
+.detail-item--link:active { background: var(--bg-alt); }
+
 .logout-btn {
   width: 100%;
   display: flex;

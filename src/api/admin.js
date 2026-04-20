@@ -18,7 +18,9 @@ export const adminApi = {
 
   // Transactions
   transactions: (params) => client.get('/admin/transactions', { params }),
-  transactionShow: (ref) => client.get(`/admin/transactions/${ref}`),
+  transactionShow:   (ref)          => client.get(`/admin/transactions/${ref}`),
+  transactionRetry:  (ref)          => client.post(`/admin/transactions/${ref}/retry`),
+  transactionExport: (params)       => client.get('/admin/transactions/export', { params, responseType: 'blob' }),
 
   // Rates
   rates: () => client.get('/admin/rates'),
@@ -26,6 +28,7 @@ export const adminApi = {
 
   // Partners
   partners: () => client.get('/admin/partners'),
+  partnerHealth: () => client.get('/admin/partners/health'),
   partnerUpdate: (id, data) => client.put(`/admin/partners/${id}`, data),
   partnerCreate: (data) => client.post('/admin/partners', data),
   partnerToggle: (id) => client.post(`/admin/partners/${id}/toggle`),

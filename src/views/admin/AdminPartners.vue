@@ -7,11 +7,79 @@
           <h1>Partner Management</h1>
           <p>Manage payment partners and corridor settings</p>
         </div>
-        <button class="btn-primary" @click="openAddPartner">
-          <i class="fa-solid fa-plus"></i> Add Partner
-        </button>
+        <div class="header-actions">
+          <button class="btn-secondary" @click="loadHealth">
+            <i class="fa-solid fa-chart-line"></i> Health
+          </button>
+          <button class="btn-primary" @click="openAddPartner">
+            <i class="fa-solid fa-plus"></i> Add Partner
+          </button>
+        </div>
       </div>
 
+      <!-- ── Health Dashboard ─────────────────────────────────────────── -->
+      <div v-if="showHealth" class="health-section">
+        <div class="health-header">
+          <span class="section-label">Partner Health</span>
+          <button class="btn-icon" @click="showHealth = false"><i class="fa-solid fa-xmark" /></button>
+        </div>
+        <div v-if="healthLoading" class="state-center">
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <div v-else class="health-grid">
+          <div v-for="p in health" :key="p.id" class="health-card">
+            <div class="health-card__header">
+              <div class="partner-badge">{{ p.code }}</div>
+              <div class="health-card__name">{{ p.name }}</div>
+              <span class="badge" :class="p.is_active ? 'badge--green' : 'badge--red'">
+                {{ p.is_active ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+            <div class="health-stats">
+              <div class="health-stat">
+                <div class="health-stat__value">{{ p.total ?? 0 }}</div>
+                <div class="health-stat__label">Total</div>
+              </div>
+              <div class="health-stat health-stat--success">
+                <div class="health-stat__value">{{ p.success ?? 0 }}</div>
+                <div class="health-stat__label">Success</div>
+              </div>
+              <div class="health-stat health-stat--danger">
+                <div class="health-stat__value">{{ p.failed ?? 0 }}</div>
+                <div class="health-stat__label">Failed</div>
+              </div>
+              <div class="health-stat health-stat--warn">
+                <div class="health-stat__value">{{ p.pending ?? 0 }}</div>
+                <div class="health-stat__label">Pending</div>
+              </div>
+            </div>
+            <div class="health-meta">
+              <span v-if="p.success_rate !== null">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ p.success_rate }}% success rate
+              </span>
+              <span v-if="p.avg_ms !== null">
+                <i class="fa-solid fa-clock"></i>
+                {{ p.avg_ms }}ms avg
+              </span>
+              <span v-if="p.total === 0" class="text-muted">No attempts yet</span>
+            </div>
+            <!-- Recent attempts -->
+            <div v-if="p.recent?.length" class="recent-attempts">
+              <div class="recent-label">Recent attempts</div>
+              <div v-for="a in p.recent" :key="a.attempted_at" class="recent-row">
+                <span class="mono-ref">{{ a.reference }}</span>
+                <span class="badge badge--sm" :class="a.status === 'success' ? 'badge--green' : a.status === 'failed' ? 'badge--red' : 'badge--amber'">
+                  {{ a.status }}
+                </span>
+                <span class="recent-ms">{{ a.response_time_ms ? a.response_time_ms + 'ms' : '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Partner list ─────────────────────────────────────────────── -->
       <div v-if="loading" class="state-center">
         <i class="fa-solid fa-spinner fa-spin"></i>
         <p>Loading partners...</p>
@@ -20,7 +88,6 @@
       <template v-else>
         <div v-for="partner in partners" :key="partner.id" class="partner-block">
 
-          <!-- Partner header -->
           <div class="partner-header">
             <div class="partner-header__left">
               <div class="partner-badge">{{ partner.code }}</div>
@@ -50,7 +117,6 @@
             </div>
           </div>
 
-          <!-- Corridors table -->
           <div class="corridors-section">
             <div class="corridors-toolbar">
               <span class="corridors-title">
@@ -59,10 +125,7 @@
               </span>
               <div class="search-box search-box--sm">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input
-                  v-model="corridorSearch[partner.id]"
-                  placeholder="Filter corridors..."
-                />
+                <input v-model="corridorSearch[partner.id]" placeholder="Filter corridors..." />
               </div>
             </div>
 
@@ -81,10 +144,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="corridor in filteredCorridors(partner)"
-                    :key="corridor.id"
-                  >
+                  <tr v-for="corridor in filteredCorridors(partner)" :key="corridor.id">
                     <td><span class="cur cur--from">{{ corridor.from_currency }}</span></td>
                     <td><span class="cur cur--to">{{ corridor.to_currency }}</span></td>
                     <td class="cell-mono">{{ corridor.fee_percent }}%</td>
@@ -221,6 +281,24 @@ const editForm       = ref({})
 const partnerModal   = ref(null)
 const corridorSearch = reactive({})
 
+// Health dashboard
+const showHealth   = ref(false)
+const health       = ref([])
+const healthLoading = ref(false)
+
+async function loadHealth() {
+  showHealth.value   = true
+  healthLoading.value = true
+  try {
+    const { data } = await adminApi.partnerHealth()
+    health.value = data.partners
+  } catch {
+    ui.error('Failed to load health data')
+  } finally {
+    healthLoading.value = false
+  }
+}
+
 function filteredCorridors(partner) {
   const q = (corridorSearch[partner.id] || '').toUpperCase()
   if (!q) return partner.corridors ?? []
@@ -318,98 +396,162 @@ onMounted(load)
 <style scoped>
 .admin-page { padding: 16px; max-width: 1100px; }
 @media (min-width: 768px) { .admin-page { padding: 24px 20px; } }
+
 .page-header {
   display: flex; justify-content: space-between;
-  align-items: flex-start; margin-bottom: 24px; gap: 12px;
+  align-items: flex-start; margin-bottom: 24px; gap: 12px; flex-wrap: wrap;
 }
 .page-header h1 { font-size: 22px; font-weight: 800; color: #0f172a; }
 .page-header p  { font-size: 13px; color: #64748b; margin-top: 3px; }
+.header-actions { display: flex; gap: 8px; }
 
 .btn-primary {
   display: flex; align-items: center; gap: 8px;
   padding: 10px 16px; background: var(--accent); color: #fff;
   border: none; border-radius: 12px; font-size: 13px; font-weight: 600;
-  cursor: pointer; white-space: nowrap; flex-shrink: 0;
-  transition: background 0.15s;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.15s;
 }
 .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* States */
+.btn-secondary {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; background: #fff; color: #374151;
+  border: 1px solid #e2e8f0; border-radius: 12px; font-size: 13px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-icon {
+  width: 28px; height: 28px; border-radius: 8px; border: none;
+  background: #f1f5f9; color: #64748b; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Health dashboard ────────────────────────────────────────────────── */
+.health-section {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  margin-bottom: 24px; overflow: hidden;
+}
+.health-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+}
+.section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #64748b;
+}
+.health-grid {
+  display: grid; grid-template-columns: 1fr;
+  gap: 0;
+}
+@media (min-width: 640px) { .health-grid { grid-template-columns: 1fr 1fr; } }
+
+.health-card {
+  padding: 16px; border-bottom: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+}
+.health-card__header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.health-card__name { font-size: 14px; font-weight: 700; flex: 1; }
+
+.health-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-bottom: 10px;
+}
+.health-stat {
+  text-align: center; padding: 8px 4px;
+  background: #f8fafc; border-radius: 8px;
+}
+.health-stat--success { background: #f0fdf4; }
+.health-stat--danger  { background: #fef2f2; }
+.health-stat--warn    { background: #fffbeb; }
+.health-stat__value {
+  font-size: 18px; font-weight: 800;
+  color: #0f172a; line-height: 1;
+}
+.health-stat--success .health-stat__value { color: #16a34a; }
+.health-stat--danger  .health-stat__value { color: #dc2626; }
+.health-stat--warn    .health-stat__value { color: #d97706; }
+.health-stat__label { font-size: 10px; color: #94a3b8; margin-top: 3px; font-weight: 600; text-transform: uppercase; }
+
+.health-meta {
+  display: flex; gap: 12px; font-size: 12px; color: #64748b;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.health-meta i { color: #94a3b8; margin-right: 3px; }
+.text-muted { color: #94a3b8; }
+
+.recent-attempts { background: #f8fafc; border-radius: 8px; padding: 10px; }
+.recent-label { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.recent-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px;
+}
+.recent-row:last-child { border-bottom: none; }
+.recent-ms { color: #94a3b8; font-size: 11px; margin-left: auto; }
+
+/* ── Partner blocks ──────────────────────────────────────────────────── */
 .state-center {
   padding: 56px; text-align: center; color: #94a3b8;
   display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
-
-/* Partner block */
 .partner-block {
   background: #fff; border: 1px solid #e2e8f0;
   border-radius: 16px; margin-bottom: 20px; overflow: hidden;
 }
-
 .partner-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 20px; border-bottom: 1px solid #f1f5f9;
-  gap: 12px; flex-wrap: wrap;
+  padding: 16px 20px; border-bottom: 1px solid #f1f5f9; gap: 12px; flex-wrap: wrap;
 }
 .partner-header__left { display: flex; align-items: center; gap: 12px; }
 .partner-badge {
   background: var(--accent); color: #fff;
-  padding: 6px 10px; border-radius: 8px;
-  font-size: 12px; font-weight: 700; flex-shrink: 0;
+  padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; flex-shrink: 0;
 }
 .partner-name { font-size: 15px; font-weight: 700; color: #111827; }
 .partner-meta { font-size: 12px; color: #64748b; margin-top: 2px; }
 .partner-header__right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-/* Badges */
 .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
 .badge--sm  { padding: 2px 6px; font-size: 10px; }
 .badge--green { background: #f0fdf4; color: #16a34a; }
 .badge--red   { background: #fef2f2; color: #dc2626; }
 .badge--gray  { background: #f1f5f9; color: #475569; }
+.badge--amber { background: #fffbeb; color: #d97706; }
 
-/* Buttons */
 .btn-sm {
-  padding: 6px 12px; border-radius: 8px; font-size: 12px;
-  font-weight: 600; cursor: pointer; border: none;
-  display: inline-flex; align-items: center; gap: 5px;
-  transition: all 0.15s;
+  padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
 }
 .btn-sm--edit    { background: #eff6ff; color: #2563eb; }
 .btn-sm--danger  { background: #fef2f2; color: #dc2626; }
 .btn-sm--success { background: #f0fdf4; color: #16a34a; }
 
-/* Corridors section */
 .corridors-section { padding: 0; }
 .corridors-toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid #f8fafc;
-  gap: 10px; flex-wrap: wrap;
+  padding: 12px 16px; border-bottom: 1px solid #f8fafc; gap: 10px; flex-wrap: wrap;
 }
 .corridors-title {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 700; color: #64748b;
   text-transform: uppercase; letter-spacing: 0.05em;
 }
-.corridors-title i { color: #94a3b8; }
-
 .search-box--sm {
   display: flex; align-items: center; gap: 6px;
-  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
-  padding: 6px 10px;
+  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px;
 }
 .search-box--sm i { color: #94a3b8; font-size: 11px; }
 .search-box--sm input { border: none; outline: none; font-size: 12px; background: transparent; width: 140px; }
 
-/* Table */
 .table-wrap { overflow-x: auto; }
 .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
 .data-table th {
-  padding: 9px 14px; text-align: left; font-size: 10px;
-  font-weight: 700; color: #94a3b8; text-transform: uppercase;
-  letter-spacing: 0.06em; background: #fafafa;
-  border-bottom: 1px solid #f1f5f9; white-space: nowrap;
+  padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700;
+  color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;
+  background: #fafafa; border-bottom: 1px solid #f1f5f9; white-space: nowrap;
 }
 .data-table td {
   padding: 10px 14px; border-bottom: 1px solid #f8fafc;
@@ -423,27 +565,24 @@ onMounted(load)
 .cur--to   { color: var(--accent); }
 .cell-mono { font-family: 'DM Mono', monospace; font-size: 12px; color: #475569; }
 .cell-empty { text-align: center; color: #94a3b8; font-size: 13px; padding: 24px; }
-
 .cell-actions { display: flex; gap: 6px; }
+.mono-ref { font-family: monospace; font-size: 11px; background: #f8fafc; padding: 2px 7px; border-radius: 5px; color: #475569; }
+
 .btn-xs {
-  padding: 4px 10px; border-radius: 6px; font-size: 11px;
-  font-weight: 600; cursor: pointer; border: none;
-  display: inline-flex; align-items: center; gap: 4px;
-  transition: all 0.15s;
+  padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s;
 }
 .btn-xs--edit    { background: #eff6ff; color: #2563eb; }
 .btn-xs--danger  { background: #fef2f2; color: #dc2626; }
 .btn-xs--success { background: #f0fdf4; color: #16a34a; }
 
-/* Modal */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(15,23,42,0.6);
   display: flex; align-items: flex-end; justify-content: center; z-index: 100;
 }
 .modal {
   background: #fff; border-radius: 20px 20px 0 0;
-  width: 100%; max-width: 480px;
-  padding-bottom: env(safe-area-inset-bottom);
+  width: 100%; max-width: 480px; padding-bottom: env(safe-area-inset-bottom);
 }
 .modal-header {
   display: flex; justify-content: space-between; align-items: center;
@@ -457,13 +596,9 @@ onMounted(load)
 }
 .modal-body { padding: 0 20px 16px; }
 .modal-footer { display: flex; gap: 10px; padding: 0 20px 20px; }
-
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-grid--single { grid-template-columns: 1fr; }
-.form-field label {
-  display: block; font-size: 12px; font-weight: 600;
-  color: #374151; margin-bottom: 6px;
-}
+.form-field label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 6px; }
 .form-field .hint { font-weight: 400; color: #94a3b8; }
 .form-field .required { color: var(--danger); }
 .form-field input,
@@ -474,13 +609,10 @@ onMounted(load)
 }
 .form-field input:focus,
 .form-field select:focus { border-color: var(--accent); }
-
 .btn-ghost {
   flex: 1; padding: 12px; background: #f8fafc; color: #475569;
-  border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px;
-  font-weight: 600; cursor: pointer;
+  border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
 }
-
 @media (min-width: 641px) {
   .modal-overlay { align-items: center; padding: 20px; }
   .modal { border-radius: 16px; }
