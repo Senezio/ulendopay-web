@@ -8,7 +8,7 @@
           <p>{{ staff.length }} team member{{ staff.length !== 1 ? 's' : '' }}</p>
         </div>
         <button class="btn-add" @click="showCreate=true">
-          <i class="fa-solid fa-user-plus"></i>
+          <i class="fa-sharp-duotone fa-solid fa-user-plus"></i>
           Add Staff
         </button>
       </div>
@@ -68,7 +68,7 @@
           </div>
 
           <div v-else class="empty">
-            <i class="fa-solid fa-user-shield"></i>
+            <i class="fa-duotone fa-solid fa-user-shield"></i>
             <span>No staff members yet</span>
           </div>
         </div>
@@ -82,7 +82,7 @@
               <div class="modal__title">Add Staff Member</div>
               <div class="modal__sub">They'll receive a welcome email with login instructions</div>
             </div>
-            <button class="modal__x" @click="showCreate=false"><i class="fa-solid fa-xmark"></i></button>
+            <button class="modal__x" @click="showCreate=false"><i class="fa-sharp-duotone fa-solid fa-xmark"></i></button>
           </div>
           <div class="modal__bd">
             <div class="frow">
@@ -111,8 +111,8 @@
           <div class="modal__ft">
             <button class="btn-ghost" @click="showCreate=false">Cancel</button>
             <button class="btn-create" :disabled="createLoading" @click="createStaff">
-              <i v-if="createLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-user-plus"></i>
+              <i v-if="createLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-user-plus"></i>
               Create Account
             </button>
           </div>

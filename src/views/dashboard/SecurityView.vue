@@ -17,7 +17,7 @@
         </div>
         <div class="detail-list">
           <div v-if="sessionsLoading" class="state-loading">
-            <i class="fas fa-spinner fa-spin" /> Loading...
+            <i class="fas fa-spinner-third fa-spin" /> Loading...
           </div>
           <div v-else-if="!sessions.length" class="state-empty">
             No active sessions
@@ -52,7 +52,7 @@
         <div class="section__title">Account Activity</div>
         <div class="detail-list">
           <div v-if="logsLoading" class="state-loading">
-            <i class="fas fa-spinner fa-spin" /> Loading...
+            <i class="fas fa-spinner-third fa-spin" /> Loading...
           </div>
           <div v-else-if="!logs.length" class="state-empty">
             No activity recorded yet

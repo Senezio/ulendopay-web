@@ -2,7 +2,7 @@
   <div class="layout">
     <header class="mobile-header md:hidden">
       <button @click="isMenuOpen = true" class="menu-trigger">
-        <i class="fa-solid fa-bars"></i>
+        <i class="fa-sharp-duotone fa-solid fa-bars"></i>
       </button>
       <div class="mobile-logo"><img src="/logo.png" alt="UlendoPay" style="height: 40px; width: auto; object-fit: contain;"></div>
     </header>
@@ -60,14 +60,14 @@ const auth   = useAuthStore()
 const isMenuOpen = ref(false)
 
 const nav = [
-  { to: '/dashboard', icon: 'fa-solid fa-house',          label: 'Home' },
-  { to: '/send',      icon: 'fa-solid fa-paper-plane',    label: 'Send' },
-  { to: '/topup',    icon: 'fa-solid fa-wallet',           label: 'Top Up' },
-  { to: '/withdraw', icon: 'fa-solid fa-money-bill-transfer', label: 'Withdraw' },
-  { to: '/history',   icon: 'fa-solid fa-clock-rotate-left', label: 'History' },
-  { to: '/kyc',       icon: 'fa-solid fa-id-card',        label: 'KYC' },
-  { to: '/rewards',   icon: 'fa-solid fa-gift',            label: 'Rewards' },
-  { to: '/profile',   icon: 'fa-solid fa-user',           label: 'Profile' },
+  { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',          label: 'Home' },
+  { to: '/send',      icon: 'fa-sharp-duotone fa-solid fa-paper-plane',    label: 'Send' },
+  { to: '/topup',    icon: 'fa-duotone fa-solid fa-wallet',           label: 'Top Up' },
+  { to: '/withdraw', icon: 'fa-duotone fa-solid fa-money-bill-transfer', label: 'Withdraw' },
+  { to: '/history',   icon: 'fa-sharp-duotone fa-solid fa-clock-rotate-left', label: 'History' },
+  { to: '/kyc',       icon: 'fa-sharp-duotone fa-solid fa-id-card',        label: 'KYC' },
+  { to: '/rewards',   icon: 'fa-sharp-duotone fa-solid fa-gift',            label: 'Rewards' },
+  { to: '/profile',   icon: 'fa-sharp-duotone fa-solid fa-user',           label: 'Profile' },
 ]
 
 async function handleLogout() {

@@ -12,7 +12,7 @@
       <div class="stat-card__value">{{ value }}</div>
       <div class="stat-card__label">{{ label }}</div>
     </div>
-    <i v-if="link" class="fa-solid fa-arrow-right stat-card__arrow"></i>
+    <i v-if="link" class="fa-sharp-duotone fa-solid fa-arrow-right stat-card__arrow"></i>
   </component>
 </template>
 

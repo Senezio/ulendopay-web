@@ -84,12 +84,12 @@
                   </select>
                 </div>
               </div>
-              <div class="calc-arrow"><i class="fa-solid fa-chevron-right"></i></div>
+              <div class="calc-arrow"><i class="fa-sharp-duotone fa-solid fa-chevron-right"></i></div>
               <div class="calc-field">
                 <label>They receive</label>
                 <div class="calc-input-wrap calc-input-wrap--receive">
                   <div class="calc-receive-amount">
-                    <span v-if="calcLoading"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    <span v-if="calcLoading"><i class="fa-duotone fa-sharp-duotone fa-solid fa-spinner-third-third fa-spin"></i></span>
                     <span v-else-if="calcResult">{{ formatCalc(calcResult.receive_amount) }}</span>
                     <span v-else class="calc-placeholder">—</span>
                   </div>
@@ -338,10 +338,10 @@ function debouncedCalc() {
 }
 
 const trustPoints = [
-  { iconClass: 'fa-regular fa-clock', label: 'Fast transfers',    desc: 'Most transfers complete within minutes' },
-  { iconClass: 'fa-solid fa-chart-line', label: 'Official rates',    desc: 'Rates sourced from central banks' },
-  { iconClass: 'fa-solid fa-lock', label: 'Secure by design',  desc: 'KYC verified, PIN protected, encrypted' },
-  { iconClass: 'fa-solid fa-globe', label: 'Pan-African',        desc: 'Supported across Sub-Saharan Africa' },
+  { iconClass: 'fa-sharp-duotone fa-sharp-duotone fa-solid fa-clock', label: 'Fast transfers',    desc: 'Most transfers complete within minutes' },
+  { iconClass: 'fa-sharp-duotone fa-sharp-duotone fa-solid fa-chart-trend-up', label: 'Official rates',    desc: 'Rates sourced from central banks' },
+  { iconClass: 'fa-sharp-duotone fa-sharp-duotone fa-solid fa-shield-check', label: 'Secure by design',  desc: 'KYC verified, PIN protected, encrypted' },
+  { iconClass: 'fa-sharp-duotone fa-sharp-duotone fa-solid fa-earth-africa', label: 'Pan-African',        desc: 'Supported across Sub-Saharan Africa' },
 ]
 
 const steps = [
@@ -351,12 +351,12 @@ const steps = [
 ]
 
 const features = [
-  { iconClass: 'fa-solid fa-arrow-right', title: 'Send money',         desc: 'Transfer to mobile money accounts and bank accounts across Africa at transparent rates.' },
-  { iconClass: 'fa-solid fa-chart-simple', title: 'Live exchange rates', desc: 'Rates are pulled directly from official central bank sources. No inflated margins.' },
-  { iconClass: 'fa-solid fa-clock-rotate-left', title: 'Transaction history', desc: 'Every transfer is logged with a unique reference number and full status tracking.' },
-  { iconClass: 'fa-solid fa-key', title: 'PIN & 2FA login',    desc: 'Log in using your phone number and PIN. Every session requires a one-time verification code.' },
-  { iconClass: 'fa-solid fa-id-card', title: 'KYC verification',   desc: 'Submit your national ID or passport once. Verified accounts get higher transfer limits.' },
-  { iconClass: 'fa-solid fa-message', title: 'SMS notifications',  desc: 'Receive SMS updates for every transfer — initiated, completed, or refunded.' },
+  { iconClass: 'fa-duotone fa-duotone fa-solid fa-money-bill-transfer', title: 'Send money',         desc: 'Transfer to mobile money accounts and bank accounts across Africa at transparent rates.' },
+  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-chart-mixed', title: 'Live exchange rates', desc: 'Rates are pulled directly from official central bank sources. No inflated margins.' },
+  { iconClass: 'fa-duotone fa-duotone fa-solid fa-history', title: 'Transaction history', desc: 'Every transfer is logged with a unique reference number and full status tracking.' },
+  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-key-skeleton-left-right', title: 'PIN & 2FA login',    desc: 'Log in using your phone number and PIN. Every session requires a one-time verification code.' },
+  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-address-card', title: 'KYC verification',   desc: 'Submit your national ID or passport once. Verified accounts get higher transfer limits.' },
+  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-comment-sms', title: 'SMS notifications',  desc: 'Receive SMS updates for every transfer — initiated, completed, or refunded.' },
 ]
 
 const securityPoints = [
@@ -1109,4 +1109,8 @@ const securityPoints = [
   }
 }
 
+.trust-item__icon i, .feature-card__icon i {
+  --fa-primary-color: #e85d04;
+  --fa-secondary-color: #f97316;
+}
 </style>

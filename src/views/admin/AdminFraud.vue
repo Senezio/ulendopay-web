@@ -17,11 +17,11 @@
             <option value="cleared">Cleared</option>
             <option value="confirmed">Confirmed Fraud</option>
           </select>
-          <button class="btn-icon" @click="load"><i class="fa-solid fa-rotate"></i></button>
+          <button class="btn-icon" @click="load"><i class="fa-sharp-duotone fa-solid fa-rotate"></i></button>
         </div>
 
         <div v-if="loading" class="table-loading">
-          <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading...
         </div>
 
         <div v-else-if="alerts?.data?.length" class="table-wrap">
@@ -75,14 +75,14 @@
                       @click="toggleExpand(alert.id)"
                       :title="expanded === alert.id ? 'Hide details' : 'View details'"
                     >
-                      <i :class="expanded === alert.id ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
+                      <i :class="expanded === alert.id ? 'fa-sharp-duotone fa-solid fa-chevron-up' : 'fa-sharp-duotone fa-solid fa-chevron-down'"></i>
                     </button>
                     <template v-if="alert.status === 'new' || alert.status === 'reviewing'">
                       <button class="btn-action btn-action--success" @click="openAction(alert, 'clear')" title="Clear — not fraud">
-                        <i class="fa-solid fa-check"></i>
+                        <i class="fa-sharp-duotone fa-solid fa-check"></i>
                       </button>
                       <button class="btn-action btn-action--danger" @click="openAction(alert, 'confirm')" title="Confirm fraud">
-                        <i class="fa-solid fa-skull"></i>
+                        <i class="fa-sharp-duotone fa-solid fa-skull"></i>
                       </button>
                     </template>
                   </div>
@@ -94,7 +94,7 @@
                 <td colspan="7">
                   <div class="context-panel">
                     <div class="context-panel__title">
-                      <i class="fa-solid fa-magnifying-glass-chart"></i>
+                      <i class="fa-sharp-duotone fa-solid fa-magnifying-glass-chart"></i>
                       Fraud Signal Details
                     </div>
                     <div class="context-rules">
@@ -122,7 +122,7 @@
         </div>
 
         <div v-else class="table-empty">
-          <i class="fa-solid fa-shield-halved"></i>
+          <i class="fa-sharp-duotone fa-solid fa-shield-halved"></i>
           <p>No fraud alerts</p>
         </div>
       </div>
@@ -134,7 +134,7 @@
         <div class="modal__header">
           <h3>{{ actionModal.type === 'confirm' ? 'Confirm Fraud' : 'Clear Alert' }}</h3>
           <button class="modal__close" @click="closeModal">
-            <i class="fa-solid fa-xmark"></i>
+            <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
           </button>
         </div>
         <div class="modal__body">
@@ -156,7 +156,7 @@
           </div>
 
           <div v-if="actionModal.type === 'confirm'" class="modal-warning">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
             This will immediately suspend the user and block all their transactions.
           </div>
 
@@ -177,8 +177,8 @@
             :disabled="!actionNotes || actionLoading"
             @click="confirmAction"
           >
-            <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-            <i v-else class="fa-solid fa-skull"></i>
+            <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+            <i v-else class="fa-sharp-duotone fa-solid fa-skull"></i>
             Confirm Fraud & Suspend
           </button>
           <button
@@ -187,8 +187,8 @@
             :disabled="!actionNotes || actionLoading"
             @click="confirmAction"
           >
-            <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-            <i v-else class="fa-solid fa-check"></i>
+            <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+            <i v-else class="fa-sharp-duotone fa-solid fa-check"></i>
             Clear Alert
           </button>
         </div>

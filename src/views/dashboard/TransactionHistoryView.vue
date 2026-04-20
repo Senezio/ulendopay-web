@@ -177,10 +177,10 @@ onMounted(async () => {
 function open(item) { selected.value = item }
 
 function iconFor(item) {
-  if (item.kind === 'topup')       return 'fa-solid fa-arrow-down-to-line'
-  if (item.kind === 'withdraw')    return 'fa-solid fa-arrow-up-from-line'
-  if (item.kind === 'transfer-in') return 'fa-solid fa-arrow-down-left'
-  return 'fa-solid fa-arrow-up-right'
+  if (item.kind === 'topup')       return 'fa-sharp-duotone fa-solid fa-arrow-down-to-line'
+  if (item.kind === 'withdraw')    return 'fa-sharp-duotone fa-solid fa-arrow-up-from-line'
+  if (item.kind === 'transfer-in') return 'fa-sharp-duotone fa-solid fa-arrow-down-left'
+  return 'fa-sharp-duotone fa-solid fa-arrow-up-right'
 }
 
 function labelFor(item) {

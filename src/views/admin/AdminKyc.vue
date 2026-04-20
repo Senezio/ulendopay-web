@@ -11,16 +11,16 @@
       <div class="admin-table-card">
         <div class="table-toolbar">
           <div class="table-toolbar__count">
-            <i class="fa-solid fa-clock"></i>
+            <i class="fa-sharp-duotone fa-solid fa-clock"></i>
             {{ records?.total ?? 0 }} pending
           </div>
           <button class="btn-icon" @click="load">
-            <i class="fa-solid fa-rotate"></i>
+            <i class="fa-sharp-duotone fa-solid fa-rotate"></i>
           </button>
         </div>
 
         <div v-if="loading" class="table-loading">
-          <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading...
         </div>
 
         <div class="table-scroll" v-else-if="records?.data?.length">
@@ -48,7 +48,7 @@
               <td>
                 <div class="cell-actions">
                   <button class="btn-action btn-action--view" @click="openRecord(record)">
-                    <i class="fa-solid fa-eye"></i> Review
+                    <i class="fa-sharp-duotone fa-solid fa-eye"></i> Review
                   </button>
                 </div>
               </td>
@@ -58,7 +58,7 @@
       </div>
 
         <div v-else class="table-empty">
-          <i class="fa-solid fa-circle-check"></i>
+          <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
           <p>No pending KYC submissions</p>
         </div>
       </div>
@@ -69,7 +69,7 @@
           <div class="modal__header">
             <h3>KYC Review — {{ selected.user?.name }}</h3>
             <button class="modal__close" @click="closeModal">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
           <div class="modal__body">
@@ -78,7 +78,7 @@
             <div class="document-viewer">
               <div class="document-viewer__label">Submitted Document</div>
               <div v-if="documentLoading" class="document-viewer__loading">
-                <i class="fa-solid fa-spinner fa-spin"></i> Loading document...
+                <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading document...
               </div>
               <div v-else-if="documentUrl" class="document-viewer__content">
                 <img
@@ -92,14 +92,14 @@
                   <canvas ref="pdfCanvas" class="document-viewer__pdf-canvas"></canvas>
                 </div>
                 <div v-else class="document-viewer__error">
-                  <i class="fa-solid fa-file"></i>
+                  <i class="fa-sharp-duotone fa-solid fa-file"></i>
                   <a :href="documentUrl" target="_blank" class="document-viewer__link">
-                    Open Document <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    Open Document <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square"></i>
                   </a>
                 </div>
               </div>
               <div v-else class="document-viewer__error">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+                <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
                 <span>Document unavailable</span>
               </div>
             </div>
@@ -146,21 +146,21 @@
           <div class="modal__footer">
             <template v-if="!rejectMode">
               <button class="btn-danger-outline" @click="rejectMode = true">
-                <i class="fa-solid fa-xmark"></i> Reject
+                <i class="fa-sharp-duotone fa-solid fa-xmark"></i> Reject
               </button>
               <button class="btn-success" :disabled="actionLoading" @click="approve">
-                <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-                <i v-else class="fa-solid fa-check"></i>
+                <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+                <i v-else class="fa-sharp-duotone fa-solid fa-check"></i>
                 Approve
               </button>
             </template>
             <template v-else>
               <button class="btn-ghost" @click="rejectMode = false; rejectReason = ''">
-                <i class="fa-solid fa-arrow-left"></i> Back
+                <i class="fa-sharp-duotone fa-solid fa-arrow-left"></i> Back
               </button>
               <button class="btn-danger" :disabled="!rejectReason || actionLoading" @click="reject">
-                <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-                <i v-else class="fa-solid fa-xmark"></i>
+                <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+                <i v-else class="fa-sharp-duotone fa-solid fa-xmark"></i>
                 Confirm Rejection
               </button>
             </template>

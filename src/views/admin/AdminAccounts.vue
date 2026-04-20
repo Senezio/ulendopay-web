@@ -10,10 +10,10 @@
         </div>
         <div class="header-actions">
           <button class="btn-icon" @click="load" title="Refresh">
-            <i class="fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
+            <i class="fa-sharp-duotone fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
           </button>
           <button class="btn-primary-sm" @click="showCreate = true">
-            <i class="fa-solid fa-plus"></i> New Account
+            <i class="fa-sharp-duotone fa-solid fa-plus"></i> New Account
           </button>
         </div>
       </div>
@@ -39,7 +39,7 @@
 
       <!-- Account list -->
       <div v-if="loading" class="state-loading">
-        <i class="fa-solid fa-spinner fa-spin"></i> Loading accounts...
+        <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading accounts...
       </div>
 
       <div v-else class="accounts-table-wrap">
@@ -82,16 +82,16 @@
 
           <div class="col-actions">
             <button class="action-btn" @click="openLedger(acc)" title="View ledger">
-              <i class="fa-solid fa-book-open"></i>
+              <i class="fa-sharp-duotone fa-solid fa-book-open"></i>
             </button>
             <button class="action-btn" @click="openAdjust(acc)" title="Manual adjustment">
-              <i class="fa-solid fa-sliders"></i>
+              <i class="fa-sharp-duotone fa-solid fa-sliders"></i>
             </button>
             <button class="action-btn action-btn--toggle"
               :class="acc.is_active ? 'action-btn--danger' : 'action-btn--success'"
               @click="toggleAccount(acc)"
               :title="acc.is_active ? 'Deactivate' : 'Activate'">
-              <i :class="acc.is_active ? 'fa-solid fa-ban' : 'fa-solid fa-check'"></i>
+              <i :class="acc.is_active ? 'fa-sharp-duotone fa-solid fa-ban' : 'fa-sharp-duotone fa-solid fa-check'"></i>
             </button>
           </div>
         </div>
@@ -111,7 +111,7 @@
               <p>{{ ledgerAccount.type }} · {{ ledgerAccount.currency_code }} · Normal balance: {{ ledgerAccount.normal_balance }}</p>
             </div>
             <button class="modal-close" @click="ledgerAccount = null">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -136,7 +136,7 @@
 
           <div class="modal-body">
             <div v-if="ledgerLoading" class="state-loading">
-              <i class="fa-solid fa-spinner fa-spin"></i> Loading entries...
+              <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading entries...
             </div>
             <div v-else-if="ledgerEntries.length === 0" class="table-empty">
               No journal entries for this account
@@ -173,12 +173,12 @@
               <p>{{ adjustAccount.code }} · Current: {{ formatBalance(adjustAccount.balance) }} {{ adjustAccount.currency_code }}</p>
             </div>
             <button class="modal-close" @click="adjustAccount = null">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
           <div class="modal-body">
             <div class="warning-box">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+              <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
               Manual adjustments post directly to the ledger. Use only for corrections. All actions are audited.
             </div>
             <div class="form-field">
@@ -206,8 +206,8 @@
           <div class="modal-footer">
             <button class="btn-ghost" @click="adjustAccount = null">Cancel</button>
             <button class="btn-primary" :disabled="actionLoading || !adjustForm.amount || !adjustForm.reason" @click="saveAdjustment">
-              <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-check"></i>
+              <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-check"></i>
               Post Adjustment
             </button>
           </div>
@@ -223,7 +223,7 @@
               <p>Escrow, fee, guarantee, or partner accounts</p>
             </div>
             <button class="modal-close" @click="showCreate = false">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
           <div class="modal-body">
@@ -270,8 +270,8 @@
           <div class="modal-footer">
             <button class="btn-ghost" @click="showCreate = false">Cancel</button>
             <button class="btn-primary" :disabled="actionLoading || !createForm.code" @click="createAccount">
-              <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-plus"></i>
+              <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-plus"></i>
               Create Account
             </button>
           </div>

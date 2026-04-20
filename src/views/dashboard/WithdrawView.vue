@@ -4,7 +4,7 @@
 
       <div class="page-header fade-up">
         <div class="page-header__back" @click="router.back()">
-          <i class="fa-solid fa-arrow-left"></i>
+          <i class="fa-sharp-duotone fa-solid fa-arrow-left"></i>
         </div>
         <div>
           <h1>Withdraw</h1>
@@ -24,7 +24,7 @@
       <!-- Success state -->
       <div v-if="state === 'success'" class="result-card result-card--success fade-up">
         <div class="result-card__icon">
-          <i class="fa-solid fa-circle-check"></i>
+          <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
         </div>
         <h2>Withdrawal Initiated</h2>
         <p>Funds are being sent to your mobile money wallet.</p>
@@ -36,7 +36,7 @@
         </div>
 
         <button class="btn-secondary" @click="reset">
-          <i class="fa-solid fa-plus"></i>
+          <i class="fa-sharp-duotone fa-solid fa-plus"></i>
           Withdraw More
         </button>
       </div>
@@ -47,7 +47,7 @@
         <!-- Step 1: Amount -->
         <div v-if="step === 1">
           <div class="step-title">
-            <i class="fa-solid fa-coins"></i>
+            <i class="fa-sharp-duotone fa-solid fa-coins"></i>
             How much do you want to withdraw?
           </div>
 
@@ -77,34 +77,34 @@
           </div>
 
           <div v-if="errors.amount" class="field-error">
-            <i class="fa-solid fa-circle-exclamation"></i>
+            <i class="fa-sharp-duotone fa-solid fa-circle-exclamation"></i>
             {{ errors.amount }}
           </div>
 
           <button class="btn-primary" @click="goToStep2">
             Continue
-            <i class="fa-solid fa-arrow-right"></i>
+            <i class="fa-sharp-duotone fa-solid fa-arrow-right"></i>
           </button>
         </div>
 
         <!-- Step 2: Mobile Money Details -->
         <div v-else-if="step === 2">
           <div class="step-title">
-            <i class="fa-solid fa-mobile-screen"></i>
+            <i class="fa-sharp-duotone fa-solid fa-mobile-screen"></i>
             Where should we send the money?
           </div>
 
           <div class="summary-pill">
-            <i class="fa-solid fa-coins"></i>
+            <i class="fa-sharp-duotone fa-solid fa-coins"></i>
             Withdrawing {{ wallet?.currency_code }} {{ formatAmount(form.amount) }}
             <button class="summary-pill__edit" @click="step = 1">
-              <i class="fa-solid fa-pen"></i>
+              <i class="fa-sharp-duotone fa-solid fa-pen"></i>
             </button>
           </div>
 
           <div class="form-field">
             <label>
-              <i class="fa-solid fa-sim-card"></i>
+              <i class="fa-sharp-duotone fa-solid fa-sim-card"></i>
               Mobile Operator
             </label>
             <div class="operator-grid">
@@ -119,19 +119,19 @@
               </button>
             </div>
             <div v-if="errors.mobile_operator" class="field-error">
-              <i class="fa-solid fa-circle-exclamation"></i>
+              <i class="fa-sharp-duotone fa-solid fa-circle-exclamation"></i>
               {{ errors.mobile_operator }}
             </div>
           </div>
 
           <div class="form-field">
             <label>
-              <i class="fa-solid fa-phone"></i>
+              <i class="fa-sharp-duotone fa-solid fa-phone"></i>
               Mobile Money Number
             </label>
             <div class="phone-input">
               <div class="phone-input__prefix">
-                <i class="fa-solid fa-location-dot"></i>
+                <i class="fa-sharp-duotone fa-solid fa-location-dot"></i>
                 {{ dialCode }}
               </div>
               <input
@@ -142,34 +142,34 @@
               />
             </div>
             <div class="field-hint">
-              <i class="fa-solid fa-circle-info"></i>
+              <i class="fa-sharp-duotone fa-solid fa-circle-info"></i>
               Funds will be sent to this number
             </div>
             <div v-if="errors.phone_number" class="field-error">
-              <i class="fa-solid fa-circle-exclamation"></i>
+              <i class="fa-sharp-duotone fa-solid fa-circle-exclamation"></i>
               {{ errors.phone_number }}
             </div>
           </div>
 
           <!-- Confirmation warning -->
           <div class="warning-banner">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
             Double-check the number above. Withdrawals to wrong numbers cannot be reversed.
           </div>
 
           <div v-if="errors.general" class="error-banner">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
             {{ errors.general }}
           </div>
 
           <button class="btn-primary" :disabled="loading" @click="handleSubmit">
-            <i v-if="loading" class="fa-solid fa-spinner fa-spin"></i>
-            <i v-else class="fa-solid fa-paper-plane"></i>
+            <i v-if="loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+            <i v-else class="fa-sharp-duotone fa-solid fa-paper-plane"></i>
             {{ loading ? 'Processing...' : 'Withdraw Funds' }}
           </button>
 
           <button class="btn-ghost" @click="step = 1">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fa-sharp-duotone fa-solid fa-arrow-left"></i>
             Back
           </button>
         </div>
@@ -179,7 +179,7 @@
       <!-- Recent withdrawals -->
       <div v-if="recentWithdrawals.length" class="recent-section fade-up-3">
         <div class="recent-section__title">
-          <i class="fa-solid fa-clock-rotate-left"></i>
+          <i class="fa-sharp-duotone fa-solid fa-clock-rotate-left"></i>
           Recent Withdrawals
         </div>
         <div class="withdrawal-list">
@@ -275,9 +275,9 @@ const pollingStatusClass = computed(() => ({
 }))
 
 const pollingIcon = computed(() => ({
-  waiting:   'fa-solid fa-spinner fa-spin',
-  completed: 'fa-solid fa-circle-check',
-  failed:    'fa-solid fa-circle-xmark',
+  waiting:   'fa-sharp-duotone fa-solid fa-spinner-third fa-spin',
+  completed: 'fa-sharp-duotone fa-solid fa-circle-check',
+  failed:    'fa-sharp-duotone fa-solid fa-circle-xmark',
 }[pollingStatus.value]))
 
 const pollingMessage = computed(() => ({
@@ -297,12 +297,12 @@ function formatDate(date) {
 
 function statusIcon(status) {
   return {
-    completed: 'fa-solid fa-circle-check',
-    pending:   'fa-solid fa-clock',
-    failed:    'fa-solid fa-circle-xmark',
-    initiated: 'fa-solid fa-hourglass-start',
-    cancelled: 'fa-solid fa-ban',
-  }[status] || 'fa-solid fa-circle'
+    completed: 'fa-sharp-duotone fa-solid fa-circle-check',
+    pending:   'fa-sharp-duotone fa-solid fa-clock',
+    failed:    'fa-sharp-duotone fa-solid fa-circle-xmark',
+    initiated: 'fa-sharp-duotone fa-solid fa-hourglass-start',
+    cancelled: 'fa-sharp-duotone fa-solid fa-ban',
+  }[status] || 'fa-sharp-duotone fa-solid fa-circle'
 }
 
 function goToStep2() {

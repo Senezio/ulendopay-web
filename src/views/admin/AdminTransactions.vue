@@ -9,18 +9,18 @@
         <!-- Export buttons -->
         <div class="export-group">
           <button class="btn-export" :disabled="exporting" @click="doExport('csv')">
-            <i v-if="exporting==='csv'" class="fa-solid fa-spinner fa-spin" />
-            <i v-else class="fa-solid fa-file-csv" />
+            <i v-if="exporting==='csv'" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
+            <i v-else class="fa-sharp-duotone fa-solid fa-file-csv" />
             CSV
           </button>
           <button class="btn-export" :disabled="exporting" @click="doExport('xlsx')">
-            <i v-if="exporting==='xlsx'" class="fa-solid fa-spinner fa-spin" />
-            <i v-else class="fa-solid fa-file-excel" />
+            <i v-if="exporting==='xlsx'" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
+            <i v-else class="fa-sharp-duotone fa-solid fa-file-excel" />
             Excel
           </button>
           <button class="btn-export" :disabled="exporting" @click="doExport('pdf')">
-            <i v-if="exporting==='pdf'" class="fa-solid fa-spinner fa-spin" />
-            <i v-else class="fa-solid fa-file-pdf" />
+            <i v-if="exporting==='pdf'" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
+            <i v-else class="fa-sharp-duotone fa-solid fa-file-pdf" />
             PDF
           </button>
         </div>
@@ -28,7 +28,7 @@
 
       <div class="filters">
         <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
+          <i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i>
           <input v-model="search" placeholder="Search by reference or name..." @input="debouncedLoad" />
         </div>
         <select v-model="statusFilter" @change="load">
@@ -45,12 +45,12 @@
       </div>
 
       <div v-if="loading" class="state-empty">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+        <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
         <p>Loading transactions...</p>
       </div>
 
       <div v-else-if="!transactions?.data?.length" class="state-empty">
-        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+        <i class="fa-sharp-duotone fa-solid fa-arrow-right-arrow-left"></i>
         <p>No transactions found</p>
       </div>
 
@@ -74,7 +74,7 @@
                 <td>
                   <div class="cell-corridor">
                     <span class="corridor-from">{{ tx.send_currency }}</span>
-                    <i class="fa-solid fa-arrow-right"></i>
+                    <i class="fa-sharp-duotone fa-solid fa-arrow-right"></i>
                     <span class="corridor-to">{{ tx.receive_currency }}</span>
                   </div>
                 </td>
@@ -92,8 +92,8 @@
                     @click="retryTx(tx)"
                     title="Retry disbursement"
                   >
-                    <i v-if="retrying === tx.reference_number" class="fa-solid fa-spinner fa-spin" />
-                    <i v-else class="fa-solid fa-rotate-right" />
+                    <i v-if="retrying === tx.reference_number" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
+                    <i v-else class="fa-sharp-duotone fa-solid fa-rotate-right" />
                     Retry
                   </button>
                   <span v-else class="cell-na">—</span>
@@ -104,9 +104,9 @@
         </div>
 
         <div v-if="transactions.last_page > 1" class="pagination">
-          <button :disabled="page===1" @click="page--;load()"><i class="fa-solid fa-chevron-left"></i></button>
+          <button :disabled="page===1" @click="page--;load()"><i class="fa-sharp-duotone fa-solid fa-chevron-left"></i></button>
           <span>{{ page }} / {{ transactions.last_page }}</span>
-          <button :disabled="page===transactions.last_page" @click="page++;load()"><i class="fa-solid fa-chevron-right"></i></button>
+          <button :disabled="page===transactions.last_page" @click="page++;load()"><i class="fa-sharp-duotone fa-solid fa-chevron-right"></i></button>
         </div>
       </template>
     </div>

@@ -9,10 +9,10 @@
         </div>
         <div class="header-actions">
           <button class="btn-secondary" @click="loadHealth">
-            <i class="fa-solid fa-chart-line"></i> Health
+            <i class="fa-duotone fa-solid fa-chart-line"></i> Health
           </button>
           <button class="btn-primary" @click="openAddPartner">
-            <i class="fa-solid fa-plus"></i> Add Partner
+            <i class="fa-sharp-duotone fa-solid fa-plus"></i> Add Partner
           </button>
         </div>
       </div>
@@ -21,10 +21,10 @@
       <div v-if="showHealth" class="health-section">
         <div class="health-header">
           <span class="section-label">Partner Health</span>
-          <button class="btn-icon" @click="showHealth = false"><i class="fa-solid fa-xmark" /></button>
+          <button class="btn-icon" @click="showHealth = false"><i class="fa-sharp-duotone fa-solid fa-xmark" /></button>
         </div>
         <div v-if="healthLoading" class="state-center">
-          <i class="fa-solid fa-spinner fa-spin"></i>
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
         </div>
         <div v-else class="health-grid">
           <div v-for="p in health" :key="p.id" class="health-card">
@@ -55,11 +55,11 @@
             </div>
             <div class="health-meta">
               <span v-if="p.success_rate !== null">
-                <i class="fa-solid fa-circle-check"></i>
+                <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
                 {{ p.success_rate }}% success rate
               </span>
               <span v-if="p.avg_ms !== null">
-                <i class="fa-solid fa-clock"></i>
+                <i class="fa-sharp-duotone fa-solid fa-clock"></i>
                 {{ p.avg_ms }}ms avg
               </span>
               <span v-if="p.total === 0" class="text-muted">No attempts yet</span>
@@ -81,7 +81,7 @@
 
       <!-- ── Partner list ─────────────────────────────────────────────── -->
       <div v-if="loading" class="state-center">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+        <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
         <p>Loading partners...</p>
       </div>
 
@@ -105,7 +105,7 @@
                 {{ partner.is_active ? 'Active' : 'Inactive' }}
               </span>
               <button class="btn-sm btn-sm--edit" @click="openEditPartner(partner)">
-                <i class="fa-solid fa-pen"></i> Edit
+                <i class="fa-sharp-duotone fa-solid fa-pen"></i> Edit
               </button>
               <button
                 class="btn-sm"
@@ -120,11 +120,11 @@
           <div class="corridors-section">
             <div class="corridors-toolbar">
               <span class="corridors-title">
-                <i class="fa-solid fa-route"></i>
+                <i class="fa-sharp-duotone fa-solid fa-route"></i>
                 {{ partner.corridors?.length ?? 0 }} Corridors
               </span>
               <div class="search-box search-box--sm">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i>
                 <input v-model="corridorSearch[partner.id]" placeholder="Filter corridors..." />
               </div>
             </div>
@@ -159,7 +159,7 @@
                     <td>
                       <div class="cell-actions">
                         <button class="btn-xs btn-xs--edit" @click="openEdit(corridor)">
-                          <i class="fa-solid fa-pen"></i>
+                          <i class="fa-sharp-duotone fa-solid fa-pen"></i>
                         </button>
                         <button
                           class="btn-xs"
@@ -187,7 +187,7 @@
         <div class="modal">
           <div class="modal-header">
             <h3>Edit Corridor — {{ editTarget.from_currency }} → {{ editTarget.to_currency }}</h3>
-            <button @click="editTarget = null"><i class="fa-solid fa-xmark"></i></button>
+            <button @click="editTarget = null"><i class="fa-sharp-duotone fa-solid fa-xmark"></i></button>
           </div>
           <div class="modal-body">
             <div class="form-grid">
@@ -212,8 +212,8 @@
           <div class="modal-footer">
             <button class="btn-ghost" @click="editTarget = null">Cancel</button>
             <button class="btn-primary" :disabled="actionLoading" @click="saveCorridor">
-              <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-floppy-disk"></i>
+              <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-floppy-disk"></i>
               Save Changes
             </button>
           </div>
@@ -225,7 +225,7 @@
         <div class="modal">
           <div class="modal-header">
             <h3>{{ partnerModal.id ? 'Edit Partner' : 'Add Partner' }}</h3>
-            <button @click="partnerModal = null"><i class="fa-solid fa-xmark"></i></button>
+            <button @click="partnerModal = null"><i class="fa-sharp-duotone fa-solid fa-xmark"></i></button>
           </div>
           <div class="modal-body">
             <div class="form-grid form-grid--single">
@@ -254,8 +254,8 @@
           <div class="modal-footer">
             <button class="btn-ghost" @click="partnerModal = null">Cancel</button>
             <button class="btn-primary" :disabled="actionLoading" @click="savePartner">
-              <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-floppy-disk"></i>
+              <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-floppy-disk"></i>
               {{ partnerModal.id ? 'Save Changes' : 'Add Partner' }}
             </button>
           </div>

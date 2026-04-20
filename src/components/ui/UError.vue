@@ -1,6 +1,6 @@
 <template>
   <div class="error">
-    <i class="fa-solid fa-circle-exclamation"></i>
+    <i class="fa-sharp-duotone fa-solid fa-circle-exclamation"></i>
     {{ message }}
   </div>
 </template>

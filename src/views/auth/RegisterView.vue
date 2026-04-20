@@ -46,7 +46,7 @@
 
         <template v-else-if="step === 'otp'">
           <div class="auth-head">
-            <div class="otp-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div class="otp-icon"><i class="fa-sharp-duotone fa-solid fa-mobile-screen-button"></i></div>
             <h1>Verify your phone</h1>
             <p>We sent a 6-digit code to <strong>{{ form.phone }}</strong>. Enter it below.</p>
           </div>
@@ -63,7 +63,7 @@
 
         <template v-else-if="step === 'email_otp'">
           <div class="auth-head">
-            <div class="otp-icon"><i class="fa-solid fa-envelope"></i></div>
+            <div class="otp-icon"><i class="fa-sharp-duotone fa-solid fa-envelope"></i></div>
             <h1>Verify your email</h1>
             <p>We sent a 6-digit code to <strong>{{ form.email }}</strong>. Enter it below.</p>
           </div>

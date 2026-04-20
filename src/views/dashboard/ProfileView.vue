@@ -106,7 +106,7 @@
         <div class="section__title">Account Numbers</div>
         <div class="detail-list">
           <div v-if="accountsLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Loading...</div>
             </div>
@@ -163,7 +163,7 @@
               <p class="modal__desc">Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
               <div class="qr-wrap">
                 <img :src="qrCodeImage" alt="QR Code" class="qr-img" v-if="qrCodeImage" />
-                <div v-else class="qr-loading"><i class="fas fa-spinner fa-spin" /></div>
+                <div v-else class="qr-loading"><i class="fas fa-spinner-third fa-spin" /></div>
               </div>
               <div class="secret-box">
                 <div class="secret-label">Or enter manually:</div>
@@ -182,7 +182,7 @@
               />
               <div v-if="twoFactorError" class="modal__error">{{ twoFactorError }}</div>
               <button class="btn-primary" :disabled="twoFactorCode.length !== 6 || twoFactorLoading" @click="enableTwoFactor">
-                <i v-if="twoFactorLoading" class="fas fa-spinner fa-spin" />
+                <i v-if="twoFactorLoading" class="fas fa-spinner-third fa-spin" />
                 Confirm & Enable
               </button>
             </div>
@@ -219,7 +219,7 @@
             />
             <div v-if="twoFactorError" class="modal__error">{{ twoFactorError }}</div>
             <button class="btn-danger" :disabled="twoFactorCode.length !== 6 || twoFactorLoading" @click="disableTwoFactor">
-              <i v-if="twoFactorLoading" class="fas fa-spinner fa-spin" />
+              <i v-if="twoFactorLoading" class="fas fa-spinner-third fa-spin" />
               Disable 2FA
             </button>
           </div>
@@ -231,7 +231,7 @@
         <div class="section__title">Active Sessions</div>
         <div class="detail-list">
           <div v-if="sessionsLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
           </div>
           <template v-else>
@@ -254,7 +254,7 @@
                 :disabled="revokingId === s.id"
                 @click="revokeSession(s.id)"
               >
-                <i v-if="revokingId === s.id" class="fas fa-spinner fa-spin" />
+                <i v-if="revokingId === s.id" class="fas fa-spinner-third fa-spin" />
                 <span v-else>Revoke</span>
               </button>
             </div>
@@ -274,7 +274,7 @@
         <div class="section__title">Recent Activity</div>
         <div class="detail-list">
           <div v-if="auditLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
           </div>
           <div v-else-if="!auditLogs.length" class="detail-item">

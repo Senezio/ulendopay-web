@@ -11,7 +11,7 @@
         >
           <i :class="iconClass(toast.type)" class="toast__icon"></i>
           <span class="toast__message">{{ toast.message }}</span>
-          <i class="fa-solid fa-xmark toast__close"></i>
+          <i class="fa-sharp-duotone fa-solid fa-xmark toast__close"></i>
         </div>
       </TransitionGroup>
     </div>
@@ -25,11 +25,11 @@ const ui = useUiStore()
 
 function iconClass(type) {
   return {
-    success: 'fa-solid fa-circle-check',
-    error: 'fa-solid fa-circle-xmark',
-    warning: 'fa-solid fa-triangle-exclamation',
-    info: 'fa-solid fa-circle-info',
-  }[type] || 'fa-solid fa-circle-info'
+    success: 'fa-sharp-duotone fa-solid fa-circle-check',
+    error: 'fa-sharp-duotone fa-solid fa-circle-xmark',
+    warning: 'fa-sharp-duotone fa-solid fa-triangle-exclamation',
+    info: 'fa-sharp-duotone fa-solid fa-circle-info',
+  }[type] || 'fa-sharp-duotone fa-solid fa-circle-info'
 }
 </script>
 

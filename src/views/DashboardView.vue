@@ -13,7 +13,7 @@
       <!-- KYC Banner -->
       <div v-if="auth.user?.kyc_status !== 'verified'" class="kyc-banner fade-up-1" @click="router.push('/kyc')">
         <div class="kyc-banner__left">
-          <i class="fa-solid fa-triangle-exclamation"></i>
+          <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
           <div>
             <div class="kyc-banner__title">KYC Verification Required</div>
             <div class="kyc-banner__sub">Verify your identity to send money</div>
@@ -41,7 +41,7 @@
               </div>
             </div>
             <div class="wallet-card wallet-card--cta" @click="router.push('/send')">
-              <div class="cta-icon"><i class="fa-solid fa-paper-plane"></i></div>
+              <div class="cta-icon"><i class="fa-sharp-duotone fa-solid fa-paper-plane"></i></div>
               <span>Send Money</span>
             </div>
           </template>
@@ -189,10 +189,10 @@ onMounted(async () => {
 
 // ── Display helpers ──────────────────────────────────────────────────────────
 function iconFor(item) {
-  if (item.kind === 'topup')       return 'fa-solid fa-arrow-down-to-line'
-  if (item.kind === 'withdraw')    return 'fa-solid fa-arrow-up-from-line'
-  if (item.kind === 'transfer-in') return 'fa-solid fa-arrow-down-left'
-  return 'fa-solid fa-arrow-up-right'
+  if (item.kind === 'topup')       return 'fa-sharp-duotone fa-solid fa-arrow-down-to-line'
+  if (item.kind === 'withdraw')    return 'fa-sharp-duotone fa-solid fa-arrow-up-from-line'
+  if (item.kind === 'transfer-in') return 'fa-sharp-duotone fa-solid fa-arrow-down-left'
+  return 'fa-sharp-duotone fa-solid fa-arrow-up-right'
 }
 
 function labelFor(item) {

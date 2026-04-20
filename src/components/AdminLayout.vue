@@ -4,14 +4,14 @@
     <!-- Mobile header -->
     <header class="admin-mobile-header">
       <button class="menu-toggle" @click="sidebarOpen = !sidebarOpen">
-        <i class="fa-solid fa-bars"></i>
+        <i class="fa-sharp-duotone fa-solid fa-bars"></i>
       </button>
       <div class="mobile-brand">
         <img src="/logo.png" alt="UlendoPay" style="height: 28px; width: auto; border-radius: 6px;">
         <span>Admin Dashboard</span>
       </div>
       <div class="mobile-user">
-        <i class="fa-solid fa-user-tie"></i>
+        <i class="fa-sharp-duotone fa-solid fa-user-tie"></i>
       </div>
     </header>
 
@@ -26,51 +26,51 @@
           <div class="brand-sub">Admin Dashboard</div>
         </div>
         <button class="sidebar-close" @click="sidebarOpen = false">
-          <i class="fa-solid fa-xmark"></i>
+          <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
         </button>
       </div>
 
       <nav class="admin-sidebar__nav">
         <div class="nav-section-label">Overview</div>
         <RouterLink to="/admin" class="admin-nav-item" :class="{ active: route.path === '/admin' }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-gauge-high"></i>Dashboard
+          <i class="fa-sharp-duotone fa-solid fa-gauge-high"></i>Dashboard
         </RouterLink>
 
         <div class="nav-section-label">Operations</div>
         <RouterLink to="/admin/kyc" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/kyc') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-id-card"></i>KYC Review
+          <i class="fa-sharp-duotone fa-solid fa-id-card"></i>KYC Review
           <span v-if="kycCount > 0" class="nav-badge">{{ kycCount }}</span>
         </RouterLink>
         <RouterLink to="/admin/users" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/users') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-users"></i>Users
+          <i class="fa-sharp-duotone fa-solid fa-users"></i>Users
         </RouterLink>
         <RouterLink to="/admin/transactions" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/transactions') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-arrow-right-arrow-left"></i>Transactions
+          <i class="fa-sharp-duotone fa-solid fa-arrow-right-arrow-left"></i>Transactions
         </RouterLink>
 
         <div class="nav-section-label">System</div>
         <RouterLink to="/admin/analytics" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/analytics') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-chart-bar"></i>Analytics
+          <i class="fa-sharp-duotone fa-solid fa-chart-bar"></i>Analytics
         </RouterLink>
         <RouterLink to="/admin/rates" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/rates') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-chart-line"></i>Exchange Rates
+          <i class="fa-duotone fa-solid fa-chart-line"></i>Exchange Rates
         </RouterLink>
         <RouterLink to="/admin/fraud" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/fraud') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-triangle-exclamation"></i>Fraud Alerts
+          <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>Fraud Alerts
           <span v-if="fraudCount > 0" class="nav-badge nav-badge--danger">{{ fraudCount }}</span>
         </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/staff" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/staff') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-user-shield"></i>Staff
+          <i class="fa-duotone fa-solid fa-user-shield"></i>Staff
         </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/partners" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/partners') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-handshake"></i>Partners
+          <i class="fa-sharp-duotone fa-solid fa-handshake"></i>Partners
         
         </RouterLink>
         <RouterLink to="/admin/settings" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/settings') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-gear"></i>Settings
+          <i class="fa-sharp-duotone fa-solid fa-gear"></i>Settings
         </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/accounts" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/accounts') }" @click="sidebarOpen = false">
-          <i class="fa-solid fa-building-columns"></i>Accounts
+          <i class="fa-duotone fa-solid fa-building-columns"></i>Accounts
         </RouterLink>
       </nav>
 
@@ -84,10 +84,10 @@
         </div>
         <div class="footer-actions">
           <RouterLink to="/dashboard" class="footer-btn" title="Customer view" @click="sidebarOpen = false">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square"></i>
           </RouterLink>
           <button class="footer-btn" @click="handleLogout">
-            <i class="fa-solid fa-right-from-bracket"></i>
+            <i class="fa-sharp-duotone fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
       </div>

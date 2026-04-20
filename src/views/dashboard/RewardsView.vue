@@ -33,7 +33,7 @@
         <div class="section__title">Transfer Limits</div>
         <div class="detail-list">
           <div v-if="tierLoading" class="state-loading">
-            <i class="fas fa-spinner fa-spin" /> Loading...
+            <i class="fas fa-spinner-third fa-spin" /> Loading...
           </div>
           <template v-else>
             <div class="limit-item">
@@ -77,7 +77,7 @@
           </div>
 
           <div v-if="referralLoading" class="state-loading">
-            <i class="fas fa-spinner fa-spin" /> Loading...
+            <i class="fas fa-spinner-third fa-spin" /> Loading...
           </div>
           <template v-else>
             <div class="referral-code-box">

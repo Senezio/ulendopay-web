@@ -8,7 +8,7 @@
           <p>{{ filteredRates.length }} corridors</p>
         </div>
         <button class="btn-fetch" :disabled="fetching" @click="fetchRates">
-          <i class="fa-solid fa-rotate" :class="{'fa-spin': fetching}"></i>
+          <i class="fa-sharp-duotone fa-solid fa-rotate" :class="{'fa-spin': fetching}"></i>
           {{ fetching ? 'Fetching...' : 'Fetch Latest' }}
         </button>
       </div>
@@ -18,12 +18,12 @@
         <!-- Toolbar -->
         <div class="toolbar">
           <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i>
             <input v-model="search" placeholder="Filter by currency e.g. MWK, TZS..." />
           </div>
           <div class="toolbar__meta">
             <span v-if="staleCount > 0" class="stale-warning">
-              <i class="fa-solid fa-triangle-exclamation"></i>
+              <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
               {{ staleCount }} stale
             </span>
           </div>
@@ -31,13 +31,13 @@
 
         <!-- Loading -->
         <div v-if="loading" class="state-center">
-          <i class="fa-solid fa-spinner fa-spin"></i>
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
           <p>Loading rates...</p>
         </div>
 
         <!-- Empty -->
         <div v-else-if="!pagedRates.length" class="state-center">
-          <i class="fa-solid fa-chart-line"></i>
+          <i class="fa-duotone fa-solid fa-chart-line"></i>
           <p>No rates match your search</p>
         </div>
 
@@ -58,7 +58,7 @@
                   <td>
                     <div class="cell-corridor">
                       <span class="cur cur--from">{{ rate.from_currency }}</span>
-                      <i class="fa-solid fa-arrow-right"></i>
+                      <i class="fa-sharp-duotone fa-solid fa-arrow-right"></i>
                       <span class="cur cur--to">{{ rate.to_currency }}</span>
                     </div>
                   </td>
@@ -72,7 +72,7 @@
                   </td>
                   <td>
                     <span class="badge" :class="rate.is_stale ? 'badge--red' : 'badge--green'">
-                      <i :class="rate.is_stale ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check'"></i>
+                      <i :class="rate.is_stale ? 'fa-sharp-duotone fa-solid fa-triangle-exclamation' : 'fa-sharp-duotone fa-solid fa-circle-check'"></i>
                       {{ rate.is_stale ? 'Stale' : 'Fresh' }}
                     </span>
                   </td>
@@ -85,11 +85,11 @@
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="pagination">
             <button :disabled="page === 1" @click="page--">
-              <i class="fa-solid fa-chevron-left"></i>
+              <i class="fa-sharp-duotone fa-solid fa-chevron-left"></i>
             </button>
             <span>Page {{ page }} of {{ totalPages }}</span>
             <button :disabled="page === totalPages" @click="page++">
-              <i class="fa-solid fa-chevron-right"></i>
+              <i class="fa-sharp-duotone fa-solid fa-chevron-right"></i>
             </button>
           </div>
         </template>

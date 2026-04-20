@@ -18,7 +18,7 @@
       <!-- Revenue cards -->
       <div class="revenue-grid" v-if="data">
         <div class="rev-card rev-card--primary">
-          <div class="rev-card__icon"><i class="fa-solid fa-coins"></i></div>
+          <div class="rev-card__icon"><i class="fa-sharp-duotone fa-solid fa-coins"></i></div>
           <div class="rev-card__body">
             <div class="rev-card__label">Total Fees Collected</div>
             <div class="rev-card__value">MWK {{ formatMoney(totalRevenue) }}</div>
@@ -26,7 +26,7 @@
           </div>
         </div>
         <div class="rev-card">
-          <div class="rev-card__icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="rev-card__icon"><i class="fa-sharp-duotone fa-solid fa-shield-halved"></i></div>
           <div class="rev-card__body">
             <div class="rev-card__label">Guarantee Fund</div>
             <div class="rev-card__value">MWK {{ formatMoney(totalGuarantee) }}</div>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <div class="rev-card">
-          <div class="rev-card__icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+          <div class="rev-card__icon"><i class="fa-sharp-duotone fa-solid fa-arrow-right-arrow-left"></i></div>
           <div class="rev-card__body">
             <div class="rev-card__label">Transfer Volume</div>
             <div class="rev-card__value">MWK {{ formatMoney(totalVolume) }}</div>
@@ -42,7 +42,7 @@
           </div>
         </div>
         <div class="rev-card">
-          <div class="rev-card__icon"><i class="fa-solid fa-wallet"></i></div>
+          <div class="rev-card__icon"><i class="fa-duotone fa-solid fa-wallet"></i></div>
           <div class="rev-card__body">
             <div class="rev-card__label">Escrow Held</div>
             <div class="rev-card__value">MWK {{ formatMoney(escrowBalance) }}</div>
@@ -58,7 +58,7 @@
         <div class="chart-card">
           <div class="chart-card__header">
             <div class="chart-card__title">
-              <i class="fa-solid fa-chart-line"></i>
+              <i class="fa-duotone fa-solid fa-chart-line"></i>
               Transfer Volume
             </div>
           </div>
@@ -71,7 +71,7 @@
         <div class="chart-card">
           <div class="chart-card__header">
             <div class="chart-card__title">
-              <i class="fa-solid fa-coins"></i>
+              <i class="fa-sharp-duotone fa-solid fa-coins"></i>
               Daily Revenue (Fees)
             </div>
           </div>
@@ -84,7 +84,7 @@
         <div class="chart-card">
           <div class="chart-card__header">
             <div class="chart-card__title">
-              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+              <i class="fa-sharp-duotone fa-solid fa-arrow-right-arrow-left"></i>
               Daily Transactions
             </div>
           </div>
@@ -97,7 +97,7 @@
         <div class="chart-card">
           <div class="chart-card__header">
             <div class="chart-card__title">
-              <i class="fa-solid fa-plus-circle"></i>
+              <i class="fa-sharp-duotone fa-solid fa-plus-circle"></i>
               Daily Top-ups
             </div>
           </div>
@@ -112,7 +112,7 @@
       <div class="chart-card" v-if="data?.corridors?.length" style="margin-top:16px;">
         <div class="chart-card__header">
           <div class="chart-card__title">
-            <i class="fa-solid fa-globe-africa"></i>
+            <i class="fa-sharp-duotone fa-solid fa-globe-africa"></i>
             Top Corridors by Volume
           </div>
         </div>
@@ -120,7 +120,7 @@
           <div v-for="c in data.corridors" :key="`${c.send_currency}-${c.receive_currency}`" class="corridor-row">
             <div class="corridor-row__pair">
               <span class="cur-tag">{{ c.send_currency }}</span>
-              <i class="fa-solid fa-arrow-right"></i>
+              <i class="fa-sharp-duotone fa-solid fa-arrow-right"></i>
               <span class="cur-tag cur-tag--to">{{ c.receive_currency }}</span>
             </div>
             <div class="corridor-row__bar-wrap">
@@ -138,7 +138,7 @@
       <div class="chart-card" v-if="data?.accounts?.length" style="margin-top:16px;">
         <div class="chart-card__header">
           <div class="chart-card__title">
-            <i class="fa-solid fa-scale-balanced"></i>
+            <i class="fa-sharp-duotone fa-solid fa-scale-balanced"></i>
             Platform Account Balances
           </div>
         </div>
@@ -157,7 +157,7 @@
 
       <!-- Loading state -->
       <div v-if="loading" class="state-loading">
-        <i class="fa-solid fa-spinner fa-spin"></i>
+        <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
         <p>Loading analytics...</p>
       </div>
 

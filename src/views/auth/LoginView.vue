@@ -53,7 +53,7 @@
         <template v-else>
           <div class="auth-head">
             <div class="otp-icon">
-              <i :class="isTotpStep ? 'fa-solid fa-shield-halved' : 'fa-solid fa-mobile-screen-button'"></i>
+              <i :class="isTotpStep ? 'fa-sharp-duotone fa-solid fa-shield-halved' : 'fa-sharp-duotone fa-solid fa-mobile-screen-button'"></i>
             </div>
             <h1>Verify your identity</h1>
             <p v-if="isTotpStep">Enter the 6-digit code from your authenticator app.</p>
@@ -74,7 +74,7 @@
       </div>
 
       <div class="auth-secure fade-up-2">
-        <i class="fa-solid fa-lock"></i> Secured with end-to-end encryption
+        <i class="fa-sharp-duotone fa-solid fa-lock"></i> Secured with end-to-end encryption
       </div>
 
     </div>
@@ -87,7 +87,7 @@
           <!-- Header -->
           <div class="modal__header">
             <div class="modal__icon">
-              <i class="fa-solid fa-lock"></i>
+              <i class="fa-sharp-duotone fa-solid fa-lock"></i>
             </div>
             <div>
               <div class="modal__title">Reset PIN</div>
@@ -99,7 +99,7 @@
               </div>
             </div>
             <button class="modal__close" @click="closePinModal">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -124,7 +124,7 @@
               :disabled="pinModal.loading || !pinModal.phone"
               @click="requestPinOtp"
             >
-              <i v-if="pinModal.loading" class="fa-solid fa-spinner fa-spin"></i>
+              <i v-if="pinModal.loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
               <span v-else>Send Code</span>
             </button>
           </div>
@@ -185,7 +185,7 @@
               :disabled="pinModal.loading || pinModal.newPin.length < 4 || pinModal.newPin !== pinModal.confirmPin"
               @click="submitPinReset"
             >
-              <i v-if="pinModal.loading" class="fa-solid fa-spinner fa-spin"></i>
+              <i v-if="pinModal.loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
               <span v-else>Reset PIN</span>
             </button>
           </div>
@@ -193,7 +193,7 @@
           <!-- Step 4: done -->
           <div v-if="pinModal.step === 'done'" class="modal__body modal__body--center">
             <div class="modal__success-icon">
-              <i class="fa-solid fa-circle-check"></i>
+              <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
             </div>
             <p class="modal__info">
               Your PIN has been reset successfully.<br>
@@ -215,7 +215,7 @@
 
           <div class="modal__header">
             <div class="modal__icon">
-              <i class="fa-solid fa-key"></i>
+              <i class="fa-sharp-duotone fa-solid fa-key"></i>
             </div>
             <div>
               <div class="modal__title">Reset Password</div>
@@ -227,7 +227,7 @@
               </div>
             </div>
             <button class="modal__close" @click="closePwModal">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -252,7 +252,7 @@
               :disabled="pwModal.loading || !pwModal.email"
               @click="requestPwOtp"
             >
-              <i v-if="pwModal.loading" class="fa-solid fa-spinner fa-spin"></i>
+              <i v-if="pwModal.loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
               <span v-else>Send Code</span>
             </button>
           </div>
@@ -309,7 +309,7 @@
               :disabled="pwModal.loading || pwModal.newPw.length < 8 || pwModal.newPw !== pwModal.confirmPw"
               @click="submitPwReset"
             >
-              <i v-if="pwModal.loading" class="fa-solid fa-spinner fa-spin"></i>
+              <i v-if="pwModal.loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
               <span v-else>Reset Password</span>
             </button>
           </div>
@@ -317,7 +317,7 @@
           <!-- Step 4: done -->
           <div v-if="pwModal.step === 'done'" class="modal__body modal__body--center">
             <div class="modal__success-icon">
-              <i class="fa-solid fa-circle-check"></i>
+              <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
             </div>
             <p class="modal__info">
               Your password has been reset successfully.<br>

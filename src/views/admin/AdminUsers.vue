@@ -12,7 +12,7 @@
       <!-- Filters -->
       <div class="filters">
         <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass"></i>
+          <i class="fa-sharp-duotone fa-solid fa-magnifying-glass"></i>
           <input v-model="search" placeholder="Search name or email..." @input="debouncedLoad" />
         </div>
         <div class="filter-row">
@@ -36,13 +36,13 @@
 
         <!-- Loading -->
         <div v-if="loading" class="state-center">
-          <i class="fa-solid fa-spinner fa-spin"></i>
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
           <p>Loading users...</p>
         </div>
 
         <!-- Empty -->
         <div v-else-if="!users?.data?.length" class="state-center">
-          <i class="fa-solid fa-users"></i>
+          <i class="fa-sharp-duotone fa-solid fa-users"></i>
           <p>No users found</p>
         </div>
 
@@ -85,14 +85,14 @@
                       class="action-btn action-btn--danger"
                       @click="openSuspend(user)"
                     >
-                      <i class="fa-solid fa-ban"></i> Suspend
+                      <i class="fa-sharp-duotone fa-solid fa-ban"></i> Suspend
                     </button>
                     <button
                       v-else
                       class="action-btn action-btn--success"
                       @click="restore(user.id)"
                     >
-                      <i class="fa-solid fa-circle-check"></i> Restore
+                      <i class="fa-sharp-duotone fa-solid fa-circle-check"></i> Restore
                     </button>
                   </td>
                 </tr>
@@ -112,9 +112,9 @@
                 <span class="badge" :class="statusBadge(user.status)">{{ user.status }}</span>
               </div>
               <div class="mobile-row__meta">
-                <span><i class="fa-solid fa-location-dot"></i> {{ user.country_code || '—' }}</span>
+                <span><i class="fa-sharp-duotone fa-solid fa-location-dot"></i> {{ user.country_code || '—' }}</span>
                 <span class="badge badge--sm" :class="kycBadge(user.kyc_status)">{{ user.kyc_status }}</span>
-                <span><i class="fa-solid fa-calendar"></i> {{ formatDate(user.created_at) }}</span>
+                <span><i class="fa-sharp-duotone fa-solid fa-calendar"></i> {{ formatDate(user.created_at) }}</span>
               </div>
               <div class="mobile-row__actions">
                 <button
@@ -122,14 +122,14 @@
                   class="action-btn action-btn--danger"
                   @click="openSuspend(user)"
                 >
-                  <i class="fa-solid fa-ban"></i> Suspend
+                  <i class="fa-sharp-duotone fa-solid fa-ban"></i> Suspend
                 </button>
                 <button
                   v-else
                   class="action-btn action-btn--success"
                   @click="restore(user.id)"
                 >
-                  <i class="fa-solid fa-circle-check"></i> Restore
+                  <i class="fa-sharp-duotone fa-solid fa-circle-check"></i> Restore
                 </button>
               </div>
             </div>
@@ -138,11 +138,11 @@
           <!-- Pagination -->
           <div v-if="users.last_page > 1" class="pagination">
             <button :disabled="page === 1" @click="page--; load()">
-              <i class="fa-solid fa-chevron-left"></i>
+              <i class="fa-sharp-duotone fa-solid fa-chevron-left"></i>
             </button>
             <span>Page {{ page }} of {{ users.last_page }}</span>
             <button :disabled="page === users.last_page" @click="page++; load()">
-              <i class="fa-solid fa-chevron-right"></i>
+              <i class="fa-sharp-duotone fa-solid fa-chevron-right"></i>
             </button>
           </div>
         </template>
@@ -153,7 +153,7 @@
         <div class="modal">
           <div class="modal-header">
             <h3>Suspend {{ suspendTarget.name }}?</h3>
-            <button @click="suspendTarget = null"><i class="fa-solid fa-xmark"></i></button>
+            <button @click="suspendTarget = null"><i class="fa-sharp-duotone fa-solid fa-xmark"></i></button>
           </div>
           <div class="modal-body">
             <p>This will revoke all active sessions immediately.</p>
@@ -163,8 +163,8 @@
           <div class="modal-footer">
             <button class="btn-ghost" @click="suspendTarget = null">Cancel</button>
             <button class="btn-danger" :disabled="!suspendReason || actionLoading" @click="suspend">
-              <i v-if="actionLoading" class="fa-solid fa-spinner fa-spin"></i>
-              <i v-else class="fa-solid fa-ban"></i>
+              <i v-if="actionLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <i v-else class="fa-sharp-duotone fa-solid fa-ban"></i>
               Suspend
             </button>
           </div>

@@ -18,7 +18,7 @@
 
       <div v-if="auth.user?.kyc_status === 'verified'" class="verified-card">
         <div class="verified-icon">
-          <i class="fa-solid fa-circle-check"></i>
+          <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
         </div>
         <h2>You're verified!</h2>
         <p>Your identity has been verified. You can send money freely.</p>
@@ -96,9 +96,9 @@ const submitted = ref(false)
 const statuses = {
   none:     { color: 'var(--text-secondary)', bg: '#ffffff11', iconClass: 'fa-regular fa-circle', text: 'Not submitted' },
   pending:  { color: 'var(--accent-amber)',   bg: '#ffb93822', iconClass: 'fa-regular fa-clock', text: 'Under review' },
-  verified: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-solid fa-circle-check', text: 'Verified' },
-  approved: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-solid fa-circle-check', text: 'Verified' },
-  rejected: { color: 'var(--danger)',         bg: '#ff444422', iconClass: 'fa-solid fa-circle-xmark', text: 'Rejected' },
+  verified: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-sharp-duotone fa-solid fa-circle-check', text: 'Verified' },
+  approved: { color: 'var(--accent)',         bg: 'var(--accent-dim)', iconClass: 'fa-sharp-duotone fa-solid fa-circle-check', text: 'Verified' },
+  rejected: { color: 'var(--danger)',         bg: '#ff444422', iconClass: 'fa-sharp-duotone fa-solid fa-circle-xmark', text: 'Rejected' },
 }
 
 const status = computed(() => statuses[auth.user?.kyc_status] || statuses.none)

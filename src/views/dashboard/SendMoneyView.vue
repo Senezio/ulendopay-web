@@ -113,14 +113,14 @@
         <div class="modal">
           <div class="modal__header">
             <div class="modal__icon">
-              <i class="fa-solid fa-lock"></i>
+              <i class="fa-sharp-duotone fa-solid fa-lock"></i>
             </div>
             <div>
               <div class="modal__title">Confirm with PIN</div>
               <div class="modal__subtitle">Enter your 4-digit PIN to authorise this transfer</div>
             </div>
             <button class="modal__close" @click="closePinModal">
-              <i class="fa-solid fa-xmark"></i>
+              <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
             </button>
           </div>
 
@@ -164,8 +164,8 @@
               :disabled="pinModal.loading || pinModal.digits.join('').length < 4"
               @click="submitWithPin"
             >
-              <i v-if="pinModal.loading" class="fa-solid fa-spinner fa-spin"></i>
-              <span v-else><i class="fa-solid fa-paper-plane"></i> Send Money</span>
+              <i v-if="pinModal.loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+              <span v-else><i class="fa-sharp-duotone fa-solid fa-paper-plane"></i> Send Money</span>
             </button>
           </div>
         </div>

@@ -17,7 +17,6 @@ onMounted(() => {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-@import '@fortawesome/fontawesome-free/css/all.min.css';
 
 :root {
   --bg: #ffffff;
@@ -43,9 +42,11 @@ onMounted(() => {
 
   --success: #16a34a;
   --success-bg: #f0fdf4;
+/* Global Icon Theming */  --fa-primary-color: #e85d04;  --fa-secondary-color: #f97316;  --fa-secondary-opacity: 0.4;
 }
 
 [data-theme="dark"] {
+  --fa-secondary-opacity: 0.6;
   --bg: #0f1117;
   --bg-alt: #141720;
   --bg-elevated: #1c2030;
@@ -74,6 +75,7 @@ onMounted(() => {
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
+  transition: background-color 0.3s ease, color 0.3s ease;
   font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
   background: var(--bg);
   color: var(--text-primary);
@@ -96,4 +98,7 @@ body {
 .fade-up-1 { animation: fadeUp 0.3s 0.07s ease both; }
 .fade-up-2 { animation: fadeUp 0.3s 0.14s ease both; }
 .fade-up-3 { animation: fadeUp 0.3s 0.21s ease both; }
+i[class*='fa-duotone'], i[class*='fa-sharp-duotone'] {  --fa-primary-color: var(--fa-primary-color);  --fa-secondary-color: var(--fa-secondary-color);  --fa-secondary-opacity: var(--fa-secondary-opacity);
+  transition: color 0.3s ease, opacity 0.3s ease;}
+.card, .navbar, .footer, section, div, input, select {  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;}
 </style>

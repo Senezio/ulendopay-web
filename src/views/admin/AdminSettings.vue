@@ -7,12 +7,12 @@
           <p>System configuration and service status</p>
         </div>
         <button class="btn-icon" @click="load" title="Refresh">
-          <i class="fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
+          <i class="fa-sharp-duotone fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
         </button>
       </div>
 
       <div v-if="loading" class="state-loading">
-        <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+        <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading...
       </div>
 
       <template v-else>
@@ -85,13 +85,13 @@
                     {{ service.preview }}
                   </span>
                   <span v-else class="service-field__missing">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Not set in .env
+                    <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i> Not set in .env
                   </span>
                 </div>
               </div>
 
               <div v-if="!service.configured" class="service-card__warning">
-                <i class="fa-solid fa-circle-info"></i>
+                <i class="fa-sharp-duotone fa-solid fa-circle-info"></i>
                 Update <code>.env</code> on the server to configure this service.
               </div>
             </div>
@@ -100,7 +100,7 @@
 
         <!-- Security notice -->
         <div class="security-notice">
-          <i class="fa-solid fa-shield-halved"></i>
+          <i class="fa-sharp-duotone fa-solid fa-shield-halved"></i>
           <div>
             <strong>Security Notice</strong>
             <p>API keys are stored in the server <code>.env</code> file and are never exposed through this interface. Only masked previews are shown. To update a key, SSH into the server and edit <code>.env</code> directly, then run <code>php artisan config:clear</code>.</p>
@@ -124,12 +124,12 @@ const settings = ref({ app: {}, services: {} })
 
 function serviceIcon(key) {
   const icons = {
-    pawapay:               { icon: 'fa-solid fa-money-bill-wave', color: 'icon--blue' },
-    mtn_momo_collection:   { icon: 'fa-solid fa-mobile-screen',   color: 'icon--yellow' },
-    mtn_momo_disbursement: { icon: 'fa-solid fa-paper-plane',     color: 'icon--yellow' },
-    africastalking:        { icon: 'fa-solid fa-comment-sms',     color: 'icon--green' },
+    pawapay:               { icon: 'fa-duotone fa-solid fa-money-bill-wave', color: 'icon--blue' },
+    mtn_momo_collection:   { icon: 'fa-sharp-duotone fa-solid fa-mobile-screen',   color: 'icon--yellow' },
+    mtn_momo_disbursement: { icon: 'fa-sharp-duotone fa-solid fa-paper-plane',     color: 'icon--yellow' },
+    africastalking:        { icon: 'fa-sharp-duotone fa-solid fa-comment-sms',     color: 'icon--green' },
   }
-  return icons[key] || { icon: 'fa-solid fa-plug', color: 'icon--gray' }
+  return icons[key] || { icon: 'fa-sharp-duotone fa-solid fa-plug', color: 'icon--gray' }
 }
 
 async function load() {

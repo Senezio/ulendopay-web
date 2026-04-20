@@ -7,7 +7,7 @@
           <p>Platform overview — {{ today }}</p>
         </div>
         <button class="btn-refresh" @click="load" :disabled="loading">
-          <i class="fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
+          <i class="fa-sharp-duotone fa-solid fa-rotate" :class="{ 'fa-spin': loading }"></i>
           Refresh
         </button>
       </div>
@@ -20,14 +20,14 @@
         <!-- Users row -->
         <div class="stats-section">
           <div class="stats-section__title">
-            <i class="fa-solid fa-users"></i> Users
+            <i class="fa-sharp-duotone fa-solid fa-users"></i> Users
           </div>
           <div class="stats-grid">
-            <StatCard label="Total Users"     :value="stats.users.total"       icon="fa-solid fa-users"           color="blue" />
-            <StatCard label="Active"          :value="stats.users.active"      icon="fa-solid fa-circle-check"    color="green" />
-            <StatCard label="Suspended"       :value="stats.users.suspended"   icon="fa-solid fa-ban"             color="red" />
-            <StatCard label="Joined Today"    :value="stats.users.today"       icon="fa-solid fa-user-plus"       color="orange" />
-            <StatCard label="KYC Pending"     :value="stats.users.kyc_pending" icon="fa-solid fa-id-card"         color="amber"
+            <StatCard label="Total Users"     :value="stats.users.total"       icon="fa-sharp-duotone fa-solid fa-users"           color="blue" />
+            <StatCard label="Active"          :value="stats.users.active"      icon="fa-sharp-duotone fa-solid fa-circle-check"    color="green" />
+            <StatCard label="Suspended"       :value="stats.users.suspended"   icon="fa-sharp-duotone fa-solid fa-ban"             color="red" />
+            <StatCard label="Joined Today"    :value="stats.users.today"       icon="fa-sharp-duotone fa-solid fa-user-plus"       color="orange" />
+            <StatCard label="KYC Pending"     :value="stats.users.kyc_pending" icon="fa-sharp-duotone fa-solid fa-id-card"         color="amber"
               :link="stats.users.kyc_pending > 0 ? '/admin/kyc' : null" />
           </div>
         </div>
@@ -35,41 +35,41 @@
         <!-- Transactions row -->
         <div class="stats-section">
           <div class="stats-section__title">
-            <i class="fa-solid fa-arrow-right-arrow-left"></i> Transactions
+            <i class="fa-sharp-duotone fa-solid fa-arrow-right-arrow-left"></i> Transactions
           </div>
           <div class="stats-grid">
-            <StatCard label="Total"           :value="stats.transactions.total"       icon="fa-solid fa-list"              color="blue" />
-            <StatCard label="Today"           :value="stats.transactions.today"       icon="fa-solid fa-calendar-day"      color="blue" />
-            <StatCard label="Completed"       :value="stats.transactions.completed"   icon="fa-solid fa-circle-check"      color="green" />
-            <StatCard label="Failed"          :value="stats.transactions.failed"      icon="fa-solid fa-circle-xmark"      color="red" />
-            <StatCard label="Volume Today"    :value="formatMoney(stats.transactions.volume_today)" icon="fa-solid fa-coins" color="green" raw />
+            <StatCard label="Total"           :value="stats.transactions.total"       icon="fa-sharp-duotone fa-solid fa-list"              color="blue" />
+            <StatCard label="Today"           :value="stats.transactions.today"       icon="fa-sharp-duotone fa-solid fa-calendar-day"      color="blue" />
+            <StatCard label="Completed"       :value="stats.transactions.completed"   icon="fa-sharp-duotone fa-solid fa-circle-check"      color="green" />
+            <StatCard label="Failed"          :value="stats.transactions.failed"      icon="fa-sharp-duotone fa-solid fa-circle-xmark"      color="red" />
+            <StatCard label="Volume Today"    :value="formatMoney(stats.transactions.volume_today)" icon="fa-sharp-duotone fa-solid fa-coins" color="green" raw />
           </div>
         </div>
 
         <!-- Top-ups row -->
         <div class="stats-section">
           <div class="stats-section__title">
-            <i class="fa-solid fa-wallet"></i> Top-ups
+            <i class="fa-duotone fa-solid fa-wallet"></i> Top-ups
           </div>
           <div class="stats-grid">
-            <StatCard label="Total Top-ups"   :value="stats.topups.total"           icon="fa-solid fa-plus-circle"   color="blue" />
-            <StatCard label="Today"           :value="stats.topups.today"           icon="fa-solid fa-calendar-day"  color="blue" />
-            <StatCard label="Completed"       :value="stats.topups.completed"       icon="fa-solid fa-circle-check"  color="green" />
-            <StatCard label="Volume Today"    :value="formatMoney(stats.topups.volume_today)" icon="fa-solid fa-coins" color="green" raw />
+            <StatCard label="Total Top-ups"   :value="stats.topups.total"           icon="fa-sharp-duotone fa-solid fa-plus-circle"   color="blue" />
+            <StatCard label="Today"           :value="stats.topups.today"           icon="fa-sharp-duotone fa-solid fa-calendar-day"  color="blue" />
+            <StatCard label="Completed"       :value="stats.topups.completed"       icon="fa-sharp-duotone fa-solid fa-circle-check"  color="green" />
+            <StatCard label="Volume Today"    :value="formatMoney(stats.topups.volume_today)" icon="fa-sharp-duotone fa-solid fa-coins" color="green" raw />
           </div>
         </div>
 
         <!-- System row -->
         <div class="stats-section">
           <div class="stats-section__title">
-            <i class="fa-solid fa-server"></i> System
+            <i class="fa-sharp-duotone fa-solid fa-server"></i> System
           </div>
           <div class="stats-grid">
-            <StatCard label="Active Rates"    :value="stats.rates.active"           icon="fa-solid fa-chart-line"    color="green" />
-            <StatCard label="Stale Rates"     :value="stats.rates.stale"            icon="fa-solid fa-triangle-exclamation" color="amber" />
-            <StatCard label="New Fraud Alerts" :value="stats.fraud_alerts.new"      icon="fa-solid fa-shield-halved" color="red"
+            <StatCard label="Active Rates"    :value="stats.rates.active"           icon="fa-duotone fa-solid fa-chart-line"    color="green" />
+            <StatCard label="Stale Rates"     :value="stats.rates.stale"            icon="fa-sharp-duotone fa-solid fa-triangle-exclamation" color="amber" />
+            <StatCard label="New Fraud Alerts" :value="stats.fraud_alerts.new"      icon="fa-sharp-duotone fa-solid fa-shield-halved" color="red"
               :link="stats.fraud_alerts.new > 0 ? '/admin/fraud' : null" />
-            <StatCard label="Last Rate Fetch" :value="formatDate(stats.rates.last_fetched)" icon="fa-solid fa-clock" color="blue" raw />
+            <StatCard label="Last Rate Fetch" :value="formatDate(stats.rates.last_fetched)" icon="fa-sharp-duotone fa-solid fa-clock" color="blue" raw />
           </div>
         </div>
       </template>
