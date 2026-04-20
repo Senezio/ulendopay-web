@@ -19,11 +19,11 @@
           </div>
         </div>
         <div class="tier-card__discount" v-if="tier?.total_discount_percent > 0">
-          <i class="fas fa-tag" /> {{ tier.total_discount_percent }}% fee discount active
+          <i class="fa-sharp-duotone fa-solid fa-tag" /> {{ tier.total_discount_percent }}% fee discount active
         </div>
         <div class="tier-card__upgrade" v-if="tier?.can_upgrade">
           <RouterLink to="/kyc" class="upgrade-btn">
-            <i class="fas fa-arrow-up" /> Verify identity to unlock higher limits
+            <i class="fa-sharp-duotone fa-solid fa-arrow-up" /> Verify identity to unlock higher limits
           </RouterLink>
         </div>
       </div>
@@ -33,7 +33,7 @@
         <div class="section__title">Transfer Limits</div>
         <div class="detail-list">
           <div v-if="tierLoading" class="state-loading">
-            <i class="fas fa-spinner-third fa-spin" /> Loading...
+            <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /> Loading...
           </div>
           <template v-else>
             <div class="limit-item">
@@ -69,7 +69,7 @@
         <div class="section__title">Refer & Earn</div>
         <div class="referral-card">
           <div class="referral-card__top">
-            <div class="referral-card__icon"><i class="fas fa-users" /></div>
+            <div class="referral-card__icon"><i class="fa-sharp-duotone fa-solid fa-users" /></div>
             <div>
               <div class="referral-card__title">Invite friends, earn discounts</div>
               <div class="referral-card__sub">You and your friend each get 5% off fees when they complete their first transfer.</div>
@@ -77,14 +77,14 @@
           </div>
 
           <div v-if="referralLoading" class="state-loading">
-            <i class="fas fa-spinner-third fa-spin" /> Loading...
+            <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /> Loading...
           </div>
           <template v-else>
             <div class="referral-code-box">
               <div class="referral-code-box__label">Your referral code</div>
               <div class="referral-code-box__code">{{ referral?.referral_code }}</div>
               <button class="copy-btn" @click="copyLink">
-                <i :class="copied ? 'fas fa-check' : 'fas fa-copy'" />
+                <i :class="copied ? 'fa-sharp-duotone fa-solid fa-check' : 'fa-sharp-duotone fa-solid fa-copy'" />
                 {{ copied ? 'Copied!' : 'Copy link' }}
               </button>
             </div>
@@ -138,9 +138,9 @@ const copied        = ref(false)
 
 const tierIcon = computed(() => {
   const t = tier.value?.tier
-  if (t === 'verified')   return 'fas fa-shield-halved'
-  if (t === 'basic')      return 'fas fa-id-card'
-  return 'fas fa-user'
+  if (t === 'verified')   return 'fa-sharp-duotone fa-solid fa-shield-halved'
+  if (t === 'basic')      return 'fa-sharp-duotone fa-solid fa-id-card'
+  return 'fa-sharp-duotone fa-solid fa-user'
 })
 
 const dailyPercent = computed(() => {

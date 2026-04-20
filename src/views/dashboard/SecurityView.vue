@@ -17,14 +17,14 @@
         </div>
         <div class="detail-list">
           <div v-if="sessionsLoading" class="state-loading">
-            <i class="fas fa-spinner-third fa-spin" /> Loading...
+            <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /> Loading...
           </div>
           <div v-else-if="!sessions.length" class="state-empty">
             No active sessions
           </div>
           <div v-else v-for="session in sessions" :key="session.id" class="session-item">
             <div class="session-item__icon" :class="session.is_current ? 'icon--green' : 'icon--gray'">
-              <i class="fas fa-mobile-screen" />
+              <i class="fa-sharp-duotone fa-solid fa-mobile-screen" />
             </div>
             <div class="session-item__body">
               <div class="session-item__name">
@@ -52,7 +52,7 @@
         <div class="section__title">Account Activity</div>
         <div class="detail-list">
           <div v-if="logsLoading" class="state-loading">
-            <i class="fas fa-spinner-third fa-spin" /> Loading...
+            <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /> Loading...
           </div>
           <div v-else-if="!logs.length" class="state-empty">
             No activity recorded yet
@@ -115,14 +115,14 @@ function formatAction(action) {
 }
 
 function logIcon(action) {
-  if (action.includes('login'))      return 'fas fa-right-to-bracket'
-  if (action.includes('kyc'))        return 'fas fa-id-card'
-  if (action.includes('withdrawal')) return 'fas fa-arrow-up-from-line'
-  if (action.includes('topup'))      return 'fas fa-arrow-down-to-line'
-  if (action.includes('pin'))        return 'fas fa-lock'
-  if (action.includes('password'))   return 'fas fa-key'
-  if (action.includes('2fa'))        return 'fas fa-shield-halved'
-  return 'fas fa-circle-info'
+  if (action.includes('login'))      return 'fa-sharp-duotone fa-solid fa-right-to-bracket'
+  if (action.includes('kyc'))        return 'fa-sharp-duotone fa-solid fa-id-card'
+  if (action.includes('withdrawal')) return 'fa-sharp-duotone fa-solid fa-arrow-up-from-line'
+  if (action.includes('topup'))      return 'fa-sharp-duotone fa-solid fa-arrow-down-to-line'
+  if (action.includes('pin'))        return 'fa-sharp-duotone fa-solid fa-lock'
+  if (action.includes('password'))   return 'fa-sharp-duotone fa-solid fa-key'
+  if (action.includes('2fa'))        return 'fa-sharp-duotone fa-solid fa-shield-halved'
+  return 'fa-sharp-duotone fa-solid fa-circle-info'
 }
 
 function logIconClass(action) {

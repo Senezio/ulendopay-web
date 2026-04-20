@@ -89,7 +89,7 @@
                 <label>They receive</label>
                 <div class="calc-input-wrap calc-input-wrap--receive">
                   <div class="calc-receive-amount">
-                    <span v-if="calcLoading"><i class="fa-duotone fa-sharp-duotone fa-solid fa-spinner-third-third fa-spin"></i></span>
+                    <span v-if="calcLoading"><i class="fa-sharp-duotone fa-solid fa-spinner-third-third fa-spin"></i></span>
                     <span v-else-if="calcResult">{{ formatCalc(calcResult.receive_amount) }}</span>
                     <span v-else class="calc-placeholder">—</span>
                   </div>
@@ -352,11 +352,11 @@ const steps = [
 
 const features = [
   { iconClass: 'fa-duotone fa-duotone fa-solid fa-money-bill-transfer', title: 'Send money',         desc: 'Transfer to mobile money accounts and bank accounts across Africa at transparent rates.' },
-  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-chart-mixed', title: 'Live exchange rates', desc: 'Rates are pulled directly from official central bank sources. No inflated margins.' },
+  { iconClass: 'fa-sharp-duotone fa-solid fa-chart-mixed', title: 'Live exchange rates', desc: 'Rates are pulled directly from official central bank sources. No inflated margins.' },
   { iconClass: 'fa-duotone fa-duotone fa-solid fa-history', title: 'Transaction history', desc: 'Every transfer is logged with a unique reference number and full status tracking.' },
-  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-key-skeleton-left-right', title: 'PIN & 2FA login',    desc: 'Log in using your phone number and PIN. Every session requires a one-time verification code.' },
-  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-address-card', title: 'KYC verification',   desc: 'Submit your national ID or passport once. Verified accounts get higher transfer limits.' },
-  { iconClass: 'fa-duotone fa-sharp-duotone fa-solid fa-comment-sms', title: 'SMS notifications',  desc: 'Receive SMS updates for every transfer — initiated, completed, or refunded.' },
+  { iconClass: 'fa-sharp-duotone fa-solid fa-key-skeleton-left-right', title: 'PIN & 2FA login',    desc: 'Log in using your phone number and PIN. Every session requires a one-time verification code.' },
+  { iconClass: 'fa-sharp-duotone fa-solid fa-address-card', title: 'KYC verification',   desc: 'Submit your national ID or passport once. Verified accounts get higher transfer limits.' },
+  { iconClass: 'fa-sharp-duotone fa-solid fa-comment-sms', title: 'SMS notifications',  desc: 'Receive SMS updates for every transfer — initiated, completed, or refunded.' },
 ]
 
 const securityPoints = [

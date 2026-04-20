@@ -69,7 +69,7 @@
         <div class="section__title">Security</div>
         <div class="detail-list">
           <div class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-lock" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-lock" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">PIN</div>
               <div class="detail-item__value">{{ auth.user?.has_pin ? 'Set' : 'Not set' }}</div>
@@ -79,7 +79,7 @@
             </div>
           </div>
           <div class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-key" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-key" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Password</div>
               <div class="detail-item__value">{{ auth.user?.has_password ? 'Set' : 'Not set' }}</div>
@@ -89,7 +89,7 @@
             </div>
           </div>
           <div class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-mobile-alt" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-mobile-alt" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Phone Verification</div>
               <div class="detail-item__value">{{ auth.user?.phone_verified ? 'Verified' : 'Not verified' }}</div>
@@ -106,25 +106,25 @@
         <div class="section__title">Account Numbers</div>
         <div class="detail-list">
           <div v-if="accountsLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Loading...</div>
             </div>
           </div>
           <div v-else-if="!accounts.length" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-wallet" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-wallet" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">No accounts found</div>
             </div>
           </div>
           <div v-for="acc in accounts" :key="acc.account_number" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-building-columns" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-building-columns" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">{{ acc.currency }} Wallet</div>
               <div class="detail-item__value account-number">{{ formatAccountNumber(acc.account_number) }}</div>
             </div>
             <button class="copy-btn" @click="copyAccount(acc.account_number)" :title="'Copy account number'">
-              <i :class="copied === acc.account_number ? 'fas fa-check' : 'fas fa-copy'" />
+              <i :class="copied === acc.account_number ? 'fa-sharp-duotone fa-solid fa-check' : 'fa-sharp-duotone fa-solid fa-copy'" />
             </button>
           </div>
         </div>
@@ -135,7 +135,7 @@
         <div class="section__title">Two-Factor Authentication</div>
         <div class="detail-list">
           <div class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-shield-halved" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-shield-halved" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Authenticator App</div>
               <div class="detail-item__value">{{ twoFactorEnabled ? 'Enabled' : 'Disabled' }}</div>
@@ -156,14 +156,14 @@
         <div class="modal">
           <div class="modal__header">
             <h3>Set Up Two-Factor Authentication</h3>
-            <button @click="show2FASetup = false"><i class="fas fa-xmark" /></button>
+            <button @click="show2FASetup = false"><i class="fa-sharp-duotone fa-solid fa-xmark" /></button>
           </div>
           <div class="modal__body">
             <div v-if="setupStep === 1">
               <p class="modal__desc">Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
               <div class="qr-wrap">
                 <img :src="qrCodeImage" alt="QR Code" class="qr-img" v-if="qrCodeImage" />
-                <div v-else class="qr-loading"><i class="fas fa-spinner-third fa-spin" /></div>
+                <div v-else class="qr-loading"><i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /></div>
               </div>
               <div class="secret-box">
                 <div class="secret-label">Or enter manually:</div>
@@ -182,12 +182,12 @@
               />
               <div v-if="twoFactorError" class="modal__error">{{ twoFactorError }}</div>
               <button class="btn-primary" :disabled="twoFactorCode.length !== 6 || twoFactorLoading" @click="enableTwoFactor">
-                <i v-if="twoFactorLoading" class="fas fa-spinner-third fa-spin" />
+                <i v-if="twoFactorLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
                 Confirm & Enable
               </button>
             </div>
             <div v-else-if="setupStep === 3">
-              <div class="success-check"><i class="fas fa-circle-check" /></div>
+              <div class="success-check"><i class="fa-sharp-duotone fa-solid fa-circle-check" /></div>
               <p class="modal__desc success">Two-factor authentication is now enabled on your account.</p>
               <div class="recovery-section">
                 <div class="recovery-label">Save your recovery codes:</div>
@@ -206,7 +206,7 @@
         <div class="modal">
           <div class="modal__header">
             <h3>Disable Two-Factor Authentication</h3>
-            <button @click="show2FADisable = false"><i class="fas fa-xmark" /></button>
+            <button @click="show2FADisable = false"><i class="fa-sharp-duotone fa-solid fa-xmark" /></button>
           </div>
           <div class="modal__body">
             <p class="modal__desc">Enter the 6-digit code from your authenticator app to disable 2FA.</p>
@@ -219,7 +219,7 @@
             />
             <div v-if="twoFactorError" class="modal__error">{{ twoFactorError }}</div>
             <button class="btn-danger" :disabled="twoFactorCode.length !== 6 || twoFactorLoading" @click="disableTwoFactor">
-              <i v-if="twoFactorLoading" class="fas fa-spinner-third fa-spin" />
+              <i v-if="twoFactorLoading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
               Disable 2FA
             </button>
           </div>
@@ -231,13 +231,13 @@
         <div class="section__title">Active Sessions</div>
         <div class="detail-list">
           <div v-if="sessionsLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
           </div>
           <template v-else>
             <div v-for="s in sessions" :key="s.id" class="detail-item">
               <div class="detail-item__icon">
-                <i :class="s.is_current ? 'fas fa-mobile-screen-button' : 'fas fa-globe'" />
+                <i :class="s.is_current ? 'fa-sharp-duotone fa-solid fa-mobile-screen-button' : 'fa-sharp-duotone fa-solid fa-globe'" />
               </div>
               <div class="detail-item__body">
                 <div class="detail-item__label">
@@ -254,16 +254,16 @@
                 :disabled="revokingId === s.id"
                 @click="revokeSession(s.id)"
               >
-                <i v-if="revokingId === s.id" class="fas fa-spinner-third fa-spin" />
+                <i v-if="revokingId === s.id" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
                 <span v-else>Revoke</span>
               </button>
             </div>
             <div v-if="sessions.length > 1" class="detail-item detail-item--action" @click="revokeAll">
-              <div class="detail-item__icon"><i class="fas fa-shield-xmark" /></div>
+              <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-shield-xmark" /></div>
               <div class="detail-item__body">
                 <div class="detail-item__label">Sign out all other devices</div>
               </div>
-              <i class="fas fa-chevron-right detail-item__chevron" />
+              <i class="fa-sharp-duotone fa-solid fa-chevron-right detail-item__chevron" />
             </div>
           </template>
         </div>
@@ -274,11 +274,11 @@
         <div class="section__title">Recent Activity</div>
         <div class="detail-list">
           <div v-if="auditLoading" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-spinner-third fa-spin" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" /></div>
             <div class="detail-item__body"><div class="detail-item__label">Loading...</div></div>
           </div>
           <div v-else-if="!auditLogs.length" class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-clock-rotate-left" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-clock-rotate-left" /></div>
             <div class="detail-item__body"><div class="detail-item__label">No activity yet</div></div>
           </div>
           <div v-for="log in auditLogs" :key="log.created_at + log.action" class="detail-item">
@@ -299,7 +299,7 @@
         <div class="section__title">Appearance</div>
         <div class="detail-list">
           <div class="detail-item">
-            <div class="detail-item__icon"><i class="fas fa-circle-half-stroke" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-circle-half-stroke" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Theme</div>
               <div class="detail-item__value">{{ themeLabel }}</div>
@@ -323,12 +323,12 @@
       <div class="section fade-up-3">
         <div class="detail-list">
           <RouterLink to="/security" class="detail-item detail-item--link">
-            <div class="detail-item__icon"><i class="fas fa-shield-halved" /></div>
+            <div class="detail-item__icon"><i class="fa-sharp-duotone fa-solid fa-shield-halved" /></div>
             <div class="detail-item__body">
               <div class="detail-item__label">Sessions & Activity</div>
               <div class="detail-item__value">Manage devices and view account history</div>
             </div>
-            <i class="fas fa-chevron-right" style="color: var(--text-muted); font-size: 12px;" />
+            <i class="fa-sharp-duotone fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 12px;" />
           </RouterLink>
         </div>
       </div>
@@ -336,7 +336,7 @@
       <!-- Logout -->
       <div class="fade-up-3">
         <button class="logout-btn" @click="handleLogout">
-          <i class="fas fa-sign-out-alt" />
+          <i class="fa-sharp-duotone fa-solid fa-sign-out-alt" />
           Sign Out
         </button>
       </div>
@@ -358,9 +358,9 @@ const ui     = useUiStore()
 const router = useRouter()
 
 const themeOptions = [
-  { value: 'system', label: 'System', icon: 'fas fa-circle-half-stroke' },
-  { value: 'light',  label: 'Light',  icon: 'fas fa-sun' },
-  { value: 'dark',   label: 'Dark',   icon: 'fas fa-moon' },
+  { value: 'system', label: 'System', icon: 'fa-sharp-duotone fa-solid fa-circle-half-stroke' },
+  { value: 'light',  label: 'Light',  icon: 'fa-sharp-duotone fa-solid fa-sun' },
+  { value: 'dark',   label: 'Dark',   icon: 'fa-sharp-duotone fa-solid fa-moon' },
 ]
 
 const themeLabel = computed(() => {
@@ -503,17 +503,17 @@ const fields = computed(() => [
   {
     label: 'Full Name',
     value: auth.user?.name || '—',
-    icon:  'fas fa-user',
+    icon:  'fa-sharp-duotone fa-solid fa-user',
   },
   {
     label: 'Email Address',
     value: auth.user?.email || '—',
-    icon:  'fas fa-envelope',
+    icon:  'fa-sharp-duotone fa-solid fa-envelope',
   },
   {
     label: 'Country',
     value: auth.user?.country_code || '—',
-    icon:  'fas fa-globe-africa',
+    icon:  'fa-sharp-duotone fa-solid fa-globe-africa',
   },
 ])
 
@@ -591,13 +591,13 @@ function auditLabel(action) {
 }
 
 function auditIcon(action) {
-  if (action.includes('login') || action.includes('logout')) return 'fas fa-right-to-bracket'
-  if (action.includes('pin'))      return 'fas fa-lock'
-  if (action.includes('password')) return 'fas fa-key'
-  if (action.includes('2fa'))      return 'fas fa-shield-halved'
-  if (action.includes('kyc'))      return 'fas fa-id-card'
-  if (action.includes('refund'))   return 'fas fa-rotate-left'
-  return 'fas fa-clock-rotate-left'
+  if (action.includes('login') || action.includes('logout')) return 'fa-sharp-duotone fa-solid fa-right-to-bracket'
+  if (action.includes('pin'))      return 'fa-sharp-duotone fa-solid fa-lock'
+  if (action.includes('password')) return 'fa-sharp-duotone fa-solid fa-key'
+  if (action.includes('2fa'))      return 'fa-sharp-duotone fa-solid fa-shield-halved'
+  if (action.includes('kyc'))      return 'fa-sharp-duotone fa-solid fa-id-card'
+  if (action.includes('refund'))   return 'fa-sharp-duotone fa-solid fa-rotate-left'
+  return 'fa-sharp-duotone fa-solid fa-clock-rotate-left'
 }
 
 function auditIconBg(action) {
