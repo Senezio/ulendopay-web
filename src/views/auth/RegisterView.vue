@@ -185,14 +185,14 @@ function skipEmailVerification() {
   text-decoration: none; color: var(--text-primary); font-size: 16px;
 }
 .brand-mark {
-  width: 30px; height: 30px; background: var(--accent); color: #fff;
+  width: 30px; height: 30px; background: var(--accent); color: var(--on-accent);
   border-radius: 7px; display: flex; align-items: center;
   justify-content: center; font-size: 15px; font-weight: 800;
 }
 .brand-link strong { font-weight: 700; }
 
 .auth-box {
-  background: #fff; border: 1px solid var(--border);
+  background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 8px; padding: 32px;
 }
 
@@ -208,7 +208,7 @@ function skipEmailVerification() {
   color: var(--text-primary); margin-bottom: 6px;
 }
 .field select {
-  width: 100%; padding: 11px 14px; background: #fff;
+  width: 100%; padding: 11px 14px; background: var(--bg-card);
   border: 1px solid var(--border); border-radius: 6px;
   color: var(--text-primary); font-size: 14px;
   font-family: 'DM Sans', sans-serif; outline: none;

@@ -34,16 +34,16 @@ defineProps({
 </script>
 
 <style scoped>
-.legal-page { min-height: 100vh; background: #fff; }
-.legal-nav { border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; background: #fff; z-index: 10; }
+.legal-page { min-height: 100vh; background: var(--bg); }
+.legal-nav { border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; background: var(--bg); z-index: 10; }
 .nav-content { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-primary); font-weight: 700; }
 .logo-mark { width: 32px; height: 32px; background: var(--accent); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600; }
 .legal-content { padding: 60px 24px; }
 .content-box { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 32px; font-weight: 800; color: #111; margin-bottom: 8px; }
+h1 { font-size: 32px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
 .last-updated { font-size: 14px; color: var(--text-muted); margin-bottom: 40px; }
-h2 { font-size: 20px; font-weight: 700; color: #111; margin-top: 32px; margin-bottom: 12px; }
+h2 { font-size: 20px; font-weight: 700; color: var(--text); margin-top: 32px; margin-bottom: 12px; }
 p { line-height: 1.7; color: var(--text-secondary); margin-bottom: 16px; }
 </style>

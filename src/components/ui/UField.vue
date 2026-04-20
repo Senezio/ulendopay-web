@@ -28,7 +28,7 @@ label {
 }
 input {
   width: 100%; padding: 11px 14px;
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--text-primary);

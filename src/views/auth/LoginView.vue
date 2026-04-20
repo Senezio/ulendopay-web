@@ -553,14 +553,14 @@ async function submitPinReset() {
 }
 .brand-mark {
   width: 30px; height: 30px; background: var(--accent);
-  color: #fff; border-radius: 7px; display: flex;
+  color: var(--on-accent); border-radius: 7px; display: flex;
   align-items: center; justify-content: center;
   font-size: 15px; font-weight: 800;
 }
 .brand-link strong { font-weight: 700; }
 
 .auth-box {
-  background: #fff; border: 1px solid var(--border);
+  background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 8px; padding: 32px;
 }
 
@@ -581,7 +581,7 @@ async function submitPinReset() {
   font-family: 'DM Sans', sans-serif; transition: all 0.15s;
 }
 .method-toggle button.active {
-  background: #fff; color: var(--text-primary); font-weight: 600;
+  background: var(--bg-card); color: var(--text-primary); font-weight: 600;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
@@ -649,7 +649,7 @@ async function submitPinReset() {
 }
 .modal__icon {
   width: 40px; height: 40px; border-radius: 12px;
-  background: #fffbeb; color: #d97706;
+  background: var(--accent-dim); color: #d97706;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; flex-shrink: 0;
 }
@@ -713,7 +713,7 @@ async function submitPinReset() {
   transition: opacity 0.15s;
 }
 .modal__btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.modal__btn--primary { background: var(--accent); color: #fff; }
+.modal__btn--primary { background: var(--accent); color: var(--on-accent); }
 .modal__btn--primary:active:not(:disabled) { opacity: 0.88; }
 .modal__btn--ghost { background: var(--bg-elevated); color: var(--text-secondary); }
 
