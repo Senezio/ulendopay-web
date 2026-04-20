@@ -999,8 +999,7 @@ const securityPoints = [
 /* ── Fee Calculator (Responsive Fix) ─────────────────────────────────────── */
 .calculator-section {
   background: #f8f9fa;
-  padding: 48px 0;
-  border-bottom: 1px solid #efefef;
+  padding: 48px 16px;
 }
 .calc-card {
   background: var(--bg-card);
@@ -1008,8 +1007,9 @@ const securityPoints = [
   border-radius: 16px;
   overflow: hidden;
   max-width: 680px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 .calc-card__header {
   padding: 20px 24px;
@@ -1089,8 +1089,8 @@ const securityPoints = [
   font-weight: 700; color: #111; font-size: 14px;
 }
 .calc-breakdown__row--total .accent { color: #e85d04; }
-  font-size: 11px; color: #aaa; text-align: right; margin-top: 2px;
-}
+  /* font-size: 11px; color: #aaa; text-align: right; margin-top: 2px; */
+
 .calc-error {
   font-size: 13px; color: #dc2626; margin-bottom: 12px;
   background: #fef2f2; padding: 10px 12px; border-radius: 8px;
