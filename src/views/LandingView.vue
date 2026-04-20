@@ -999,7 +999,7 @@ const securityPoints = [
 /* ── Fee Calculator (Responsive Fix) ─────────────────────────────────────── */
 .calculator-section {
   background: #f8f9fa;
-  padding: 48px 16px;
+  padding: 48px 0;
 }
 .calc-card {
   background: var(--bg-card);
