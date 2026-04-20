@@ -213,8 +213,8 @@ onMounted(load)
 .export-group { display: flex; gap: 8px; flex-wrap: wrap; }
 .btn-export {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: 10px; border: 1px solid #e2e8f0;
-  background: #fff; color: #374151; font-size: 12px; font-weight: 600;
+  padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--bg-card); color: #374151; font-size: 12px; font-weight: 600;
   cursor: pointer; transition: all 0.15s; white-space: nowrap;
 }
 .btn-export:hover:not(:disabled) { background: #f8fafc; border-color: var(--accent); color: var(--accent); }
@@ -224,14 +224,14 @@ onMounted(load)
 @media (min-width: 640px) { .filters { flex-direction: row; flex-wrap: wrap; } }
 .search-box {
   display: flex; align-items: center; gap: 10px;
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 14px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px;
   flex: 1; min-width: 200px;
 }
 .search-box i { color: #94a3b8; font-size: 13px; }
 .search-box input { border: none; outline: none; font-size: 14px; color: #374151; width: 100%; background: transparent; }
 .filters select, .date-input {
-  padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px;
-  font-size: 13px; background: #fff; outline: none; font-family: inherit;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px;
+  font-size: 13px; background: var(--bg-card); outline: none; font-family: inherit;
 }
 .date-input { color: #374151; }
 
@@ -241,7 +241,7 @@ onMounted(load)
 .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .tx-table {
   width: 100%; border-collapse: collapse; min-width: 900px;
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
 }
 .tx-table th {
   text-align: left; font-size: 11px; text-transform: uppercase;
@@ -271,13 +271,13 @@ onMounted(load)
 .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .badge--green { background: #f0fdf4; color: #16a34a; }
 .badge--red   { background: #fef2f2; color: #dc2626; }
-.badge--amber { background: #fffbeb; color: #d97706; }
+.badge--amber { background: var(--accent-dim); color: #d97706; }
 .badge--gray  { background: #f1f5f9; color: #475569; }
 
 .btn-retry {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 4px 10px; border-radius: 7px; border: none;
-  background: #fffbeb; color: #d97706; font-size: 11px;
+  background: var(--accent-dim); color: #d97706; font-size: 11px;
   font-weight: 600; cursor: pointer; transition: all 0.15s;
   white-space: nowrap;
 }
@@ -289,8 +289,8 @@ onMounted(load)
   gap: 16px; padding: 16px; font-size: 13px; color: #64748b;
 }
 .pagination button {
-  width: 34px; height: 34px; border: 1px solid #e2e8f0;
-  background: #fff; border-radius: 10px; cursor: pointer;
+  width: 34px; height: 34px; border: 1px solid var(--border);
+  background: var(--bg-card); border-radius: 10px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
 }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }

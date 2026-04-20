@@ -29,7 +29,7 @@ defineProps({
 
 <style scoped>
 .stat-card {
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 12px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
   padding: 16px 18px; display: flex; align-items: center;
   gap: 14px; text-decoration: none; transition: all 0.15s;
 }
@@ -42,8 +42,8 @@ defineProps({
 .stat-card--blue   .stat-card__icon { background: #eff6ff; color: #2563eb; }
 .stat-card--green  .stat-card__icon { background: #f0fdf4; color: #16a34a; }
 .stat-card--red    .stat-card__icon { background: #fef2f2; color: #dc2626; }
-.stat-card--amber  .stat-card__icon { background: #fffbeb; color: #d97706; }
-.stat-card--orange .stat-card__icon { background: #fff7ed; color: var(--accent); }
+.stat-card--amber  .stat-card__icon { background: var(--accent-dim); color: #d97706; }
+.stat-card--orange .stat-card__icon { background: var(--bg-elevated); color: var(--accent); }
 
 .stat-card__body { flex: 1; }
 .stat-card__value { font-size: 20px; font-weight: 800; color: #0f172a; line-height: 1; }

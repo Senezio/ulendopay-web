@@ -142,7 +142,7 @@ function submit() {
   font-size: 15px;
   font-weight: 600;
   background: var(--accent);
-  color: #fff;
+  color: var(--text-inverse);
   border: none;
   border-radius: 6px;
   cursor: pointer;

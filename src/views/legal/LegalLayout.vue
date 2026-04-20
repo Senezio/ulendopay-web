@@ -38,7 +38,7 @@ defineProps({
 .legal-nav { border-bottom: 1px solid var(--border); padding: 16px 24px; position: sticky; top: 0; background: var(--bg); z-index: 10; }
 .nav-content { max-width: 800px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-primary); font-weight: 700; }
-.logo-mark { width: 32px; height: 32px; background: var(--accent); color: #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.logo-mark { width: 32px; height: 32px; background: var(--accent); color: var(--text-inverse); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600; }
 .legal-content { padding: 60px 24px; }
 .content-box { max-width: 800px; margin: 0 auto; }

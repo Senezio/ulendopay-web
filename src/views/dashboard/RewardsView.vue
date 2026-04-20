@@ -194,7 +194,7 @@ onMounted(async () => {
 }
 .tier-card--unverified { background: var(--bg-card); }
 .tier-card--basic      { background: #eff6ff; border-color: #bfdbfe; }
-.tier-card--verified   { background: linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%); color: #fff; }
+.tier-card--verified   { background: linear-gradient(135deg, #1B4332 0%, #2d6a4f 100%); color: var(--text-inverse); }
 
 .tier-card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
 .tier-card__label { font-size: 10px; font-weight: 700; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
@@ -206,7 +206,7 @@ onMounted(async () => {
 }
 .tier-badge--unverified { background: var(--bg-elevated); color: var(--text-muted); }
 .tier-badge--basic      { background: #dbeafe; color: #2563eb; }
-.tier-badge--verified   { background: rgba(255,255,255,0.2); color: #fff; }
+.tier-badge--verified   { background: rgba(255,255,255,0.2); color: var(--text-inverse); }
 
 .tier-card__discount {
   font-size: 13px; font-weight: 600; opacity: 0.85;
@@ -268,7 +268,7 @@ onMounted(async () => {
 
 .copy-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; background: var(--accent); color: #fff;
+  padding: 8px 14px; background: var(--accent); color: var(--text-inverse);
   border: none; border-radius: 10px; font-size: 13px; font-weight: 600;
   cursor: pointer; align-self: flex-start;
 }

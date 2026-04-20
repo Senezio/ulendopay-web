@@ -176,14 +176,14 @@ onMounted(load)
 
 .btn-fetch {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; background: var(--accent); color: #fff;
+  padding: 10px 16px; background: var(--accent); color: var(--text-inverse);
   border: none; border-radius: 12px; font-size: 13px; font-weight: 600;
   cursor: pointer; white-space: nowrap; flex-shrink: 0;
 }
 .btn-fetch:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Table card */
-.table-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+.table-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 
 /* Toolbar */
 .toolbar {
@@ -193,7 +193,7 @@ onMounted(load)
 }
 .search-box {
   display: flex; align-items: center; gap: 8px; flex: 1;
-  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
   padding: 8px 12px; min-width: 200px;
 }
 .search-box i { color: #94a3b8; font-size: 12px; }
@@ -261,8 +261,8 @@ onMounted(load)
   border-top: 1px solid #f1f5f9;
 }
 .pagination button {
-  width: 32px; height: 32px; border: 1px solid #e2e8f0;
-  background: #fff; border-radius: 8px; cursor: pointer;
+  width: 32px; height: 32px; border: 1px solid var(--border);
+  background: var(--bg-card); border-radius: 8px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; color: #475569; transition: all 0.15s;
 }

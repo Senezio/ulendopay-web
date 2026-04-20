@@ -168,10 +168,10 @@ onMounted(load)
 .ap__head h1 { font-size: 26px; font-weight: 800; color: #0d1117; letter-spacing: -0.03em; }
 .ap__head p  { font-size: 13px; color: #6b7280; margin-top: 3px; font-weight: 500; }
 
-.btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #ea580c; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; white-space: nowrap; }
+.btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #ea580c; color: var(--text-inverse); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; white-space: nowrap; }
 .btn-add:hover { background: #c2410c; }
 
-.card { background: #fff; border-radius: 16px; border: 1px solid #e8edf2; box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden; }
+.card { background: var(--bg-card); border-radius: 16px; border: 1px solid #e8edf2; box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden; }
 .table-wrap { overflow-x: auto; }
 
 .dt { width: 100%; border-collapse: collapse; }
@@ -182,7 +182,7 @@ onMounted(load)
 .dt tr:last-child td { border-bottom: none; }
 
 .member { display: flex; align-items: center; gap: 12px; }
-.member__avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #ea580c, #f97316); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 800; flex-shrink: 0; letter-spacing: 0.05em; }
+.member__avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #ea580c, #f97316); display: flex; align-items: center; justify-content: center; color: var(--text-inverse); font-size: 13px; font-weight: 800; flex-shrink: 0; letter-spacing: 0.05em; }
 .uname { font-weight: 700; color: #0d1117; font-size: 14px; }
 .umeta { font-size: 12px; color: #9ca3af; margin-top: 2px; }
 .date { font-family: 'DM Mono', monospace; font-size: 12px; color: #6b7280; }
@@ -217,7 +217,7 @@ onMounted(load)
 /* Modal */
 .overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); display: flex; align-items: flex-end; justify-content: center; z-index: 200; }
 @media (min-width: 600px) { .overlay { align-items: center; padding: 20px; } }
-.modal { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; }
+.modal { background: var(--bg-card); border-radius: 20px 20px 0 0; width: 100%; max-width: 500px; }
 @media (min-width: 600px) { .modal { border-radius: 16px; } }
 .modal__hd { padding: 22px 24px 16px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .modal__title { font-size: 17px; font-weight: 800; color: #0d1117; }
@@ -230,7 +230,7 @@ onMounted(load)
 .role-hint { font-size: 12px; color: #94a3b8; margin-top: 6px; font-weight: 500; }
 .modal__ft { padding: 16px 24px; border-top: 1px solid #f1f5f9; display: flex; justify-content: flex-end; gap: 10px; }
 .btn-ghost { padding: 10px 20px; background: #f8fafc; color: #475569; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
-.btn-create { padding: 10px 20px; background: #0d1117; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: inherit; transition: background 0.15s; }
+.btn-create { padding: 10px 20px; background: #0d1117; color: var(--text-inverse); border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-family: inherit; transition: background 0.15s; }
 .btn-create:hover:not(:disabled) { background: #1e293b; }
 .btn-create:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>

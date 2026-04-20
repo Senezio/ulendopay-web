@@ -317,7 +317,7 @@ onMounted(load)
 .admin-page__header h1 { font-size: 24px; font-weight: 800; color: #0f172a; }
 .admin-page__header p  { font-size: 13px; color: #64748b; margin-top: 4px; }
 
-.admin-table-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+.admin-table-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 
 .table-toolbar {
   display: flex; justify-content: space-between; align-items: center;
@@ -331,7 +331,7 @@ onMounted(load)
 
 .btn-icon {
   width: 32px; height: 32px; background: #f8fafc;
-  border: 1px solid #e2e8f0; border-radius: 8px;
+  border: 1px solid var(--border); border-radius: 8px;
   color: #64748b; cursor: pointer; font-size: 13px;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
@@ -381,7 +381,7 @@ onMounted(load)
 /* Document Viewer */
 .document-viewer {
   margin-bottom: 20px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -434,14 +434,14 @@ onMounted(load)
   z-index: 100; padding: 20px;
 }
 .modal {
-  background: #fff; border-radius: 16px; width: 100%;
+  background: var(--bg-card); border-radius: 16px; width: 100%;
   max-width: 560px; max-height: 90vh; overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 .modal__header {
   display: flex; justify-content: space-between; align-items: center;
   padding: 20px 24px; border-bottom: 1px solid #f1f5f9;
-  position: sticky; top: 0; background: #fff; z-index: 1;
+  position: sticky; top: 0; background: var(--bg-card); z-index: 1;
 }
 .modal__header h3 { font-size: 16px; font-weight: 700; }
 .modal__close {
@@ -453,7 +453,7 @@ onMounted(load)
 .modal__footer {
   padding: 16px 24px; border-top: 1px solid #f1f5f9;
   display: flex; justify-content: flex-end; gap: 10px;
-  position: sticky; bottom: 0; background: #fff;
+  position: sticky; bottom: 0; background: var(--bg-card);
 }
 
 .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -464,7 +464,7 @@ onMounted(load)
 .reject-form label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px; }
 .reject-form .required { color: var(--danger); }
 .reject-form textarea {
-  width: 100%; padding: 12px; border: 1px solid #e2e8f0;
+  width: 100%; padding: 12px; border: 1px solid var(--border);
   border-radius: 10px; font-size: 14px; font-family: inherit;
   resize: vertical; outline: none; transition: border-color 0.15s;
   box-sizing: border-box;
@@ -472,17 +472,17 @@ onMounted(load)
 .reject-form textarea:focus { border-color: var(--accent); }
 
 .btn-success {
-  padding: 10px 20px; background: #16a34a; color: #fff;
+  padding: 10px 20px; background: #16a34a; color: var(--text-inverse);
   border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 8px;
   transition: background 0.15s;
 }
 .btn-success:hover:not(:disabled) { background: #15803d; }
 .btn-success:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-danger { padding: 10px 20px; background: var(--danger); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.btn-danger { padding: 10px 20px; background: var(--danger); color: var(--text-inverse); border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-danger-outline { padding: 10px 20px; background: #fff; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.btn-ghost { padding: 10px 20px; background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.btn-danger-outline { padding: 10px 20px; background: var(--bg-card); color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.btn-ghost { padding: 10px 20px; background: #f8fafc; color: #475569; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
 .table-scroll {
   width: 100%;

@@ -58,10 +58,10 @@ function iconClass(type) {
   font-weight: 500;
 }
 
-.toast--success { background: #1B4332; color: #fff; }
-.toast--error   { background: #7F1D1D; color: #fff; }
-.toast--warning { background: #78350F; color: #fff; }
-.toast--info    { background: #1E3A5F; color: #fff; }
+.toast--success { background: #1B4332; color: var(--text-inverse); }
+.toast--error   { background: #7F1D1D; color: var(--text-inverse); }
+.toast--warning { background: #78350F; color: var(--text-inverse); }
+.toast--info    { background: #1E3A5F; color: var(--text-inverse); }
 
 .toast__icon { font-size: 1.1rem; flex-shrink: 0; }
 .toast__message { flex: 1; }

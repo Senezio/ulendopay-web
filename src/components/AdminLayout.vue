@@ -20,7 +20,7 @@
 
     <aside class="admin-sidebar" :class="{ open: sidebarOpen }">
       <div class="admin-sidebar__brand">
-        <img src="/logo.png" alt="UlendoPay" style="height: 36px; width: auto; border-radius: 8px; background: #fff; padding: 3px;">
+        <img src="/logo.png" alt="UlendoPay" style="height: 36px; width: auto; border-radius: 8px; background: var(--bg-card); padding: 3px;">
         <div>
           <div class="brand-name">UlendoPay</div>
           <div class="brand-sub">Admin Dashboard</div>
@@ -142,9 +142,9 @@ async function handleLogout() {
 }
 .mobile-brand {
   display: flex; align-items: center; gap: 10px;
-  color: #fff; font-weight: 700; font-size: 15px;
+  color: var(--text-inverse); font-weight: 700; font-size: 15px;
 }
-.mobile-brand img { border-radius: 6px; background: #fff; padding: 2px; }
+.mobile-brand img { border-radius: 6px; background: var(--bg-card); padding: 2px; }
 .mobile-user {
   width: 36px; height: 36px; background: #1e293b;
   border-radius: 8px; display: flex; align-items: center;
@@ -171,9 +171,9 @@ async function handleLogout() {
 .brand-icon {
   width: 34px; height: 34px; background: var(--accent);
   border-radius: 9px; display: flex; align-items: center;
-  justify-content: center; color: #fff; font-size: 15px; flex-shrink: 0;
+  justify-content: center; color: var(--text-inverse); font-size: 15px; flex-shrink: 0;
 }
-.brand-name { color: #fff; font-weight: 700; font-size: 14px; }
+.brand-name { color: var(--text-inverse); font-weight: 700; font-size: 14px; }
 .brand-sub  { color: #475569; font-size: 10px; font-weight: 500; }
 .sidebar-close { display: none; margin-left: auto; background: none; border: none; color: #64748b; cursor: pointer; font-size: 16px; }
 
@@ -191,10 +191,10 @@ async function handleLogout() {
 }
 .admin-nav-item i { width: 15px; text-align: center; font-size: 13px; flex-shrink: 0; }
 .admin-nav-item:hover { background: #1e293b; color: #cbd5e1; }
-.admin-nav-item.active { background: #1e293b; color: #fff; }
+.admin-nav-item.active { background: #1e293b; color: var(--text-inverse); }
 .admin-nav-item.active i { color: var(--accent); }
 .nav-badge {
-  margin-left: auto; background: var(--accent); color: #fff;
+  margin-left: auto; background: var(--accent); color: var(--text-inverse);
   font-size: 10px; font-weight: 700; padding: 1px 6px;
   border-radius: 10px; min-width: 16px; text-align: center;
 }
@@ -205,7 +205,7 @@ async function handleLogout() {
 .staff-avatar {
   width: 32px; height: 32px; background: var(--accent);
   border-radius: 8px; display: flex; align-items: center;
-  justify-content: center; color: #fff; font-size: 11px;
+  justify-content: center; color: var(--text-inverse); font-size: 11px;
   font-weight: 700; flex-shrink: 0;
 }
 .staff-name { color: #e2e8f0; font-size: 12px; font-weight: 600; }

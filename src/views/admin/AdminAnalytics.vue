@@ -267,12 +267,12 @@ onMounted(load)
 .page-header p  { font-size: 13px; color: #64748b; margin-top: 3px; }
 
 .period-selector { display: flex; gap: 6px; }
-.period-btn { padding: 7px 12px; border: 1px solid #e2e8f0; background: #fff; border-radius: 8px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.15s; }
-.period-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.period-btn { padding: 7px 12px; border: 1px solid var(--border); background: var(--bg-card); border-radius: 8px; font-size: 12px; font-weight: 600; color: #64748b; cursor: pointer; transition: all 0.15s; }
+.period-btn.active { background: var(--accent); color: var(--text-inverse); border-color: var(--accent); }
 
 .revenue-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
-.rev-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
-.rev-card--primary { background: linear-gradient(135deg, var(--accent) 0%, #c44e02 100%); border-color: transparent; color: #fff; }
+.rev-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; align-items: flex-start; gap: 14px; }
+.rev-card--primary { background: linear-gradient(135deg, var(--accent) 0%, #c44e02 100%); border-color: transparent; color: var(--text-inverse); }
 .rev-card__icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
 .rev-card:not(.rev-card--primary) .rev-card__icon { background: var(--accent-dim); color: var(--accent); }
 .rev-card__label { font-size: 11px; font-weight: 600; opacity: 0.8; margin-bottom: 4px; }
@@ -283,7 +283,7 @@ onMounted(load)
 .rev-card:not(.rev-card--primary) .rev-card__sub { color: #94a3b8; }
 
 .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
-.chart-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; }
+.chart-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
 .chart-card__header { margin-bottom: 12px; }
 .chart-card__title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #374151; }
 .chart-card__title i { color: var(--accent); font-size: 12px; }

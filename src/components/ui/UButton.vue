@@ -19,7 +19,7 @@ defineEmits(['click'])
 <style scoped>
 .btn {
   width: 100%; padding: 12px 20px;
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--text-inverse);
   border: none; border-radius: 6px;
   font-size: 15px; font-weight: 700;
   cursor: pointer; font-family: 'DM Sans', sans-serif;

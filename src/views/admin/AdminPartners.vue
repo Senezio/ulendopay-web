@@ -407,7 +407,7 @@ onMounted(load)
 
 .btn-primary {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; background: var(--accent); color: #fff;
+  padding: 10px 16px; background: var(--accent); color: var(--text-inverse);
   border: none; border-radius: 12px; font-size: 13px; font-weight: 600;
   cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.15s;
 }
@@ -416,8 +416,8 @@ onMounted(load)
 
 .btn-secondary {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; background: #fff; color: #374151;
-  border: 1px solid #e2e8f0; border-radius: 12px; font-size: 13px; font-weight: 600;
+  padding: 10px 16px; background: var(--bg-card); color: #374151;
+  border: 1px solid var(--border); border-radius: 12px; font-size: 13px; font-weight: 600;
   cursor: pointer; white-space: nowrap; transition: all 0.15s;
 }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
@@ -430,7 +430,7 @@ onMounted(load)
 
 /* ── Health dashboard ────────────────────────────────────────────────── */
 .health-section {
-  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
   margin-bottom: 24px; overflow: hidden;
 }
 .health-header {
@@ -466,7 +466,7 @@ onMounted(load)
 }
 .health-stat--success { background: #f0fdf4; }
 .health-stat--danger  { background: #fef2f2; }
-.health-stat--warn    { background: #fffbeb; }
+.health-stat--warn    { background: var(--accent-dim); }
 .health-stat__value {
   font-size: 18px; font-weight: 800;
   color: #0f172a; line-height: 1;
@@ -498,7 +498,7 @@ onMounted(load)
   display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
 .partner-block {
-  background: #fff; border: 1px solid #e2e8f0;
+  background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 16px; margin-bottom: 20px; overflow: hidden;
 }
 .partner-header {
@@ -507,7 +507,7 @@ onMounted(load)
 }
 .partner-header__left { display: flex; align-items: center; gap: 12px; }
 .partner-badge {
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--text-inverse);
   padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; flex-shrink: 0;
 }
 .partner-name { font-size: 15px; font-weight: 700; color: #111827; }
@@ -519,7 +519,7 @@ onMounted(load)
 .badge--green { background: #f0fdf4; color: #16a34a; }
 .badge--red   { background: #fef2f2; color: #dc2626; }
 .badge--gray  { background: #f1f5f9; color: #475569; }
-.badge--amber { background: #fffbeb; color: #d97706; }
+.badge--amber { background: var(--accent-dim); color: #d97706; }
 
 .btn-sm {
   padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
@@ -541,7 +541,7 @@ onMounted(load)
 }
 .search-box--sm {
   display: flex; align-items: center; gap: 6px;
-  background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px;
+  background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
 }
 .search-box--sm i { color: #94a3b8; font-size: 11px; }
 .search-box--sm input { border: none; outline: none; font-size: 12px; background: transparent; width: 140px; }
@@ -581,7 +581,7 @@ onMounted(load)
   display: flex; align-items: flex-end; justify-content: center; z-index: 100;
 }
 .modal {
-  background: #fff; border-radius: 20px 20px 0 0;
+  background: var(--bg-card); border-radius: 20px 20px 0 0;
   width: 100%; max-width: 480px; padding-bottom: env(safe-area-inset-bottom);
 }
 .modal-header {
@@ -603,15 +603,15 @@ onMounted(load)
 .form-field .required { color: var(--danger); }
 .form-field input,
 .form-field select {
-  width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0;
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
   border-radius: 10px; font-size: 14px; outline: none;
-  box-sizing: border-box; font-family: inherit; background: #fff;
+  box-sizing: border-box; font-family: inherit; background: var(--bg-card);
 }
 .form-field input:focus,
 .form-field select:focus { border-color: var(--accent); }
 .btn-ghost {
   flex: 1; padding: 12px; background: #f8fafc; color: #475569;
-  border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
 }
 @media (min-width: 641px) {
   .modal-overlay { align-items: center; padding: 20px; }

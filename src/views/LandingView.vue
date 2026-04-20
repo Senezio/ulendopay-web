@@ -373,7 +373,7 @@ const securityPoints = [
 .landing {
   font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
   color: #1a1a1a;
-  background: #fff;
+  background: var(--bg-card);
   line-height: 1.6;
 }
 
@@ -388,7 +388,7 @@ const securityPoints = [
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #fff;
+  background: var(--bg-card);
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -417,7 +417,7 @@ const securityPoints = [
 .navbar__logo-mark {
   width: 30px; height: 30px;
   background: #e85d04;
-  color: #fff;
+  color: var(--text-inverse);
   border-radius: 7px;
   display: flex; align-items: center; justify-content: center;
   font-size: 15px; font-weight: 800;
@@ -473,7 +473,7 @@ const securityPoints = [
   font-size: 14px;
   font-weight: 600;
   background: #e85d04;
-  color: #fff;
+  color: var(--text-inverse);
   text-decoration: none;
   border: none;
   border-radius: 6px;
@@ -584,7 +584,7 @@ const securityPoints = [
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #ffffff;
+  color: var(--text-inverse);
   margin-bottom: 18px;
 }
 .hero__headline span { color: #f97316; }
@@ -606,7 +606,7 @@ const securityPoints = [
   color: rgba(255,255,255,0.5);
 }
 .btn-outline--light {
-  color: #fff;
+  color: var(--text-inverse);
   border-color: rgba(255,255,255,0.5);
   background: rgba(255,255,255,0.08);
 }
@@ -711,7 +711,7 @@ const securityPoints = [
   overflow: hidden;
 }
 .step-card {
-  background: #fff;
+  background: var(--bg-card);
   padding: 32px;
 }
 .step-card__num {
@@ -733,7 +733,7 @@ const securityPoints = [
 }
 .feature-card {
   padding: 24px;
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid #e8e8e8;
   border-radius: 8px;
 }
@@ -774,7 +774,7 @@ const securityPoints = [
 
 .security__visual { display: flex; justify-content: center; }
 .security__card {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   padding: 24px;
@@ -822,7 +822,7 @@ const securityPoints = [
 .cta-section h2 {
   font-size: clamp(24px, 3.5vw, 36px);
   font-weight: 800;
-  color: #fff;
+  color: var(--text-inverse);
   letter-spacing: -0.02em;
   margin-bottom: 12px;
 }
@@ -873,7 +873,7 @@ const securityPoints = [
   position: fixed;
   bottom: 0; left: 0; right: 0;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--bg-card);
   border-top: 1px solid #e5e5e5;
   z-index: 99;
 }
@@ -1003,7 +1003,7 @@ const securityPoints = [
   border-bottom: 1px solid #efefef;
 }
 .calc-card {
-  background: #fff;
+  background: var(--bg-card);
   border: 1px solid #e5e5e5;
   border-radius: 16px;
   overflow: hidden;
@@ -1048,7 +1048,7 @@ const securityPoints = [
   border: 1px solid #ddd;
   border-radius: 10px; 
   overflow: hidden;
-  background: #fff; 
+  background: var(--bg-card); 
   transition: border-color 0.15s;
 }
 .calc-input-wrap:focus-within { border-color: #e85d04; }

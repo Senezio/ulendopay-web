@@ -578,6 +578,6 @@ async function submitWithPin() {
   transition: opacity 0.15s;
 }
 .modal__btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.modal__btn--primary { background: var(--accent); color: #fff; }
+.modal__btn--primary { background: var(--accent); color: var(--text-inverse); }
 .modal__btn--primary:active:not(:disabled) { opacity: 0.88; }
 </style>

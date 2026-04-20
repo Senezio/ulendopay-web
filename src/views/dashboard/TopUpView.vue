@@ -470,7 +470,7 @@ onUnmounted(() => {
 .page-header p  { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
 .balance-card {
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--text-inverse);
   border-radius: 16px; padding: 20px 22px; margin-bottom: 20px;
   display: flex; flex-direction: column; gap: 4px;
 }
@@ -593,7 +593,7 @@ onUnmounted(() => {
 
 .btn-primary {
   width: 100%; padding: 15px; background: var(--accent);
-  color: #fff; border: none; border-radius: 12px;
+  color: var(--text-inverse); border: none; border-radius: 12px;
   font-size: 15px; font-weight: 700; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   gap: 8px; transition: background 0.15s; margin-bottom: 10px;

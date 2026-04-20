@@ -118,7 +118,7 @@ onMounted(load)
 
 .btn-refresh {
   display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; background: #fff; border: 1px solid #e2e8f0;
+  padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; font-size: 13px; font-weight: 600;
   color: #475569; cursor: pointer; transition: all 0.15s;
 }

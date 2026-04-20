@@ -676,7 +676,7 @@ async function handleLogout() {
   background: var(--accent);
   font-size: 24px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-inverse);
   position: relative;
   z-index: 1;
 }
@@ -824,7 +824,7 @@ async function handleLogout() {
   flex-shrink: 0;
 }
 .badge--success { background: var(--success-bg); color: var(--success); }
-.badge--warn    { background: #fffbeb; color: #d97706; }
+.badge--warn    { background: var(--accent-dim); color: #d97706; }
 .badge--danger  { background: var(--danger-bg); color: var(--danger); }
 
 /* ── Logout ──────────────────────────────────────────────────────────── */
@@ -922,13 +922,13 @@ async function handleLogout() {
 
 /* Buttons */
 .btn-primary {
-  width: 100%; padding: 14px; background: var(--accent); color: #fff;
+  width: 100%; padding: 14px; background: var(--accent); color: var(--text-inverse);
   border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-danger {
-  width: 100%; padding: 14px; background: var(--danger); color: #fff;
+  width: 100%; padding: 14px; background: var(--danger); color: var(--text-inverse);
   border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
@@ -967,7 +967,7 @@ async function handleLogout() {
 }
 .icon--danger { background: var(--danger-bg) !important; color: var(--danger) !important; }
 .icon--info   { background: #eff6ff !important; color: #2563eb !important; }
-.icon--warn   { background: #fffbeb !important; color: #d97706 !important; }
+.icon--warn   { background: var(--accent-dim) !important; color: #d97706 !important; }
 
 
 /* ── Theme toggle ────────────────────────────────────────────────────── */

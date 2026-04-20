@@ -160,7 +160,7 @@ onMounted(load)
 
 .btn-icon {
   width: 36px; height: 36px; background: #f8fafc;
-  border: 1px solid #e2e8f0; border-radius: 8px;
+  border: 1px solid var(--border); border-radius: 8px;
   color: #64748b; cursor: pointer; font-size: 14px;
   display: flex; align-items: center; justify-content: center;
 }
@@ -185,7 +185,7 @@ onMounted(load)
 @media (min-width: 768px) { .info-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .info-card {
-  background: #fff; border: 1px solid #e2e8f0;
+  background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; padding: 14px 16px;
 }
 .info-card__label {
@@ -202,7 +202,7 @@ onMounted(load)
 @media (min-width: 768px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
 
 .service-card {
-  background: #fff; border: 1px solid #e2e8f0;
+  background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 12px; overflow: hidden;
 }
 .service-card--error { border-color: #fecaca; }
@@ -253,7 +253,7 @@ onMounted(load)
 /* Security notice */
 .security-notice {
   display: flex; gap: 14px; padding: 16px 20px;
-  background: #f8fafc; border: 1px solid #e2e8f0;
+  background: #f8fafc; border: 1px solid var(--border);
   border-radius: 12px; margin-top: 8px;
 }
 .security-notice i { color: #2563eb; font-size: 18px; margin-top: 2px; flex-shrink: 0; }
@@ -269,7 +269,7 @@ onMounted(load)
 .badge--sm { padding: 2px 6px; font-size: 10px; }
 .badge--green { background: #f0fdf4; color: #16a34a; }
 .badge--red   { background: #fef2f2; color: #dc2626; }
-.badge--amber { background: #fffbeb; color: #d97706; }
+.badge--amber { background: var(--accent-dim); color: #d97706; }
 
 .mono { font-family: 'DM Mono', monospace; }
 </style>
