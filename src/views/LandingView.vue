@@ -65,6 +65,69 @@
     </section>
 
 
+    <!-- ── Fee Calculator ───────────────────────────────────────────────────── -->
+    <section class="calculator-section reveal">
+      <div class="container">
+        <div class="calc-card">
+          <div class="calc-card__header">
+            <div class="calc-card__title">How much will it cost?</div>
+            <div class="calc-card__sub">Get a live estimate — no account needed</div>
+          </div>
+          <div class="calc-card__body">
+            <div class="calc-row">
+              <div class="calc-field">
+                <label>You send</label>
+                <div class="calc-input-wrap">
+                  <input v-model.number="calcAmount" type="number" min="1" placeholder="5,000" @input="debouncedCalc" />
+                  <select v-model="calcFrom" @change="runCalc">
+                    <option v-for="c in calcCurrencies" :key="c">{{ c }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="calc-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+              <div class="calc-field">
+                <label>They receive</label>
+                <div class="calc-input-wrap calc-input-wrap--receive">
+                  <div class="calc-receive-amount">
+                    <span v-if="calcLoading"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                    <span v-else-if="calcResult">{{ formatCalc(calcResult.receive_amount) }}</span>
+                    <span v-else class="calc-placeholder">—</span>
+                  </div>
+                  <select v-model="calcTo" @change="runCalc">
+                    <option v-for="c in calcCurrencies.filter(c => c !== calcFrom)" :key="c">{{ c }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="calcResult" class="calc-breakdown">
+              <div class="calc-breakdown__row">
+                <span>Fee ({{ calcResult.fee_percent }}%)</span>
+                <span>{{ calcFrom }} {{ formatCalc(calcResult.fee_amount) }}</span>
+              </div>
+              <div class="calc-breakdown__row">
+                <span>Exchange rate</span>
+                <span>1 {{ calcFrom }} = {{ calcResult.exchange_rate }} {{ calcTo }}</span>
+              </div>
+              <div class="calc-breakdown__row calc-breakdown__row--total">
+                <span>They receive</span>
+                <span class="accent">{{ calcTo }} {{ formatCalc(calcResult.receive_amount) }}</span>
+              </div>
+              <div class="calc-breakdown__source">
+                Rate source: {{ calcResult.rate_source }} · Updated daily
+              </div>
+            </div>
+
+            <div v-if="calcError" class="calc-error">{{ calcError }}</div>
+
+            <RouterLink to="/register" class="btn-primary btn-primary--full calc-cta">
+              Send money at this rate →
+            </RouterLink>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
     <section class="trust-bar reveal">
       <div class="container trust-bar__inner">
@@ -232,8 +295,48 @@ onMounted(() => {
     })
   }, 100)
   setTimeout(() => onScroll(), 200)
+  runCalc()
 })
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
+
+// Calculator
+const calcAmount    = ref(5000)
+const calcFrom      = ref('MWK')
+const calcTo        = ref('ZMW')
+const calcResult    = ref(null)
+const calcLoading   = ref(false)
+const calcError     = ref('')
+const calcCurrencies = ['MWK', 'ZMW', 'KES', 'TZS', 'UGX', 'ZAR', 'GHS', 'MZN', 'RWF', 'ETB']
+let calcTimer = null
+
+function formatCalc(v) {
+  return Number(v || 0).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+async function runCalc() {
+  if (!calcAmount.value || calcAmount.value < 1) return
+  calcLoading.value = true
+  calcError.value = ''
+  try {
+    const res = await fetch(`/api/v1/calculator?from_currency=${calcFrom.value}&to_currency=${calcTo.value}&amount=${calcAmount.value}`)
+    const data = await res.json()
+    if (data.message) {
+      calcError.value = data.message
+      calcResult.value = null
+    } else {
+      calcResult.value = data
+    }
+  } catch {
+    calcError.value = 'Could not fetch rate. Please try again.'
+  } finally {
+    calcLoading.value = false
+  }
+}
+
+function debouncedCalc() {
+  clearTimeout(calcTimer)
+  calcTimer = setTimeout(runCalc, 500)
+}
 
 const trustPoints = [
   { iconClass: 'fa-regular fa-clock', label: 'Fast transfers',    desc: 'Most transfers complete within minutes' },
@@ -890,6 +993,98 @@ const securityPoints = [
 }
 .navbar__links a:hover::after {
   width: 100%;
+}
+
+
+/* ── Fee Calculator ─────────────────────────────────────────────────────── */
+.calculator-section {
+  background: #f8f9fa;
+  padding: 48px 0;
+  border-bottom: 1px solid #efefef;
+}
+.calc-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 680px;
+  margin: 0 auto;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.calc-card__header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+.calc-card__title { font-size: 17px; font-weight: 700; color: #111; }
+.calc-card__sub   { font-size: 13px; color: #888; margin-top: 3px; }
+
+.calc-card__body { padding: 24px; }
+
+.calc-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+.calc-arrow {
+  font-size: 16px; color: #ccc;
+  padding-bottom: 12px; text-align: center;
+}
+.calc-field label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: #666; margin-bottom: 6px;
+}
+.calc-input-wrap {
+  display: flex; border: 1px solid #ddd;
+  border-radius: 10px; overflow: hidden;
+  background: #fff; transition: border-color 0.15s;
+}
+.calc-input-wrap:focus-within { border-color: #e85d04; }
+.calc-input-wrap input {
+  flex: 1; padding: 11px 12px; border: none; outline: none;
+  font-size: 16px; font-weight: 600; color: #111;
+  background: transparent; min-width: 0;
+}
+.calc-input-wrap select {
+  padding: 0 10px; border: none; border-left: 1px solid #eee;
+  background: #f8f8f8; font-size: 13px; font-weight: 600;
+  color: #333; outline: none; cursor: pointer;
+}
+.calc-input-wrap--receive { background: #fafafa; }
+.calc-receive-amount {
+  flex: 1; padding: 11px 12px;
+  font-size: 16px; font-weight: 700; color: #e85d04;
+}
+.calc-placeholder { color: #ccc; font-weight: 400; }
+
+.calc-breakdown {
+  background: #fafafa; border-radius: 10px;
+  padding: 14px; margin-bottom: 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.calc-breakdown__row {
+  display: flex; justify-content: space-between;
+  font-size: 13px; color: #555;
+}
+.calc-breakdown__row--total {
+  padding-top: 8px; border-top: 1px solid #eee;
+  font-weight: 700; color: #111; font-size: 14px;
+}
+.calc-breakdown__row--total .accent { color: #e85d04; }
+.calc-breakdown__source {
+  font-size: 11px; color: #aaa; text-align: right; margin-top: 2px;
+}
+.calc-error {
+  font-size: 13px; color: #dc2626; margin-bottom: 12px;
+  background: #fef2f2; padding: 10px 12px; border-radius: 8px;
+}
+.calc-cta { margin-top: 4px; display: block; text-align: center; }
+
+@media (max-width: 540px) {
+  .calc-row { grid-template-columns: 1fr; }
+  .calc-arrow { display: none; }
 }
 
 </style>
