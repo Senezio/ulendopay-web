@@ -482,7 +482,7 @@ const securityPoints = [
 }
 .btn-primary:hover { background: #d05204; }
 .btn-primary--lg   { padding: 13px 28px; font-size: 15px; }
-.btn-primary--full { width: 100%; text-align: center; border-radius: 8px; padding: 14px; }
+.btn-primary--full { width: 100%; text-align: center; border-radius: 8px; padding: 14px; box-sizing: border-box; }
 
 .btn-outline {
   display: inline-block;
