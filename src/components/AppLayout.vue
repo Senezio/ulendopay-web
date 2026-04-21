@@ -3,7 +3,8 @@
 
     <!-- Top Navbar -->
     <header class="top-nav">
-      <button class="nav-icon-btn" @click="isMenuOpen = true">
+      <!-- Hamburger: mobile only -->
+      <button class="nav-icon-btn hamburger-btn" @click="isMenuOpen = true">
         <i class="fa-sharp-duotone fa-solid fa-bars"></i>
       </button>
       <div class="top-nav__logo">
@@ -14,13 +15,14 @@
       </RouterLink>
     </header>
 
-    <!-- Sidebar Overlay -->
+    <!-- Sidebar Overlay: mobile only -->
     <div v-if="isMenuOpen" class="sidebar-overlay" @click="isMenuOpen = false"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar" :class="{ 'sidebar--open': isMenuOpen }">
       <div class="sidebar__header">
         <img src="/logo.png" alt="UlendoPay" class="sidebar__logo" />
+        <!-- Close button: mobile only -->
         <button class="sidebar__close" @click="isMenuOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
         </button>
@@ -39,7 +41,7 @@
 
       <nav class="sidebar__nav">
         <RouterLink
-          v-for="item in secondaryNav"
+          v-for="item in sidebarNav"
           :key="item.to"
           :to="item.to"
           class="nav-item"
@@ -57,12 +59,15 @@
       </button>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <slot />
-    </main>
+    <!-- Page wrapper: sidebar + content side by side on desktop -->
+    <div class="page-wrapper">
+      <!-- Main Content -->
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
 
-    <!-- Bottom Tab Bar -->
+    <!-- Bottom Tab Bar: mobile only -->
     <nav class="bottom-tabs">
       <RouterLink
         v-for="item in primaryNav"
@@ -94,20 +99,25 @@ const initials = computed(() => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 })
 
+// Mobile bottom tabs — quick-access actions only
 const primaryNav = [
-  { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',              label: 'Home' },
-  { to: '/send',      icon: 'fa-sharp-duotone fa-solid fa-paper-plane',        label: 'Send' },
-  { to: '/history',   icon: 'fa-sharp-duotone fa-solid fa-clock-rotate-left',  label: 'History' },
-  { to: '/rewards',   icon: 'fa-sharp-duotone fa-solid fa-gift',               label: 'Rewards' },
-  { to: '/profile',   icon: 'fa-sharp-duotone fa-solid fa-user',               label: 'Profile' },
+  { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',             label: 'Home' },
+  { to: '/send',      icon: 'fa-sharp-duotone fa-solid fa-paper-plane',       label: 'Send' },
+  { to: '/history',   icon: 'fa-sharp-duotone fa-solid fa-clock-rotate-left', label: 'History' },
+  { to: '/rewards',   icon: 'fa-sharp-duotone fa-solid fa-gift',              label: 'Rewards' },
+  { to: '/profile',   icon: 'fa-sharp-duotone fa-solid fa-user',              label: 'Profile' },
 ]
 
-const secondaryNav = [
-  { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',               label: 'Home' },
-  { to: '/topup',     icon: 'fa-duotone fa-solid fa-wallet',                    label: 'Top Up' },
-  { to: '/withdraw',  icon: 'fa-duotone fa-solid fa-money-bill-transfer',       label: 'Withdraw' },
-  { to: '/kyc',       icon: 'fa-sharp-duotone fa-solid fa-id-card',             label: 'KYC Verification' },
-  { to: '/security',  icon: 'fa-sharp-duotone fa-solid fa-shield-halved',       label: 'Security' },
+// Sidebar nav — full merged list, used by both mobile drawer and desktop sidebar
+const sidebarNav = [
+  { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',             label: 'Home' },
+  { to: '/topup',     icon: 'fa-duotone fa-solid fa-wallet',                  label: 'Top Up' },
+  { to: '/send',      icon: 'fa-sharp-duotone fa-solid fa-paper-plane',       label: 'Send' },
+  { to: '/withdraw',  icon: 'fa-duotone fa-solid fa-money-bill-transfer',     label: 'Withdraw' },
+  { to: '/rewards',   icon: 'fa-sharp-duotone fa-solid fa-gift',              label: 'Rewards' },
+  { to: '/history',   icon: 'fa-sharp-duotone fa-solid fa-clock-rotate-left', label: 'History' },
+  { to: '/kyc',       icon: 'fa-sharp-duotone fa-solid fa-id-card',           label: 'KYC Verification' },
+  { to: '/security',  icon: 'fa-sharp-duotone fa-solid fa-shield-halved',     label: 'Security' },
 ]
 
 async function handleLogout() {
@@ -169,7 +179,7 @@ async function handleLogout() {
   letter-spacing: 0.03em;
 }
 
-/* ── Sidebar Overlay ────────────────────────── */
+/* ── Sidebar Overlay: mobile only ───────────── */
 .sidebar-overlay {
   position: fixed;
   inset: 0;
@@ -291,11 +301,17 @@ async function handleLogout() {
 }
 .sidebar__logout:hover { background: var(--danger-bg); }
 
+/* ── Page Wrapper ───────────────────────────── */
+.page-wrapper {
+  flex: 1;
+  display: flex;
+}
+
 /* ── Main Content ───────────────────────────── */
 .main-content {
   flex: 1;
   padding: 20px 16px;
-  padding-bottom: 80px; /* space for bottom tabs */
+  padding-bottom: 80px; /* space for bottom tabs on mobile */
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
@@ -338,8 +354,78 @@ async function handleLogout() {
 .tab-item.active { color: var(--accent); }
 .tab-item.active i { transform: translateY(-1px); }
 
-@media (min-width: 768px) {
-  .top-nav { max-width: 480px; margin: 0 auto; left: 0; right: 0; }
-  .bottom-tabs { max-width: 480px; margin: 0 auto; left: 0; right: 0; border-radius: 16px 16px 0 0; }
+/* ══════════════════════════════════════════════
+   DESKTOP — 1024px and up
+   ══════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+
+  /* Layout becomes a column: top-nav on top, then row below */
+  .layout {
+    flex-direction: column;
+  }
+
+  /* Fix 3: Top nav — hide logo, push avatar to the right */
+  .top-nav {
+    max-width: none;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .top-nav__logo {
+    display: none;
+  }
+
+  /* Hamburger not needed — sidebar is always visible */
+  .hamburger-btn {
+    display: none;
+  }
+
+  /* Fix 1: Sidebar is part of layout flow — not fixed/sticky */
+  /* position: relative takes it out of the overlay stack       */
+  /* and lets the flex row in .page-wrapper own its space       */
+  .sidebar {
+    position: relative;
+    top: 0;
+    height: auto;
+    min-height: calc(100vh - 56px); /* fill viewport height */
+    transform: translateX(0);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  /* Fix 2: Lock sidebar width so flex row doesn't feel loose */
+  .sidebar {
+    width: 280px;
+  }
+
+  /* Overlay never needed on desktop */
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  /* Close button hidden — sidebar is always open on desktop */
+  .sidebar__close {
+    display: none;
+  }
+
+  /* Page wrapper becomes a row: sidebar + content side by side */
+  .page-wrapper {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  /* Fix 2: Main content claims all remaining space */
+  .main-content {
+    flex: 1;
+    max-width: none;
+    margin: 0;
+    padding: 28px 32px;
+    padding-bottom: 28px;
+  }
+
+  /* Bottom tabs are a mobile pattern — hidden on desktop */
+  .bottom-tabs {
+    display: none;
+  }
 }
 </style>
