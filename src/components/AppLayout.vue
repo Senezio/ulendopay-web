@@ -3,11 +3,19 @@
 
     <!-- Top Navbar -->
     <header class="top-nav">
-      <!-- Hamburger: mobile only -->
-      <button class="nav-icon-btn hamburger-btn" @click="isMenuOpen = true">
-        <i class="fa-sharp-duotone fa-solid fa-bars"></i>
-      </button>
-      <RouterLink to="/profile" class="nav-icon-btn nav-icon-btn--avatar">
+      <!-- Hamburger + page title: mobile only -->
+      <div class="top-nav__left">
+        <button class="nav-icon-btn hamburger-btn" @click="isMenuOpen = true">
+          <i class="fa-sharp-duotone fa-solid fa-bars"></i>
+        </button>
+        <span class="top-nav__title">{{ pageTitle }}</span>
+      </div>
+      <!-- Logo: desktop only (left side via CSS) -->
+      <div class="top-nav__logo">
+        <img src="/logo.png" alt="UlendoPay" />
+      </div>
+      <!-- Avatar: hidden on mobile, visible on desktop -->
+      <RouterLink to="/profile" class="nav-icon-btn nav-icon-btn--avatar top-nav__avatar">
         <span class="avatar-initials">{{ initials }}</span>
       </RouterLink>
     </header>
@@ -96,6 +104,8 @@ const initials = computed(() => {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 })
 
+const pageTitle = computed(() => route.meta?.title || '')
+
 // Mobile bottom tabs — quick-access actions only
 const primaryNav = [
   { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',             label: 'Home' },
@@ -143,6 +153,39 @@ async function handleLogout() {
   height: 56px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
+}
+
+.top-nav__logo img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+/* Logo hidden on mobile — replaced by page title */
+.top-nav__logo {
+  display: none;
+}
+
+/* Left group: hamburger + page title */
+.top-nav__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-nav__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+/* Avatar hidden on mobile — Profile is reachable via bottom tabs */
+.top-nav__avatar {
+  display: none;
 }
 
 .nav-icon-btn {
@@ -355,38 +398,37 @@ async function handleLogout() {
     flex-direction: column;
   }
 
-  /* Fix 3: Top nav — hide logo, push avatar to the right */
+  /* Desktop top nav: logo left, avatar right */
   .top-nav {
     max-width: none;
     width: 100%;
-    justify-content: flex-end;
+    justify-content: space-between;
   }
 
+  /* Show logo on desktop */
   .top-nav__logo {
+    display: block;
+  }
+
+  /* Hide mobile left group (hamburger + page title) on desktop */
+  .top-nav__left {
     display: none;
   }
 
-  /* Hamburger not needed — sidebar is always visible */
-  .hamburger-btn {
-    display: none;
+  /* Show avatar on desktop — no bottom tabs to reach Profile */
+  .top-nav__avatar {
+    display: flex;
   }
 
-  /* Fix 1: Sidebar is part of layout flow — not fixed/sticky */
-  /* position: relative takes it out of the overlay stack       */
-  /* and lets the flex row in .page-wrapper own its space       */
+  /* Sidebar: in layout flow, fixed width, full height */
   .sidebar {
     position: relative;
     top: 0;
-    height: auto;
-    min-height: calc(100vh - 56px); /* fill viewport height */
+    width: 280px;
+    height: calc(100vh - 56px); /* exact viewport fill, no short-content gap */
     transform: translateX(0);
     flex-shrink: 0;
     z-index: 10;
-  }
-
-  /* Fix 2: Lock sidebar width so flex row doesn't feel loose */
-  .sidebar {
-    width: 280px;
   }
 
   /* Overlay never needed on desktop */
@@ -405,7 +447,7 @@ async function handleLogout() {
     align-items: flex-start;
   }
 
-  /* Fix 2: Main content claims all remaining space */
+  /* Main content claims all remaining space */
   .main-content {
     flex: 1;
     max-width: none;
