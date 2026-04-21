@@ -166,9 +166,9 @@ async function doExport(format) {
       to:     toDate.value   || undefined,
       status: statusFilter.value || undefined,
     })
-    const ext      = format === 'xlsx' ? 'xls' : format
-    const mime     = { csv: 'text/csv', xlsx: 'application/vnd.ms-excel', pdf: 'application/pdf' }[format]
-    const blob     = new Blob([response.data], { type: mime })
+    const ext      = format === 'xlsx' ? 'xlsx' : format
+    const mime     = { csv: 'text/csv', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', pdf: 'application/pdf' }[format]
+    const blob     = response.data instanceof Blob ? response.data : new Blob([response.data], { type: mime })
     const url      = URL.createObjectURL(blob)
     const a        = document.createElement('a')
     a.href         = url
