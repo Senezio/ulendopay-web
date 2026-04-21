@@ -22,6 +22,14 @@
         </div>
         <h2>You're verified!</h2>
         <p>Your identity has been verified. You can send money freely.</p>
+        <div class="tier-status">
+          <span class="tier-badge" :class="'tier-badge--' + (auth.user?.tier || 'unverified')">
+            {{ auth.user?.tier ? auth.user.tier.charAt(0).toUpperCase() + auth.user.tier.slice(1) : 'Unverified' }} Tier
+          </span>
+          <span v-if="auth.user?.tier !== 'verified'" class="upgrade-hint">
+            Want higher limits? <RouterLink to="/kyc">Upgrade to Verified</RouterLink>
+          </span>
+        </div>
       </div>
 
       <div v-else class="kyc-card">
@@ -243,6 +251,20 @@ async function handleSubmit() {
 }
 .verified-card h2   { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 .verified-card p    { color: var(--text-secondary); font-size: 14px; }
+.tier-status {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 16px; justify-content: center; flex-wrap: wrap;
+}
+.upgrade-hint { font-size: 13px; color: var(--text-secondary); }
+.upgrade-hint a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.tier-badge {
+  display: inline-block; padding: 4px 12px; border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+}
+.tier-badge--unverified { background: #f1f5f9; color: #475569; }
+.tier-badge--basic      { background: #fff7ed; color: #c2410c; }
+.tier-badge--verified   { background: #f0fdf4; color: #16a34a; }
+
 
 .kyc-card { background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); padding: 24px; max-width: 480px; }
 

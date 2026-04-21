@@ -29,6 +29,7 @@
             <tr>
               <th>User</th>
               <th>Document</th>
+              <th>Requested Tier</th>
               <th>Submitted</th>
               <th>Actions</th>
             </tr>
@@ -43,6 +44,11 @@
               </td>
               <td>
                 <span class="badge badge--gray">{{ formatDocType(record.document_type) }}</span>
+              </td>
+              <td>
+                <span class="tier-badge" :class="'tier-badge--' + (record.requested_tier || 'basic')">
+                  {{ record.requested_tier ? record.requested_tier.charAt(0).toUpperCase() + record.requested_tier.slice(1) : '—' }}
+                </span>
               </td>
               <td class="cell-date">{{ formatDate(record.created_at) }}</td>
               <td>
@@ -129,6 +135,14 @@
               <div class="review-field">
                 <span class="review-field__label">Submitted</span>
                 <span class="review-field__value">{{ formatDate(selected.created_at) }}</span>
+              </div>
+              <div class="review-field">
+                <span class="review-field__label">Current Tier</span>
+                <span class="review-field__value">
+                  <span class="tier-badge" :class="'tier-badge--' + (selected.user?.tier || 'unverified')">
+                    {{ selected.user?.tier ? selected.user.tier.charAt(0).toUpperCase() + selected.user.tier.slice(1) : 'Unverified' }}
+                  </span>
+                </span>
               </div>
               <div class="review-field">
                 <span class="review-field__label">Requested Tier</span>
