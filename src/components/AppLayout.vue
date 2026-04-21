@@ -7,9 +7,6 @@
       <button class="nav-icon-btn hamburger-btn" @click="isMenuOpen = true">
         <i class="fa-sharp-duotone fa-solid fa-bars"></i>
       </button>
-      <div class="top-nav__logo">
-        <img src="/logo.png" alt="UlendoPay" />
-      </div>
       <RouterLink to="/profile" class="nav-icon-btn nav-icon-btn--avatar">
         <span class="avatar-initials">{{ initials }}</span>
       </RouterLink>
@@ -148,12 +145,6 @@ async function handleLogout() {
   border-bottom: 1px solid var(--border);
 }
 
-.top-nav__logo img {
-  height: 32px;
-  width: auto;
-  display: block;
-}
-
 .nav-icon-btn {
   width: 38px;
   height: 38px;
@@ -213,7 +204,7 @@ async function handleLogout() {
   padding: 16px 20px;
   border-bottom: 1px solid var(--border);
 }
-.sidebar__logo { height: 30px; width: auto; }
+.sidebar__logo { height: 48px; width: auto; }
 .sidebar__close {
   width: 32px;
   height: 32px;
