@@ -51,6 +51,12 @@ export const adminApi = {
   // KYC Document (fetched as blob to avoid direct IP access)
   kycDocument: (url) => client.get(url.replace(/.*\/api\/v1/, ''), { responseType: 'blob' }),
 
+  // Tier management
+  tierList: () => client.get('/admin/tiers'),
+  tierCreate: (data) => client.post('/admin/tiers', data),
+  tierUpdate: (id, data) => client.put(`/admin/tiers/${id}`, data),
+  userUpgradeTier: (id, data) => client.post(`/admin/users/${id}/upgrade-tier`, data),
+
   // System Accounts
   systemAccounts: ()         => client.get('/admin/accounts'),
   accountLedger:  (id)       => client.get(`/admin/accounts/${id}/ledger`),

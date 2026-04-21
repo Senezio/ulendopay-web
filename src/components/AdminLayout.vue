@@ -38,7 +38,10 @@
 
         <div class="nav-section-label">Operations</div>
         <RouterLink to="/admin/kyc" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/kyc') }" @click="sidebarOpen = false">
-          <i class="fa-sharp-duotone fa-solid fa-id-card"></i>KYC Review
+          <i class="fa-sharp-duotone fa-solid fa-layer-group"></i>Tiers
+          </RouterLink>
+          <RouterLink to="/admin/kyc" class="sidebar__link" active-class="sidebar__link--active">
+            <i class="fa-sharp-duotone fa-solid fa-id-card"></i>KYC Review
           <span v-if="kycCount > 0" class="nav-badge">{{ kycCount }}</span>
         </RouterLink>
         <RouterLink to="/admin/users" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/users') }" @click="sidebarOpen = false">

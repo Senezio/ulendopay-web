@@ -32,6 +32,7 @@ const router = createRouter({
 
     // ── Admin ─────────────────────────────────────────────────────────────────
     { path: '/admin',              name: 'admin-dashboard',    component: () => import('@/views/admin/AdminDashboard.vue'),   meta: { requiresAuth: true, requiresStaff: true } },
+    { path: '/admin/tiers', component: AdminTiers, meta: { requiresAdmin: true } },
     { path: '/admin/kyc',          name: 'admin-kyc',          component: () => import('@/views/admin/AdminKyc.vue'),         meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/users',        name: 'admin-users',        component: () => import('@/views/admin/AdminUsers.vue'),       meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/transactions', name: 'admin-transactions', component: () => import('@/views/admin/AdminTransactions.vue'),meta: { requiresAuth: true, requiresStaff: true } },
