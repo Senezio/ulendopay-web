@@ -42,6 +42,7 @@ onMounted(() => {
 
   --success: #16a34a;
   --success-bg: #f0fdf4;
+  --text-inverse: #ffffff;
 /* Global Icon Theming */  --fa-primary-color: #e85d04;  --fa-secondary-color: #f97316;  --fa-secondary-opacity: 0.4;  --fa-family: "Font Awesome 7 Sharp Duotone";  --fa-style-family-sharp-duotone: "Font Awesome 7 Sharp Duotone";
 }
 

@@ -555,9 +555,9 @@ const securityPoints = [
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.72) 0%,
-    rgba(0, 0, 0, 0.45) 50%,
-    rgba(0, 0, 0, 0.15) 100%
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.55) 60%,
+    rgba(0, 0, 0, 0.35) 100%
   );
   z-index: 1;
 }
@@ -898,9 +898,12 @@ const securityPoints = [
 
 @media (max-width: 480px) {
   .hero { min-height: 480px; }
-  .hero__content { padding: 56px 0; }
+  .hero__content { padding: 56px 24px; }
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
+  .calc-card { width: 100%; box-sizing: border-box; }
+  .hero__actions { flex-direction: column; }
+  .btn-primary--lg, .btn-outline--lg { width: 100%; text-align: center; }
 }
 
 /* ── Hero entrance animations ──────────────────────────────────────────── */
