@@ -98,7 +98,7 @@ body {
 .fade-up-1 { animation: fadeUp 0.3s 0.07s ease both; }
 .fade-up-2 { animation: fadeUp 0.3s 0.14s ease both; }
 .fade-up-3 { animation: fadeUp 0.3s 0.21s ease both; }
-i[class*='fa-duotone'], i[class*='fa-sharp-duotone'] {  --fa-primary-color: var(--fa-primary-color);  --fa-secondary-color: var(--fa-secondary-color);  --fa-secondary-opacity: var(--fa-secondary-opacity);
+i[class*='fa-duotone'], i[class*='fa-sharp-duotone'] {  --fa-primary-color: #e85d04;  --fa-secondary-color: #f97316;  --fa-secondary-opacity: 0.4;
   transition: color 0.3s ease, opacity 0.3s ease;}
 .card, .navbar, .footer, section, div, input, select {  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;}
 </style>
