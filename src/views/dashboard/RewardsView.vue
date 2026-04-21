@@ -43,9 +43,11 @@
             <div class="limit-item">
               <div class="limit-item__label">Daily Limit</div>
               <div class="limit-item__right">
-                <div class="limit-item__value">{{ tier?.currency }} {{ fmt(tier?.daily_remaining) }} remaining</div>
+                <div class="limit-item__value" :class="{ 'limit--exceeded': tier?.daily_remaining <= 0 }">
+                  {{ tier?.daily_remaining > 0 ? tier?.currency + ' ' + fmt(tier?.daily_remaining) + ' remaining' : 'Limit exceeded' }}
+                </div>
                 <div class="limit-bar">
-                  <div class="limit-bar__fill" :style="{ width: dailyPercent + '%' }"></div>
+                  <div class="limit-bar__fill" :class="dailyPercent >= 100 ? 'limit-bar__fill--exceeded' : ''" :style="{ width: dailyPercent + '%' }"></div>
                 </div>
                 <div class="limit-item__sub">{{ tier?.currency }} {{ fmt(tier?.daily_used) }} of {{ fmt(tier?.daily_limit) }} used</div>
               </div>
@@ -53,9 +55,11 @@
             <div class="limit-item">
               <div class="limit-item__label">Monthly Limit</div>
               <div class="limit-item__right">
-                <div class="limit-item__value">{{ tier?.currency }} {{ fmt(tier?.monthly_remaining) }} remaining</div>
+                <div class="limit-item__value" :class="{ 'limit--exceeded': tier?.monthly_remaining <= 0 }">
+                  {{ tier?.monthly_remaining > 0 ? tier?.currency + ' ' + fmt(tier?.monthly_remaining) + ' remaining' : 'Limit exceeded' }}
+                </div>
                 <div class="limit-bar">
-                  <div class="limit-bar__fill limit-bar__fill--monthly" :style="{ width: monthlyPercent + '%' }"></div>
+                  <div class="limit-bar__fill" :class="monthlyPercent >= 100 ? 'limit-bar__fill--exceeded' : 'limit-bar__fill--monthly'" :style="{ width: monthlyPercent + '%' }"></div>
                 </div>
                 <div class="limit-item__sub">{{ tier?.currency }} {{ fmt(tier?.monthly_used) }} of {{ fmt(tier?.monthly_limit) }} used</div>
               </div>
@@ -293,6 +297,9 @@ onMounted(async () => {
 .referral-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
 .badge--green { background: var(--success-bg); color: var(--success); }
 .badge--gray  { background: var(--bg-elevated); color: var(--text-muted); }
+
+.limit--exceeded { color: var(--danger) !important; }
+.limit-bar__fill--exceeded { background: var(--danger) !important; }
 
 .state-loading {
   padding: 24px; text-align: center; color: var(--text-muted);
