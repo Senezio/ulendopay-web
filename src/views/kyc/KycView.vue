@@ -33,13 +33,22 @@
 
         <form v-else @submit.prevent="handleSubmit">
           <div class="field">
+            <label>Requested Tier</label>
+            <select v-model="form.requested_tier">
+              <option value="basic">Basic — Higher limits, KYC pending</option>
+              <option value="verified">Verified — Full access, maximum limits</option>
+            </select>
+            <span class="field-hint">Select the tier you are applying for</span>
+          </div>
+
+          <div class="field">
             <label>Document Type</label>
             <select v-model="form.document_type">
-              <option value="national_id">National ID</option>
-              <option value="passport">Passport</option>
-              <option value="drivers_license">Driver's License</option>
-              <option value="utility_bill">Utility Bill</option>
+              <option v-for="doc in availableDocuments" :key="doc.value" :value="doc.value">
+                {{ doc.label }}
+              </option>
             </select>
+            <span class="field-hint">{{ tierDocHint }}</span>
           </div>
 
           <UField
@@ -76,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import AppLayout from '@/components/AppLayout.vue'
 import UField  from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
@@ -86,7 +95,34 @@ import client from '@/api/client'
 
 const auth = useAuthStore()
 
-const form      = ref({ document_type: 'national_id', document_number: '' })
+watch(() => form.value.requested_tier, () => {
+  form.value.document_type = form.value.requested_tier === 'verified' ? 'passport' : 'national_id'
+})
+
+const form      = ref({ document_type: 'national_id', document_number: '', requested_tier: 'basic' })
+
+const basicDocs = [
+  { value: 'national_id',     label: 'National ID / NRC' },
+  { value: 'drivers_license', label: "Driver's License" },
+  { value: 'voters_card',     label: "Voter's Card" },
+]
+
+const verifiedDocs = [
+  { value: 'passport',        label: 'Passport' },
+  { value: 'national_id',     label: 'National ID + Bank Statement' },
+  { value: 'drivers_license', label: "Driver's License + Bank Statement" },
+  { value: 'bank_statement',  label: 'Bank Statement (3 months, official letterhead)' },
+]
+
+const availableDocuments = computed(() =>
+  form.value.requested_tier === 'verified' ? verifiedDocs : basicDocs
+)
+
+const tierDocHint = computed(() =>
+  form.value.requested_tier === 'verified'
+    ? 'Verified tier requires a strong ID. Bank statements must show 3 months of activity on official letterhead.'
+    : 'Basic tier requires one government-issued photo ID.'
+)
 const file      = ref(null)
 const fileInput = ref(null)
 const error     = ref('')
@@ -136,6 +172,7 @@ async function handleSubmit() {
     const fd = new FormData()
     fd.append('document_type', form.value.document_type)
     fd.append('document_number', form.value.document_number || '')
+    fd.append('requested_tier', form.value.requested_tier)
     fd.append('document', file.value, file.value.name)
 
     // Log FormData contents for debugging
@@ -211,6 +248,7 @@ async function handleSubmit() {
 
 .field { margin-bottom: 16px; }
 .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+.field-hint { display: block; font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 .field select {
   width: 100%; padding: 11px 14px; background: var(--bg-elevated);
   border: 1px solid var(--border); border-radius: 10px;

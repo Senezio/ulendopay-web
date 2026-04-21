@@ -130,6 +130,14 @@
                 <span class="review-field__label">Submitted</span>
                 <span class="review-field__value">{{ formatDate(selected.created_at) }}</span>
               </div>
+              <div class="review-field">
+                <span class="review-field__label">Requested Tier</span>
+                <span class="review-field__value">
+                  <span class="tier-badge" :class="'tier-badge--' + (selected.requested_tier || 'basic')">
+                    {{ selected.requested_tier ? selected.requested_tier.charAt(0).toUpperCase() + selected.requested_tier.slice(1) : 'Not specified' }}
+                  </span>
+                </span>
+              </div>
             </div>
 
             <!-- Rejection reason -->
@@ -218,10 +226,12 @@ watch([isPdf, documentUrl], async ([pdf, url]) => {
 
 function formatDocType(type) {
   return {
-    national_id: 'National ID',
-    passport: 'Passport',
+    national_id:    'National ID / NRC',
+    passport:       'Passport',
     drivers_license: "Driver's License",
-    utility_bill: 'Utility Bill',
+    utility_bill:   'Utility Bill',
+    voters_card:    "Voter's Card",
+    bank_statement: 'Bank Statement',
   }[type] || type
 }
 
@@ -492,5 +502,12 @@ onMounted(load)
 .table-scroll table {
   min-width: 700px;
 }
+
+.tier-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 12px; font-weight: 700;
+}
+.tier-badge--basic { background: #fff7ed; color: #c2410c; }
+.tier-badge--verified { background: #f0fdf4; color: #16a34a; }
 
 </style>
