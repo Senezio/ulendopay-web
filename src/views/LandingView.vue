@@ -41,7 +41,6 @@
     </header>
 
     <!-- ── Hero ──────────────────────────────────────────────────────────── -->
-    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <section class="hero" :style="{ backgroundImage: `url(${bannerImage})` }">
       <div class="hero__overlay"></div>
       <div class="container hero__content">
@@ -568,6 +567,8 @@ const securityPoints = [
   flex-direction: column;
   max-width: 560px;
   padding: 72px 0;
+  box-sizing: border-box;
+  width: 100%;
 }
 .hero__tag {
   display: inline-block;
@@ -903,7 +904,7 @@ const securityPoints = [
   .features-grid    { grid-template-columns: 1fr; }
   .calc-card { width: 100%; box-sizing: border-box; }
   .hero__actions { flex-direction: column; }
-  .btn-primary--lg, .btn-outline--lg { width: 100%; text-align: center; }
+  .btn-primary--lg, .btn-outline--lg { width: 100%; text-align: center; box-sizing: border-box; }
 }
 
 /* ── Hero entrance animations ──────────────────────────────────────────── */
@@ -1021,7 +1022,7 @@ const securityPoints = [
 .calc-card__title { font-size: 17px; font-weight: 700; color: #111; }
 .calc-card__sub   { font-size: 13px; color: #888; margin-top: 3px; }
 
-.calc-card__body { padding: 24px; }
+.calc-card__body { padding: 24px; box-sizing: border-box; }
 
 .calc-row {
   display: flex;
@@ -1091,7 +1092,7 @@ const securityPoints = [
   font-weight: 700; color: #111; font-size: 14px;
 }
 .calc-breakdown__row--total .accent { color: #e85d04; }
-  /* font-size: 11px; color: #aaa; text-align: right; margin-top: 2px; */
+.calc-rate-note { font-size: 11px; color: #aaa; text-align: right; margin-top: 2px; }
 
 .calc-error {
   font-size: 13px; color: #dc2626; margin-bottom: 12px;
