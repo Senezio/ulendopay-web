@@ -113,8 +113,7 @@
                 <span>They receive</span>
                 <span class="accent">{{ calcTo }} {{ formatCalc(calcResult.receive_amount) }}</span>
               </div>
-                Rates updated daily from official central bank sources
-              </div>
+              <div class="calc-rate-note">Rates updated daily from official central bank sources</div>
             </div>
 
             <div v-if="calcError" class="calc-error">{{ calcError }}</div>
