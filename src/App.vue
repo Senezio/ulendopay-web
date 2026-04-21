@@ -7,11 +7,14 @@
 import { onMounted } from 'vue'
 import ToastContainer from '@/components/ui/ToastContainer.vue'
 import { useUiStore } from '@/stores/ui'
+import { useAuthStore } from '@/stores/auth'
 
 const ui = useUiStore()
+const auth = useAuthStore()
 
 onMounted(() => {
   ui.initTheme()
+  if (auth.isAuthenticated) auth.fetchMe()
 })
 </script>
 
