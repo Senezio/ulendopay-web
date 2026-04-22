@@ -1,33 +1,23 @@
 <template>
   <div class="layout">
 
-    <!-- Top Navbar -->
     <header class="top-nav">
-      <!-- Hamburger + page title: mobile only -->
       <div class="top-nav__left">
         <button class="nav-icon-btn hamburger-btn" @click="isMenuOpen = true">
           <i class="fa-sharp-duotone fa-solid fa-bars"></i>
         </button>
         <span class="top-nav__title">{{ pageTitle }}</span>
       </div>
-      <!-- Logo: desktop only (left side via CSS) -->
-      <div class="top-nav__logo">
-        <img src="/logo.png" alt="UlendoPay" />
-      </div>
-      <!-- Avatar: hidden on mobile, visible on desktop -->
       <RouterLink to="/profile" class="nav-icon-btn nav-icon-btn--avatar top-nav__avatar">
         <span class="avatar-initials">{{ initials }}</span>
       </RouterLink>
     </header>
 
-    <!-- Sidebar Overlay: mobile only -->
     <div v-if="isMenuOpen" class="sidebar-overlay" @click="isMenuOpen = false"></div>
 
-    <!-- Sidebar -->
     <aside class="sidebar" :class="{ 'sidebar--open': isMenuOpen }">
       <div class="sidebar__header">
         <img src="/logo.png" alt="UlendoPay" class="sidebar__logo" />
-        <!-- Close button: mobile only -->
         <button class="sidebar__close" @click="isMenuOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
         </button>
@@ -64,15 +54,12 @@
       </button>
     </aside>
 
-    <!-- Page wrapper: sidebar + content side by side on desktop -->
     <div class="page-wrapper">
-      <!-- Main Content -->
       <main class="main-content">
         <slot />
       </main>
     </div>
 
-    <!-- Bottom Tab Bar: mobile only -->
     <nav class="bottom-tabs">
       <RouterLink
         v-for="item in primaryNav"
@@ -106,7 +93,6 @@ const initials = computed(() => {
 
 const pageTitle = computed(() => route.meta?.title || '')
 
-// Mobile bottom tabs — quick-access actions only
 const primaryNav = [
   { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',             label: 'Home' },
   { to: '/send',      icon: 'fa-sharp-duotone fa-solid fa-paper-plane',       label: 'Send' },
@@ -115,7 +101,6 @@ const primaryNav = [
   { to: '/profile',   icon: 'fa-sharp-duotone fa-solid fa-user',              label: 'Profile' },
 ]
 
-// Sidebar nav — full merged list, used by both mobile drawer and desktop sidebar
 const sidebarNav = [
   { to: '/dashboard', icon: 'fa-sharp-duotone fa-solid fa-house',             label: 'Home' },
   { to: '/topup',     icon: 'fa-duotone fa-solid fa-wallet',                  label: 'Top Up' },
@@ -141,7 +126,6 @@ async function handleLogout() {
   background: var(--bg);
 }
 
-/* ── Top Navbar ─────────────────────────────── */
 .top-nav {
   position: sticky;
   top: 0;
@@ -155,18 +139,6 @@ async function handleLogout() {
   border-bottom: 1px solid var(--border);
 }
 
-.top-nav__logo img {
-  height: 36px;
-  width: auto;
-  display: block;
-}
-
-/* Logo hidden on mobile — replaced by page title */
-.top-nav__logo {
-  display: none;
-}
-
-/* Left group: hamburger + page title */
 .top-nav__left {
   display: flex;
   align-items: center;
@@ -183,7 +155,6 @@ async function handleLogout() {
   max-width: 200px;
 }
 
-/* Avatar hidden on mobile — Profile is reachable via bottom tabs */
 .top-nav__avatar {
   display: none;
 }
@@ -213,7 +184,6 @@ async function handleLogout() {
   letter-spacing: 0.03em;
 }
 
-/* ── Sidebar Overlay: mobile only ───────────── */
 .sidebar-overlay {
   position: fixed;
   inset: 0;
@@ -222,7 +192,6 @@ async function handleLogout() {
   backdrop-filter: blur(2px);
 }
 
-/* ── Sidebar ────────────────────────────────── */
 .sidebar {
   position: fixed;
   top: 0;
@@ -335,23 +304,21 @@ async function handleLogout() {
 }
 .sidebar__logout:hover { background: var(--danger-bg); }
 
-/* ── Page Wrapper ───────────────────────────── */
 .page-wrapper {
   flex: 1;
   display: flex;
+  width: 100%;
 }
 
-/* ── Main Content ───────────────────────────── */
 .main-content {
   flex: 1;
-  padding: 20px 16px;
-  padding-bottom: 80px; /* space for bottom tabs on mobile */
   width: 100%;
+  padding: 20px 16px;
+  padding-bottom: 80px;
   max-width: 480px;
   margin: 0 auto;
 }
 
-/* ── Bottom Tab Bar ─────────────────────────── */
 .bottom-tabs {
   position: fixed;
   bottom: 0;
@@ -388,9 +355,6 @@ async function handleLogout() {
 .tab-item.active { color: var(--accent); }
 .tab-item.active i { transform: translateY(-1px); }
 
-/* ══════════════════════════════════════════════
-   DESKTOP — 1024px and up
-   ══════════════════════════════════════════════ */
 @media (min-width: 1024px) {
   .layout {
     flex-direction: column;
@@ -399,14 +363,8 @@ async function handleLogout() {
   }
 
   .top-nav {
-    width: 100%;
-    justify-content: space-between;
-    flex-shrink: 0;
+    display: none;
   }
-
-  .top-nav__logo { display: block; }
-  .top-nav__left { display: none; }
-  .top-nav__avatar { display: flex; }
 
   .page-wrapper {
     flex-direction: row;
@@ -415,7 +373,7 @@ async function handleLogout() {
   }
 
   .sidebar {
-    position: static;
+    position: relative;
     transform: translateX(0);
     width: 280px;
     height: 100%;
@@ -428,6 +386,7 @@ async function handleLogout() {
 
   .main-content {
     flex: 1;
+    width: 100%;
     max-width: none;
     margin: 0;
     padding: 32px;
