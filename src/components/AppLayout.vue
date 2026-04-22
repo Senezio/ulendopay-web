@@ -357,7 +357,7 @@ async function handleLogout() {
 
 @media (min-width: 1024px) {
   .layout {
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     overflow: hidden;
   }
@@ -367,7 +367,7 @@ async function handleLogout() {
   }
 
   .page-wrapper {
-    flex-direction: row;
+    flex-direction: column;
     flex: 1;
     overflow: hidden;
   }
@@ -376,7 +376,7 @@ async function handleLogout() {
     position: relative;
     transform: translateX(0);
     width: 280px;
-    height: 100%;
+    height: 100vh;
     flex-shrink: 0;
   }
 
