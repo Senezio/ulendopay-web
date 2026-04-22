@@ -77,7 +77,8 @@ onMounted(() => {
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { overflow-x: hidden; max-width: 100%; }
+html { overflow-x: clip; max-width: 100%; }
+body { max-width: 100%; }
 
 body {
   transition: background-color 0.3s ease, color 0.3s ease;
