@@ -392,73 +392,47 @@ async function handleLogout() {
    DESKTOP — 1024px and up
    ══════════════════════════════════════════════ */
 @media (min-width: 1024px) {
-
-  /* Layout becomes a column: top-nav on top, then row below */
   .layout {
     flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
   }
 
-  /* Desktop top nav: logo left, avatar right */
   .top-nav {
-    max-width: none;
     width: 100%;
     justify-content: space-between;
-  }
-
-  /* Show logo on desktop */
-  .top-nav__logo {
-    display: block;
-  }
-
-  /* Hide mobile left group (hamburger + page title) on desktop */
-  .top-nav__left {
-    display: none;
-  }
-
-  /* Show avatar on desktop — no bottom tabs to reach Profile */
-  .top-nav__avatar {
-    display: flex;
-  }
-
-  /* Sidebar: in layout flow, fixed width, full height */
-  .sidebar {
-    position: relative;
-    top: 0;
-    width: 280px;
-    height: calc(100vh - 56px); /* exact viewport fill, no short-content gap */
-    transform: translateX(0);
     flex-shrink: 0;
-    z-index: 10;
   }
 
-  /* Overlay never needed on desktop */
-  .sidebar-overlay {
+  .top-nav__logo { display: block; }
+  .top-nav__left { display: none; }
+  .top-nav__avatar { display: flex; }
+
+  .page-wrapper {
+    flex-direction: row;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    position: static;
+    transform: translateX(0);
+    width: 280px;
+    height: 100%;
+    flex-shrink: 0;
+  }
+
+  .sidebar-overlay, .sidebar__close, .bottom-tabs {
     display: none !important;
   }
 
-  /* Close button hidden — sidebar is always open on desktop */
-  .sidebar__close {
-    display: none;
-  }
-
-  /* Page wrapper becomes a row: sidebar + content side by side */
-  .page-wrapper {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-
-  /* Main content claims all remaining space */
   .main-content {
     flex: 1;
     max-width: none;
     margin: 0;
-    padding: 28px 32px;
-    padding-bottom: 28px;
-  }
-
-  /* Bottom tabs are a mobile pattern — hidden on desktop */
-  .bottom-tabs {
-    display: none;
+    padding: 32px;
+    overflow-y: auto;
+    padding-bottom: 32px;
   }
 }
 </style>
