@@ -674,12 +674,14 @@ async function submitWithPin() {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
+  overflow: hidden;
+  width: 100%;
 }
 .step {
   display: flex;
   align-items: center;
-  gap: 7px;
-  white-space: nowrap;
+  gap: 4px;
+  min-width: 0;
 }
 .step__dot {
   width: 28px; height: 28px;
@@ -702,7 +704,7 @@ async function submitWithPin() {
   border-color: var(--accent);
   color: #fff;
 }
-.step__label { font-size: 12px; color: var(--text-muted); }
+.step__label { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52px; }
 .step.active .step__label { color: var(--text-primary); font-weight: 600; }
 .step.done   .step__label { color: var(--accent); }
 .step__line {
@@ -710,7 +712,7 @@ async function submitWithPin() {
   height: 2px;
   background: var(--border);
   margin: 0 8px;
-  min-width: 16px;
+  min-width: 8px;
   transition: background 0.3s;
 }
 .step__line.done { background: var(--accent); }
@@ -720,8 +722,8 @@ async function submitWithPin() {
   background: var(--bg-card);
   border-radius: 20px;
   border: 1px solid var(--border);
-  padding: 24px;
-  max-width: 520px;
+  padding: 16px;
+  max-width: 100%;
 }
 
 .card-header {
@@ -1000,6 +1002,8 @@ async function submitWithPin() {
   width: 100%;
   max-width: 480px;
   padding-bottom: env(safe-area-inset-bottom, 16px);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* Desktop: centered modal instead of bottom sheet */
@@ -1058,7 +1062,7 @@ async function submitWithPin() {
 .modal__close:hover { background: var(--border); }
 
 .modal__body {
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1098,11 +1102,12 @@ async function submitWithPin() {
 /* ── PIN boxes ──────────────────────────────────────────────────────── */
 .pin-input-group {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
+  width: 100%;
 }
 .pin-box {
-  width: 58px; height: 66px;
+  width: 56px; height: 62px;
   border-radius: 14px;
   border: 1.5px solid var(--border);
   background: var(--bg-elevated);
