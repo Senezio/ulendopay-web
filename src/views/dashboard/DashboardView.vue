@@ -144,9 +144,9 @@ const balanceDecimal = (v) => {
 function normalise(raw) {
   const ref = raw.reference_number || raw.reference
   let kind = 'transfer-out'
-  if (ref?.startsWith('TUP-')) kind = 'topup'
-  else if (ref?.startsWith('WDR-')) kind = 'withdraw'
-  else if (raw.sender_id && raw.sender_id !== auth.user?.id) kind = 'transfer-in'
+  if (ref?.startsWith('TUP-'))           kind = 'topup'
+  else if (ref?.startsWith('WDR-'))      kind = 'withdraw'
+  else if (raw.direction === 'received') kind = 'transfer-in'
   return { ...raw, reference: ref, kind }
 }
 
@@ -197,8 +197,8 @@ function iconFor(item) {
 function labelFor(item) {
   if (item.kind === 'topup')       return `Top Up · ${item.mobile_operator || ''}`
   if (item.kind === 'withdraw')    return `Withdrawal · ${item.mobile_operator || ''}`
-  if (item.kind === 'transfer-in') return 'Money Received'
-  return 'Money Sent'
+  if (item.kind === 'transfer-in') return `Money Received${item.sender_name ? ' · ' + item.sender_name : ''}`
+  return `Money Sent${item.recipient_name ? ' · ' + item.recipient_name : ''}`
 }
 
 function amountFor(item) {

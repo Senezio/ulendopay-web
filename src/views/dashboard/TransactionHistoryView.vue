@@ -123,9 +123,6 @@
 import { ref, computed, onMounted } from 'vue'
 import AppLayout from '@/components/AppLayout.vue'
 import client from '@/api/client'
-import { useAuthStore } from '@/stores/auth'
-
-const auth = useAuthStore()
 
 const allActivity = ref([])
 const selected    = ref(null)
@@ -149,9 +146,9 @@ const filtered = computed(() => {
 function normalise(raw) {
   const ref = raw.reference_number || raw.reference
   let kind = 'transfer-out'
-  if (ref?.startsWith('TUP-')) kind = 'topup'
-  else if (ref?.startsWith('WDR-')) kind = 'withdraw'
-  else if (raw.sender_id && raw.sender_id !== auth.user?.id) kind = 'transfer-in'
+  if (ref?.startsWith('TUP-'))         kind = 'topup'
+  else if (ref?.startsWith('WDR-'))    kind = 'withdraw'
+  else if (raw.direction === 'received') kind = 'transfer-in'
   return { ...raw, reference: ref, kind }
 }
 
@@ -186,8 +183,8 @@ function iconFor(item) {
 function labelFor(item) {
   if (item.kind === 'topup')       return `Top Up${item.mobile_operator ? ' · ' + item.mobile_operator : ''}`
   if (item.kind === 'withdraw')    return `Withdrawal${item.mobile_operator ? ' · ' + item.mobile_operator : ''}`
-  if (item.kind === 'transfer-in') return 'Money Received'
-  return 'Money Sent'
+  if (item.kind === 'transfer-in') return `Money Received${item.sender_name ? ' · ' + item.sender_name : ''}`
+  return `Money Sent${item.recipient_name ? ' · ' + item.recipient_name : ''}`
 }
 
 function amountFor(item) {
@@ -220,12 +217,22 @@ function modalRows(item) {
     ['Phone',      item.phone_number],
     ['Country',    item.country_code],
     ['Initiated',  formatDateTime(item.initiated_at)],
-    ['Completed',  item.completed_at  ? formatDateTime(item.completed_at) : null],
-    ['Failed at',  item.failed_at     ? formatDateTime(item.failed_at)    : null],
-    ['Reason', friendlyError(item.failure_reason)],
+    ['Completed',  item.completed_at ? formatDateTime(item.completed_at) : null],
+    ['Failed at',  item.failed_at    ? formatDateTime(item.failed_at)    : null],
+    ['Reason',     friendlyError(item.failure_reason)],
+  ]
+  if (item.kind === 'transfer-in') return [
+    ['Reference',    item.reference],
+    ['From',         item.sender_name],
+    ['You received', item.receive_amount ? `${fmt(item.receive_amount)} ${item.receive_currency}` : null],
+    ['They sent',    item.send_amount    ? `${fmt(item.send_amount)} ${item.send_currency}`       : null],
+    ['Exchange rate', item.locked_rate   ? `1 ${item.send_currency} = ${item.locked_rate} ${item.receive_currency}` : null],
+    ['Completed at', item.completed_at   ? formatDateTime(item.completed_at) : null],
+    ['Refunded at',  item.refunded_at    ? formatDateTime(item.refunded_at)  : null],
   ]
   return [
     ['Reference',      item.reference],
+    ['To',             item.recipient_name],
     ['You sent',       item.send_amount    ? `${fmt(item.send_amount)} ${item.send_currency}`       : null],
     ['Recipient gets', item.receive_amount ? `${fmt(item.receive_amount)} ${item.receive_currency}` : null],
     ['Exchange rate',  item.locked_rate    ? `1 ${item.send_currency} = ${item.locked_rate} ${item.receive_currency}` : null],
