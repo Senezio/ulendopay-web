@@ -113,6 +113,24 @@
             </div>
           </div>
 
+          <!-- Saved recipients -->
+          <div v-if="savedRecipients.length" class="saved-recipients">
+            <div class="saved-label">Saved Recipients</div>
+            <div class="saved-scroll">
+              <div
+                v-for="r in savedRecipients"
+                :key="r.id"
+                class="saved-card"
+                :class="{ 'saved-card--active': selectedSavedId === r.id }"
+                @click="selectSaved(r)"
+              >
+                <div class="saved-avatar">{{ r.full_name?.charAt(0) }}</div>
+                <div class="saved-name">{{ r.full_name }}</div>
+                <div class="saved-network">{{ r.mobile_network }}</div>
+              </div>
+            </div>
+          </div>
+
           <div class="field" :class="{ 'field--error': formErrors.full_name }">
             <label>Full Name</label>
             <input v-model="recipientForm.full_name" type="text" placeholder="John Doe" />
@@ -161,6 +179,13 @@
             <label>Mobile Money Number</label>
             <input v-model="recipientForm.mobile_number" type="tel" placeholder="+255 XXX XXX XXX" />
             <span v-if="formErrors.mobile_number" class="field__error">{{ formErrors.mobile_number }}</span>
+          </div>
+
+          <div v-if="!selectedSavedId" class="save-toggle">
+            <label class="save-toggle__label">
+              <input type="checkbox" v-model="saveRecipient" class="save-toggle__check" />
+              <span>Save recipient for future transfers</span>
+            </label>
           </div>
 
           <UError v-if="error" :message="error" />
@@ -395,6 +420,20 @@ const recipientLookup = ref(null)  // { name, kyc_verified, country_code } | nul
 const lookupLoading   = ref(false)
 const lookupError     = ref('')    // 'not_found' | 'error' | ''
 
+// Saved recipients
+const savedRecipients  = ref([])
+const saveRecipient    = ref(false)
+const selectedSavedId  = ref(null)
+
+async function fetchSavedRecipients() {
+  try {
+    const { data } = await client.get('/recipients')
+    savedRecipients.value = data.data || []
+  } catch (e) {
+    console.error('Could not load saved recipients', e)
+  }
+}
+
 let timer       = null
 let lookupTimer = null
 
@@ -526,6 +565,7 @@ async function handleQuote() {
     countdown.value = rl.rate_lock.expires_in_seconds || 600
     startTimer()
     currentStep.value = 'Recipient'
+    fetchSavedRecipients()
   } catch (err) {
     error.value = err.response?.data?.message || 'Could not get quote'
   } finally {
@@ -543,11 +583,20 @@ async function handleSend() {
   error.value   = ''
   loading.value = true
   try {
-    const { data: rd } = await client.post('/recipients', recipientForm.value)
-    const { data }     = await client.post('/transactions', {
+    let recipientId = selectedSavedId.value
+
+    if (!recipientId) {
+      const { data: rd } = await client.post('/recipients', {
+        ...recipientForm.value,
+        is_active: saveRecipient.value,
+      })
+      recipientId = rd.recipient.id
+    }
+
+    const { data } = await client.post('/transactions', {
       idempotency_key: `send-${Date.now()}`,
       rate_lock_id:    rateLock.value.id,
-      recipient_id:    rd.recipient.id,
+      recipient_id:    recipientId,
       send_amount:     quoteForm.value.send_amount,
     })
     transaction.value = data.transaction
@@ -561,6 +610,19 @@ async function handleSend() {
   }
 }
 
+function selectSaved(r) {
+  selectedSavedId.value = r.id
+  recipientForm.value = {
+    full_name:      r.full_name,
+    phone:          r.phone || '',
+    country_code:   r.country_code || 'TZA',
+    payment_method: r.payment_method || 'mobile_money',
+    mobile_network: r.mobile_network || '',
+    mobile_number:  r.mobile_number || '',
+  }
+  saveRecipient.value = false
+}
+
 function reset() {
   stopTimer()
   currentStep.value = 'Quote'
@@ -570,6 +632,9 @@ function reset() {
   recipientLookup.value = null
   lookupError.value     = ''
   lookupLoading.value   = false
+  saveRecipient.value   = false
+  selectedSavedId.value = null
+  savedRecipients.value = []
   quoteForm.value = { from_currency: userCurrency.value, to_currency: '', send_amount: '' }
   recipientForm.value = {
     full_name: '', phone: '', country_code: 'TZA',
@@ -955,6 +1020,42 @@ async function submitWithPin() {
 }
 
 /* ── Back button ────────────────────────────────────────────────────── */
+/* Saved recipients */
+.saved-recipients { margin-bottom: 20px; }
+.saved-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 10px;
+}
+.saved-scroll {
+  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px;
+  scrollbar-width: none;
+}
+.saved-scroll::-webkit-scrollbar { display: none; }
+.saved-card {
+  flex-shrink: 0; width: 80px; padding: 10px 8px;
+  border-radius: 14px; border: 1.5px solid var(--border);
+  background: var(--bg-elevated); cursor: pointer;
+  text-align: center; transition: all 0.15s;
+}
+.saved-card:hover { border-color: var(--accent); }
+.saved-card--active { border-color: var(--accent); background: var(--accent-dim); }
+.saved-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; margin: 0 auto 6px;
+}
+.saved-name    { font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-network { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Save toggle */
+.save-toggle { margin-bottom: 16px; }
+.save-toggle__label {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text-secondary); cursor: pointer;
+}
+.save-toggle__check { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
 .btn-back {
   width: 100%;
   margin-top: 10px;
