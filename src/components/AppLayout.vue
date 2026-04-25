@@ -8,9 +8,40 @@
         </button>
         <span class="top-nav__title">{{ pageTitle }}</span>
       </div>
-      <RouterLink to="/profile" class="nav-icon-btn nav-icon-btn--avatar top-nav__avatar">
-        <span class="avatar-initials">{{ initials }}</span>
-      </RouterLink>
+      <div class="avatar-menu-wrap">
+        <button class="nav-icon-btn nav-icon-btn--avatar top-nav__avatar" @click="isAvatarMenuOpen = !isAvatarMenuOpen">
+          <span class="avatar-initials">{{ initials }}</span>
+        </button>
+        <Transition name="dropdown">
+          <div v-if="isAvatarMenuOpen" class="avatar-dropdown" v-click-outside="() => isAvatarMenuOpen = false">
+            <div class="avatar-dropdown__user">
+              <div class="avatar-dropdown__name">{{ auth.user?.name }}</div>
+              <div class="avatar-dropdown__email">{{ auth.user?.email }}</div>
+            </div>
+            <div class="avatar-dropdown__divider" />
+            <div class="avatar-dropdown__item">
+              <i class="fa-sharp-duotone fa-solid fa-circle-half-stroke" />
+              <span>Theme</span>
+              <div class="theme-toggle">
+                <button
+                  v-for="t in themeOptions" :key="t.value"
+                  class="theme-btn"
+                  :class="{ active: ui.theme === t.value }"
+                  @click.stop="ui.setTheme(t.value)"
+                  :title="t.label"
+                >
+                  <i :class="t.icon" />
+                </button>
+              </div>
+            </div>
+            <div class="avatar-dropdown__divider" />
+            <button class="avatar-dropdown__item avatar-dropdown__item--danger" @click="handleLogout">
+              <i class="fa-sharp-duotone fa-solid fa-arrow-right-from-bracket" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </Transition>
+      </div>
     </header>
 
     <div v-if="isMenuOpen" class="sidebar-overlay" @click="isMenuOpen = false"></div>
@@ -80,11 +111,30 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useUiStore } from '@/stores/ui'
 
 const route  = useRoute()
 const router = useRouter()
 const auth   = useAuthStore()
-const isMenuOpen = ref(false)
+const ui     = useUiStore()
+const isMenuOpen       = ref(false)
+const isAvatarMenuOpen = ref(false)
+
+const themeOptions = [
+  { value: 'system', label: 'System', icon: 'fa-sharp-duotone fa-solid fa-circle-half-stroke' },
+  { value: 'light',  label: 'Light',  icon: 'fa-sharp-duotone fa-solid fa-sun' },
+  { value: 'dark',   label: 'Dark',   icon: 'fa-sharp-duotone fa-solid fa-moon' },
+]
+
+const vClickOutside = {
+  mounted(el, binding) {
+    el._clickOutside = (e) => { if (!el.contains(e.target)) binding.value(e) }
+    document.addEventListener('click', el._clickOutside)
+  },
+  unmounted(el) {
+    document.removeEventListener('click', el._clickOutside)
+  }
+}
 
 const initials = computed(() => {
   const name = auth.user?.name || ''
@@ -354,6 +404,79 @@ async function handleLogout() {
 .tab-item:hover { color: var(--text-secondary); }
 .tab-item.active { color: var(--accent); }
 .tab-item.active i { transform: translateY(-1px); }
+
+/* Avatar dropdown */
+.avatar-menu-wrap { position: relative; }
+
+.avatar-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.avatar-dropdown__user {
+  padding: 14px 16px;
+}
+.avatar-dropdown__name  { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.avatar-dropdown__email { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.avatar-dropdown__divider { height: 1px; background: var(--border); }
+
+.avatar-dropdown__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s;
+}
+.avatar-dropdown__item:hover { background: var(--bg-elevated); }
+.avatar-dropdown__item i { width: 16px; text-align: center; color: var(--text-muted); }
+.avatar-dropdown__item span { flex: 1; }
+.avatar-dropdown__item--danger { color: var(--danger); }
+.avatar-dropdown__item--danger i { color: var(--danger); }
+.avatar-dropdown__item--danger:hover { background: var(--danger-bg); }
+
+/* Theme toggle inside dropdown */
+.theme-toggle {
+  display: flex; gap: 3px;
+  background: var(--bg-elevated);
+  border-radius: 8px; padding: 2px;
+  border: 1px solid var(--border);
+}
+.theme-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px; border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.theme-btn.active {
+  background: var(--bg-card);
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Dropdown transition */
+.dropdown-enter-active, .dropdown-leave-active { transition: all 0.15s ease; }
+.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-6px); }
 
 @media (min-width: 1024px) {
   .layout {
