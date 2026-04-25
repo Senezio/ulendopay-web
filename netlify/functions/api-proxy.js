@@ -51,7 +51,7 @@ exports.handler = async (event) => {
     const response = await fetch(targetUrl, options);
     const contentType = response.headers.get('Content-Type') || 'application/json';
 
-    const isBinary = /^(image|application\/pdf|application\/octet-stream)/.test(contentType);
+    const isBinary = /^(image|application\/pdf|application\/octet-stream|application\/vnd\.openxmlformats|application\/vnd\.ms-excel)/.test(contentType);
 
     const body = isBinary
       ? (await response.buffer()).toString('base64')
