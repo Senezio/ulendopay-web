@@ -76,7 +76,7 @@
 
           <transition name="fade">
             <div v-if="quote" class="quote-box">
-              <div class="quote-row">
+              <div v-if="quoteForm.from_currency !== quoteForm.to_currency" class="quote-row">
                 <span>Exchange Rate</span>
                 <span class="mono">1 {{ quoteForm.from_currency }} = {{ quote.exchange_rate }} {{ quoteForm.to_currency }}</span>
               </div>
@@ -385,7 +385,7 @@ const NETWORKS_BY_CURRENCY = {
 const allCurrencies     = Object.keys(CURRENCY_LABELS)
 const userCurrency      = computed(() => auth.user?.currency || 'MWK')
 const sendCurrencies    = computed(() => [userCurrency.value, ...allCurrencies.filter(c => c !== userCurrency.value)])
-const receiveCurrencies = computed(() => allCurrencies.filter(c => c !== quoteForm.value.from_currency))
+const receiveCurrencies = computed(() => allCurrencies)
 const availableNetworks = computed(() => NETWORKS_BY_CURRENCY[quoteForm.value.to_currency] ?? [])
 
 // ── Steps ───────────────────────────────────────────────────────────────────
@@ -497,10 +497,11 @@ function formatCountdown(secs) {
 }
 
 // ── Confirm summary rows ────────────────────────────────────────────────────
+const isSameCurrency = computed(() => quoteForm.value.from_currency === quoteForm.value.to_currency)
 const confirmRows = computed(() => [
   ['You send',       `${Number(quoteForm.value.send_amount).toLocaleString()} ${quoteForm.value.from_currency}`],
   ['Fee',            `${quote.value?.fee_amount} ${quoteForm.value.from_currency}`],
-  ['Rate',           `1 ${quoteForm.value.from_currency} = ${quote.value?.exchange_rate} ${quoteForm.value.to_currency}`],
+  ...(!isSameCurrency.value ? [['Rate', `1 ${quoteForm.value.from_currency} = ${quote.value?.exchange_rate} ${quoteForm.value.to_currency}`]] : []),
   ['Recipient gets', `${quote.value?.receive_amount} ${quoteForm.value.to_currency}`],
   ['To',             recipientForm.value.full_name],
   ['Via',            recipientForm.value.mobile_network],
@@ -1260,3 +1261,4 @@ async function submitWithPin() {
   transform: scale(0.98);
 }
 </style>
+~ $
