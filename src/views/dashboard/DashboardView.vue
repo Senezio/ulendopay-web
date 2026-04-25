@@ -302,7 +302,7 @@ const formatDate   = (d) => new Date(d).toLocaleDateString('en', { month: 'short
 
 .wallet-card__balance { line-height: 1; }
 .balance-integer {
-  font-size: 32px; font-weight: 800;
+  font-size: clamp(16px, 4vw, 32px); font-weight: 800;
   letter-spacing: -0.04em; color: var(--text-primary);
 }
 .balance-decimal {
