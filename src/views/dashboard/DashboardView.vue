@@ -256,7 +256,7 @@ const formatDate   = (d) => new Date(d).toLocaleDateString('en', { month: 'short
 
 .wallets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 12px;
 }
 
