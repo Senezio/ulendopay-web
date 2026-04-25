@@ -300,9 +300,9 @@ const formatDate   = (d) => new Date(d).toLocaleDateString('en', { month: 'short
 }
 .wallet-card__badge.active { background: var(--accent-dim); color: var(--accent); }
 
-.wallet-card__balance { line-height: 1; }
+.wallet-card__balance { line-height: 1; overflow: hidden; }
 .balance-integer {
-  font-size: clamp(16px, 4vw, 32px); font-weight: 800;
+  font-size: clamp(14px, 2.5vw, 28px); font-weight: 800;
   letter-spacing: -0.04em; color: var(--text-primary);
 }
 .balance-decimal {
