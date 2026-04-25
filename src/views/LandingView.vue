@@ -1,24 +1,29 @@
 <template>
   <div class="landing">
 
+    <!-- ── Navbar ─────────────────────────────────────────────────────────── -->
     <header class="navbar" :class="{ 'navbar--scrolled': scrolled }">
       <div class="navbar__inner">
+        <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
           <img src="/logo.png" alt="Logo" style="height: 40px; width: auto; display: block;">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
 
+        <!-- Desktop nav links -->
         <nav class="navbar__links">
           <a href="#features">Features</a>
           <a href="#how-it-works">How it works</a>
           <a href="#security">Security</a>
         </nav>
 
+        <!-- Desktop CTAs -->
         <div class="navbar__actions">
           <RouterLink to="/login" class="btn-ghost">Sign in</RouterLink>
           <RouterLink to="/register" class="btn-primary">Create account</RouterLink>
         </div>
 
+        <!-- Mobile: sign in + hamburger -->
         <div class="navbar__mobile-actions">
           <RouterLink to="/login" class="btn-ghost btn-ghost--sm">Sign in</RouterLink>
           <button class="hamburger" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen">
@@ -27,6 +32,7 @@
         </div>
       </div>
 
+      <!-- Mobile dropdown -->
       <div class="mobile-menu" :class="{ open: menuOpen }">
         <a href="#features"     @click="menuOpen = false">Features</a>
         <a href="#how-it-works" @click="menuOpen = false">How it works</a>
@@ -34,6 +40,7 @@
       </div>
     </header>
 
+    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <section class="hero" :style="{ backgroundImage: `url(${bannerImage})` }">
       <div class="hero__overlay"></div>
       <div class="container hero__content">
@@ -57,7 +64,8 @@
     </section>
 
 
-    <section class="calculator-section reveal">
+    <!-- ── Fee Calculator ───────────────────────────────────────────────────── -->
+    <section class="calculator-section">
       <div class="container">
         <div class="calc-card">
           <div class="calc-card__header">
@@ -117,7 +125,8 @@
       </div>
     </section>
 
-    <section class="trust-bar reveal">
+    <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
+    <section class="trust-bar">
       <div class="container trust-bar__inner">
         <div v-for="t in trustPoints" :key="t.label" class="trust-item stagger-item">
           <span class="trust-item__icon"><i :class="t.iconClass"></i></span>
@@ -129,6 +138,7 @@
       </div>
     </section>
 
+    <!-- ── How it works ──────────────────────────────────────────────────── -->
     <section id="how-it-works" class="section reveal reveal--left">
       <div class="container">
         <div class="section__label reveal reveal--scale">HOW IT WORKS</div>
@@ -143,6 +153,7 @@
       </div>
     </section>
 
+    <!-- ── Features ──────────────────────────────────────────────────────── -->
     <section id="features" class="section section--alt reveal reveal--right">
       <div class="container">
         <div class="section__label reveal reveal--scale">FEATURES</div>
@@ -157,6 +168,7 @@
       </div>
     </section>
 
+    <!-- ── Security ──────────────────────────────────────────────────────── -->
     <section id="security" class="section reveal reveal--left">
       <div class="container security-grid">
         <div class="security__text">
@@ -200,6 +212,7 @@
       </div>
     </section>
 
+    <!-- ── CTA Section ────────────────────────────────────────────────────── -->
     <section class="cta-section" :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78)), url(${ctaBannerImage})` }">
       <div class="container cta-section__inner">
         <h2>Ready to send money?</h2>
@@ -209,6 +222,7 @@
       </div>
     </section>
 
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
@@ -224,6 +238,7 @@
       </div>
     </footer>
 
+    <!-- ── Mobile sticky CTA ──────────────────────────────────────────────── -->
     <div class="sticky-cta">
       <RouterLink to="/register" class="btn-primary btn-primary--full">Create account</RouterLink>
     </div>
@@ -357,13 +372,8 @@ const securityPoints = [
 </script>
 
 <style scoped>
-*, *::before, *::after {
-  box-sizing: border-box;
-}
 /* ── Base ──────────────────────────────────────────────────────────────── */
 .landing {
-  overflow-x: hidden;
-  width: 100%;
   font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
   color: #1a1a1a;
   background: var(--bg-card);
@@ -373,8 +383,7 @@ const securityPoints = [
 .container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 16px;
-  width: 100%;
+  padding: 0 24px;
 }
 
 /* ── Navbar ────────────────────────────────────────────────────────────── */
@@ -477,7 +486,7 @@ const securityPoints = [
 }
 .btn-primary:hover { background: #d05204; }
 .btn-primary--lg   { padding: 13px 28px; font-size: 15px; }
-.btn-primary--full { display: block; width: 100%; text-align: center; border-radius: 8px; padding: 14px 0; box-sizing: border-box; margin: 0 auto; }
+.btn-primary--full { width: 100%; text-align: center; border-radius: 8px; padding: 14px; box-sizing: border-box; }
 
 .btn-outline {
   display: inline-block;
@@ -632,43 +641,48 @@ const securityPoints = [
 .trust-item__desc  { font-size: 13px; color: #777; margin-top: 2px; }
 
 /* ── Sections ──────────────────────────────────────────────────────────── */
-.section     { padding: 40px 0; }
+.section     { padding: 80px 0; }
 .section--alt { background: #fafafa; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; }
 
 /* ── Scroll reveal animations ──────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal.revealed {
   opacity: 1;
+  transform: none;
 }
 .reveal--left {
   opacity: 0;
   transform: translateX(-60px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal--left.revealed {
   opacity: 1;
-  transform: translateX(0);
+  transform: none;
 }
 .reveal--right {
   opacity: 0;
   transform: translateX(60px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal--right.revealed {
   opacity: 1;
-  transform: translateX(0);
+  transform: none;
 }
 .reveal--scale {
   opacity: 0;
   transform: scale(0.92);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal--scale.revealed {
   opacity: 1;
-  transform: scale(1);
+  transform: none;
 }
 
 /* CTA section background */
@@ -864,7 +878,7 @@ const securityPoints = [
 /* ── Sticky mobile CTA ───────────────────────────────────────────────────── */
 .sticky-cta {
   display: none;
-  position: sticky;
+  position: fixed;
   bottom: 0; left: 0; right: 0;
   padding: 12px 16px;
   background: var(--bg-card);
@@ -892,8 +906,8 @@ const securityPoints = [
 }
 
 @media (max-width: 480px) {
-  .hero { min-height: auto; }
-  .hero__content { padding: 40px 24px 80px 24px; }
+  .hero { min-height: 480px; }
+  .hero__content { padding: 56px 24px; }
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
   .calc-card { width: 100%; box-sizing: border-box; }
@@ -996,10 +1010,7 @@ const securityPoints = [
 /* ── Fee Calculator (Responsive Fix) ─────────────────────────────────────── */
 .calculator-section {
   background: #f8f9fa;
-  padding: 20px 0;
-  margin-top: -40px;
-  position: relative;
-  z-index: 10;
+  padding: 48px 0;
 }
 .calc-card {
   background: var(--bg-card);
@@ -1045,7 +1056,6 @@ const securityPoints = [
 }
 .calc-input-wrap {
   display: flex;
-  max-width: 100%;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow: hidden;
@@ -1065,12 +1075,11 @@ const securityPoints = [
 }
 .calc-input-wrap--receive { background: #fafafa; border-color: #eee; }
 .calc-receive-amount {
-  flex: 1; padding: 11px 8px;
-  font-size: clamp(14px, 4vw, 16px); font-weight: 700; color: #e85d04;
-  word-break: break-all;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
+  flex: 1; padding: 11px 12px;
+  font-size: 16px; font-weight: 700; color: #e85d04;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .calc-placeholder { color: #ccc; font-weight: 400; }
 
