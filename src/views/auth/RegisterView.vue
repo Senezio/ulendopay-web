@@ -22,9 +22,14 @@
             <UField label="Email Address (optional)" type="email" v-model="form.email" placeholder="name@email.com" />
 
             <div class="field">
-              <label class="field__label">Country</label>
-              <select v-model="form.country_code" class="field__select">
-                <option v-for="c in countries" :key="c[0]" :value="c[0]">{{ c[1] }}</option>
+              <label class="field__label">
+                Country
+                <span v-if="countryDetected" class="field__lock">
+                  <i class="fa-sharp-duotone fa-solid fa-location-dot"></i> Auto-detected
+                </span>
+              </label>
+              <select v-model="form.country_code" class="field__select" :class="{ 'field__select--locked': countryDetected }">
+                <option v-for="c in countries" :key="c[0]" :value="c[0]">{{ c[1] }} ({{ c[2] }})</option>
               </select>
             </div>
 
@@ -85,7 +90,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { authApi } from '@/api/auth'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
@@ -111,11 +116,83 @@ const form = ref({
 })
 
 const countries = [
-  ['MWI', '🇲🇼 Malawi'],   ['KEN', '🇰🇪 Kenya'],        ['TZA', '🇹🇿 Tanzania'],
-  ['ZMB', '🇿🇲 Zambia'],   ['ZAF', '🇿🇦 South Africa'], ['MOZ', '🇲🇿 Mozambique'],
-  ['BWA', '🇧🇼 Botswana'], ['ZWE', '🇿🇼 Zimbabwe'],     ['UGA', '🇺🇬 Uganda'],
-  ['GHA', '🇬🇭 Ghana'],    ['NGA', '🇳🇬 Nigeria'],       ['ETH', '🇪🇹 Ethiopia'],
+  ['DZA', '🇩🇿 Algeria',          '+213'],
+  ['AGO', '🇦🇴 Angola',           '+244'],
+  ['BEN', '🇧🇯 Benin',            '+229'],
+  ['BWA', '🇧🇼 Botswana',         '+267'],
+  ['BFA', '🇧🇫 Burkina Faso',     '+226'],
+  ['BDI', '🇧🇮 Burundi',          '+257'],
+  ['CPV', '🇨🇻 Cabo Verde',       '+238'],
+  ['CMR', '🇨🇲 Cameroon',         '+237'],
+  ['CAF', '🇨🇫 Central African Republic', '+236'],
+  ['TCD', '🇹🇩 Chad',             '+235'],
+  ['COM', '🇰🇲 Comoros',          '+269'],
+  ['COD', '🇨🇩 DR Congo',         '+243'],
+  ['COG', '🇨🇬 Congo',            '+242'],
+  ['CIV', '🇨🇮 Côte d'Ivoire',   '+225'],
+  ['DJI', '🇩🇯 Djibouti',         '+253'],
+  ['EGY', '🇪🇬 Egypt',            '+20'],
+  ['GNQ', '🇬🇶 Equatorial Guinea','+240'],
+  ['ERI', '🇪🇷 Eritrea',          '+291'],
+  ['SWZ', '🇸🇿 Eswatini',         '+268'],
+  ['ETH', '🇪🇹 Ethiopia',         '+251'],
+  ['GAB', '🇬🇦 Gabon',            '+241'],
+  ['GMB', '🇬🇲 Gambia',           '+220'],
+  ['GHA', '🇬🇭 Ghana',            '+233'],
+  ['GIN', '🇬🇳 Guinea',           '+224'],
+  ['GNB', '🇬🇼 Guinea-Bissau',    '+245'],
+  ['KEN', '🇰🇪 Kenya',            '+254'],
+  ['LSO', '🇱🇸 Lesotho',          '+266'],
+  ['LBR', '🇱🇷 Liberia',          '+231'],
+  ['LBY', '🇱🇾 Libya',            '+218'],
+  ['MDG', '🇲🇬 Madagascar',       '+261'],
+  ['MWI', '🇲🇼 Malawi',           '+265'],
+  ['MLI', '🇲🇱 Mali',             '+223'],
+  ['MRT', '🇲🇷 Mauritania',       '+222'],
+  ['MUS', '🇲🇺 Mauritius',        '+230'],
+  ['MAR', '🇲🇦 Morocco',          '+212'],
+  ['MOZ', '🇲🇿 Mozambique',       '+258'],
+  ['NAM', '🇳🇦 Namibia',          '+264'],
+  ['NER', '🇳🇪 Niger',            '+227'],
+  ['NGA', '🇳🇬 Nigeria',          '+234'],
+  ['RWA', '🇷🇼 Rwanda',           '+250'],
+  ['STP', '🇸🇹 São Tomé & Príncipe', '+239'],
+  ['SEN', '🇸🇳 Senegal',          '+221'],
+  ['SLE', '🇸🇱 Sierra Leone',     '+232'],
+  ['SOM', '🇸🇴 Somalia',          '+252'],
+  ['ZAF', '🇿🇦 South Africa',     '+27'],
+  ['SSD', '🇸🇸 South Sudan',      '+211'],
+  ['SDN', '🇸🇩 Sudan',            '+249'],
+  ['TZA', '🇹🇿 Tanzania',         '+255'],
+  ['TGO', '🇹🇬 Togo',             '+228'],
+  ['TUN', '🇹🇳 Tunisia',          '+216'],
+  ['UGA', '🇺🇬 Uganda',           '+256'],
+  ['ZMB', '🇿🇲 Zambia',           '+260'],
+  ['ZWE', '🇿🇼 Zimbabwe',         '+263'],
 ]
+
+// Detect country from phone number prefix
+const countryDetected = ref(false)
+
+function detectCountryFromPhone(phone) {
+  if (!phone) return
+  const digits = phone.replace(/\D/g, '')
+  // Sort by dial code length descending for greedy match
+  const sorted = [...countries].sort((a, b) => b[2].length - a[2].length)
+  for (const [code,, dial] of sorted) {
+    const prefix = dial.replace('+', '')
+    if (digits.startsWith(prefix)) {
+      form.value.country_code = code
+      countryDetected.value = true
+      return
+    }
+  }
+  countryDetected.value = false
+}
+
+watch(() => form.value.phone, (val) => {
+  detectCountryFromPhone(val)
+})
 
 async function handleRegister() {
   error.value = ''
@@ -224,6 +301,17 @@ function skipEmailVerification() {
 }
 
 /* ── Country Select ──────────────────────────── */
+.field__lock {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-left: 8px;
+  opacity: 0.85;
+}
+.field__select--locked {
+  border-color: var(--accent);
+  background: var(--bg-elevated);
+}
 /* Native selects don't inherit CSS vars reliably in dark mode,
    so we set all relevant properties explicitly */
 .field { margin-bottom: 16px; }
