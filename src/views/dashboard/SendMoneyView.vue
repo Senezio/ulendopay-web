@@ -116,17 +116,20 @@
           <!-- Saved recipients -->
           <div v-if="savedRecipients.length" class="saved-recipients">
             <div class="saved-label">Saved Recipients</div>
-            <div class="saved-scroll">
+            <div class="saved-list">
               <div
                 v-for="r in savedRecipients"
                 :key="r.id"
-                class="saved-card"
-                :class="{ 'saved-card--active': selectedSavedId === r.id }"
+                class="saved-row"
+                :class="{ 'saved-row--active': selectedSavedId === r.id }"
                 @click="selectSaved(r)"
               >
                 <div class="saved-avatar">{{ r.full_name?.charAt(0) }}</div>
-                <div class="saved-name">{{ r.full_name }}</div>
-                <div class="saved-network">{{ r.mobile_network }}</div>
+                <div class="saved-info">
+                  <div class="saved-name">{{ r.full_name }}</div>
+                  <div class="saved-meta">{{ r.mobile_number }} &middot; {{ r.mobile_network }}</div>
+                </div>
+                <i v-if="selectedSavedId === r.id" class="fa-sharp-duotone fa-solid fa-circle-check saved-check"></i>
               </div>
             </div>
           </div>
@@ -1026,27 +1029,33 @@ async function submitWithPin() {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 10px;
 }
-.saved-scroll {
-  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px;
+.saved-list {
+  display: flex; flex-direction: column;
+  max-height: 220px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: 14px;
+  background: var(--bg-elevated);
   scrollbar-width: none;
 }
-.saved-scroll::-webkit-scrollbar { display: none; }
-.saved-card {
-  flex-shrink: 0; width: 80px; padding: 10px 8px;
-  border-radius: 14px; border: 1.5px solid var(--border);
-  background: var(--bg-elevated); cursor: pointer;
-  text-align: center; transition: all 0.15s;
+.saved-list::-webkit-scrollbar { display: none; }
+.saved-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
 }
-.saved-card:hover { border-color: var(--accent); }
-.saved-card--active { border-color: var(--accent); background: var(--accent-dim); }
+.saved-row:last-child { border-bottom: none; }
+.saved-row:hover { background: var(--bg-card); }
+.saved-row--active { background: var(--accent-dim); }
 .saved-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
   background: var(--accent); color: #fff;
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; margin: 0 auto 6px;
+  font-size: 15px; font-weight: 700;
 }
-.saved-name    { font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.saved-network { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+.saved-info { flex: 1; min-width: 0; }
+.saved-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.saved-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-check { color: var(--accent); font-size: 16px; flex-shrink: 0; }
 
 /* Save toggle */
 .save-toggle { margin-bottom: 16px; }
