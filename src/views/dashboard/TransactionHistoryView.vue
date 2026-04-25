@@ -4,8 +4,14 @@
 
       <!-- Header -->
       <div class="history__header fade-up">
-        <h1>Transaction History</h1>
-        <p>{{ filtered.length }} {{ filtered.length === 1 ? 'transaction' : 'transactions' }}</p>
+        <div>
+          <h1>Transaction History</h1>
+          <p>{{ filtered.length }} {{ filtered.length === 1 ? 'transaction' : 'transactions' }}</p>
+        </div>
+        <button class="btn-statement" @click="showStatement = true">
+          <i class="fa-sharp-duotone fa-solid fa-file-arrow-down"></i>
+          Statement
+        </button>
       </div>
 
       <!-- Filter tabs -->
@@ -72,7 +78,7 @@
 
     </div>
 
-    <!-- Modal -->
+    <!-- ── Transaction detail Modal ──────────────────────────────────────── -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="selected" class="modal-backdrop" @click.self="selected = null">
@@ -116,6 +122,67 @@
       </Transition>
     </Teleport>
 
+    <!-- ── Statement download sheet ──────────────────────────────────────── -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showStatement" class="modal-backdrop" @click.self="showStatement = false">
+          <div class="modal">
+
+            <div class="modal__header">
+              <div class="modal-icon transfer-out">
+                <i class="fa-sharp-duotone fa-solid fa-file-arrow-down"></i>
+              </div>
+              <div>
+                <div class="modal-title">Download Statement</div>
+                <div class="modal-ref">{{ walletCurrency }} wallet</div>
+              </div>
+              <button class="modal-close" @click="showStatement = false">✕</button>
+            </div>
+
+            <div class="statement-form">
+              <div class="statement-presets">
+                <button
+                  v-for="p in presets" :key="p.label"
+                  class="preset-btn"
+                  :class="{ active: activePreset === p.label }"
+                  @click="applyPreset(p)">
+                  {{ p.label }}
+                </button>
+              </div>
+
+              <div class="statement-fields">
+                <div class="statement-field">
+                  <label>From</label>
+                  <input type="date" v-model="stmtFrom" :max="stmtTo || today" />
+                </div>
+                <div class="statement-field">
+                  <label>To</label>
+                  <input type="date" v-model="stmtTo" :min="stmtFrom" :max="today" />
+                </div>
+              </div>
+
+              <div v-if="stmtError" class="statement-error">
+                <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>
+                {{ stmtError }}
+              </div>
+            </div>
+
+            <button
+              class="btn-download"
+              :disabled="stmtLoading || !stmtFrom || !stmtTo"
+              @click="downloadStatement">
+              <i v-if="stmtLoading"
+                class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin" />
+              <i v-else
+                class="fa-sharp-duotone fa-solid fa-file-pdf" />
+              {{ stmtLoading ? 'Generating...' : 'Download PDF' }}
+            </button>
+
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
   </AppLayout>
 </template>
 
@@ -123,11 +190,87 @@
 import { ref, computed, onMounted } from 'vue'
 import AppLayout from '@/components/AppLayout.vue'
 import client from '@/api/client'
+import { walletApi } from '@/api/wallet'
 
 const allActivity = ref([])
 const selected    = ref(null)
 const loading     = ref(true)
 
+// ── Statement ─────────────────────────────────────────────────────────────
+const showStatement = ref(false)
+const stmtFrom      = ref('')
+const stmtTo        = ref('')
+const stmtLoading   = ref(false)
+const stmtError     = ref('')
+const walletCurrency= ref('')
+const activePreset  = ref('')
+const today         = new Date().toISOString().slice(0, 10)
+
+const presets = [
+  {
+    label: 'This month',
+    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10),
+    to:   today,
+  },
+  {
+    label: 'Last month',
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1).toISOString().slice(0, 10),
+    to:   new Date(new Date().getFullYear(), new Date().getMonth(), 0).toISOString().slice(0, 10),
+  },
+  {
+    label: 'Last 3 months',
+    from: new Date(new Date().setMonth(new Date().getMonth() - 3)).toISOString().slice(0, 10),
+    to:   today,
+  },
+  {
+    label: 'This year',
+    from: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10),
+    to:   today,
+  },
+]
+
+function applyPreset(p) {
+  activePreset.value = p.label
+  stmtFrom.value     = p.from
+  stmtTo.value       = p.to
+  stmtError.value    = ''
+}
+
+async function downloadStatement() {
+  stmtError.value = ''
+  if (!stmtFrom.value || !stmtTo.value) {
+    stmtError.value = 'Please select a date range.'
+    return
+  }
+  if (stmtFrom.value > stmtTo.value) {
+    stmtError.value = 'Start date must be before end date.'
+    return
+  }
+  stmtLoading.value = true
+  try {
+    const response = await client.get('/statement', {
+      params: {
+        currency: walletCurrency.value,
+        from:     stmtFrom.value,
+        to:       stmtTo.value,
+      },
+      responseType: 'blob',
+    })
+    const url      = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+    const a        = document.createElement('a')
+    a.href         = url
+    a.download     = `UlendoPay_Statement_${walletCurrency.value}_${stmtFrom.value}_${stmtTo.value}.pdf`
+    a.click()
+    URL.revokeObjectURL(url)
+    showStatement.value = false
+  } catch (e) {
+    stmtError.value = e.response?.data?.message || 'Could not generate statement. Please try again.'
+  } finally {
+    stmtLoading.value = false
+  }
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────
 const filters = [
   { key: 'all',      label: 'All' },
   { key: 'transfer', label: 'Transfers' },
@@ -146,24 +289,28 @@ const filtered = computed(() => {
 function normalise(raw) {
   const ref = raw.reference_number || raw.reference
   let kind = 'transfer-out'
-  if (ref?.startsWith('TUP-'))         kind = 'topup'
-  else if (ref?.startsWith('WDR-'))    kind = 'withdraw'
+  if (ref?.startsWith('TUP-'))          kind = 'topup'
+  else if (ref?.startsWith('WDR-'))     kind = 'withdraw'
   else if (raw.direction === 'received') kind = 'transfer-in'
   return { ...raw, reference: ref, kind }
 }
 
 onMounted(async () => {
   try {
-    const [txRes, topupRes, withdrawRes] = await Promise.all([
+    const [txRes, topupRes, withdrawRes, walletRes] = await Promise.all([
       client.get('/transactions'),
       client.get('/topup/history'),
       client.get('/withdraw/history'),
+      walletApi.getAll(),
     ])
     const txs       = (txRes.data?.data      || txRes.data?.transactions || []).map(normalise)
     const topups    = (topupRes.data?.data    || topupRes.data?.top_ups   || []).map(normalise)
     const withdraws = (withdrawRes.data?.data || withdrawRes.data?.withdrawals || []).map(normalise)
     allActivity.value = [...txs, ...topups, ...withdraws]
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+    const wallets = walletRes.data?.wallets || []
+    if (wallets.length) walletCurrency.value = wallets[0].currency
   } catch (e) {
     console.error(e)
   } finally {
@@ -222,13 +369,13 @@ function modalRows(item) {
     ['Reason',     friendlyError(item.failure_reason)],
   ]
   if (item.kind === 'transfer-in') return [
-    ['Reference',    item.reference],
-    ['From',         item.sender_name],
-    ['You received', item.receive_amount ? `${fmt(item.receive_amount)} ${item.receive_currency}` : null],
-    ['They sent',    item.send_amount    ? `${fmt(item.send_amount)} ${item.send_currency}`       : null],
-    ['Exchange rate', item.locked_rate   ? `1 ${item.send_currency} = ${item.locked_rate} ${item.receive_currency}` : null],
-    ['Completed at', item.completed_at   ? formatDateTime(item.completed_at) : null],
-    ['Refunded at',  item.refunded_at    ? formatDateTime(item.refunded_at)  : null],
+    ['Reference',     item.reference],
+    ['From',          item.sender_name],
+    ['You received',  item.receive_amount ? `${fmt(item.receive_amount)} ${item.receive_currency}` : null],
+    ['They sent',     item.send_amount    ? `${fmt(item.send_amount)} ${item.send_currency}`       : null],
+    ['Exchange rate', item.locked_rate    ? `1 ${item.send_currency} = ${item.locked_rate} ${item.receive_currency}` : null],
+    ['Completed at',  item.completed_at   ? formatDateTime(item.completed_at) : null],
+    ['Refunded at',   item.refunded_at    ? formatDateTime(item.refunded_at)  : null],
   ]
   return [
     ['Reference',      item.reference],
@@ -245,9 +392,9 @@ function modalRows(item) {
   ]
 }
 
-const fmt        = (v) => Number(v || 0).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-const fmtInt     = (v) => Math.floor(Number(v || 0)).toLocaleString('en')
-const fmtDec     = (v) => Number(v || 0).toFixed(2).split('.')[1]
+const fmt            = (v) => Number(v || 0).toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const fmtInt         = (v) => Math.floor(Number(v || 0)).toLocaleString('en')
+const fmtDec         = (v) => Number(v || 0).toFixed(2).split('.')[1]
 const formatDate     = (d) => new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' })
 const formatDateTime = (d) => d ? new Date(d).toLocaleString('en', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null
 
@@ -275,9 +422,22 @@ function friendlyError(code) {
 
 <style scoped>
 .history { padding-bottom: 40px; }
-.history__header { margin-bottom: 20px; }
+.history__header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 20px;
+}
 .history__header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.03em; }
 .history__header p  { color: var(--text-secondary); font-size: 14px; margin-top: 4px; }
+
+.btn-statement {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 12px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: 'Sora', sans-serif; transition: all 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.btn-statement:hover { border-color: var(--accent); color: var(--accent); }
 
 .filters { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
 .filter-btn {
@@ -334,7 +494,53 @@ function friendlyError(code) {
 .tx-status.initiated,
 .tx-status.retrying  { color: var(--accent-amber); }
 
-/* ── Modal ───────────────────────────────────────────────────────────────── */
+/* ── Statement sheet ─────────────────────────────────────────────────────── */
+.statement-form { padding: 4px 0 20px; }
+
+.statement-presets {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.preset-btn {
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-secondary); cursor: pointer; font-family: 'Sora', sans-serif;
+  transition: all 0.15s;
+}
+.preset-btn:hover  { border-color: var(--accent); color: var(--accent); }
+.preset-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+.statement-fields {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.statement-field label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.statement-field input[type="date"] {
+  width: 100%; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-primary); font-size: 13px; outline: none;
+  font-family: 'Sora', sans-serif; transition: border-color 0.15s;
+}
+.statement-field input[type="date"]:focus { border-color: var(--accent); }
+
+.statement-error {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; padding: 10px 14px; border-radius: 10px;
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+  color: var(--danger); font-size: 12px;
+}
+
+.btn-download {
+  width: 100%; padding: 14px; border-radius: 12px;
+  background: var(--accent); border: none; color: #000;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: 'Sora', sans-serif; transition: opacity 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-download:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Modal (shared) ──────────────────────────────────────────────────────── */
 .modal-backdrop {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
