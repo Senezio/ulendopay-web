@@ -129,7 +129,7 @@ const countries = [
   ['COM', '🇰🇲 Comoros',          '+269'],
   ['COD', '🇨🇩 DR Congo',         '+243'],
   ['COG', '🇨🇬 Congo',            '+242'],
-  ['CIV', '🇨🇮 Côte d'Ivoire',   '+225'],
+  ['CIV', '🇨🇮 Cote dIvoire',    '+225'],
   ['DJI', '🇩🇯 Djibouti',         '+253'],
   ['EGY', '🇪🇬 Egypt',            '+20'],
   ['GNQ', '🇬🇶 Equatorial Guinea','+240'],
