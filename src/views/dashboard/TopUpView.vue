@@ -2,40 +2,60 @@
   <AppLayout>
     <div class="topup-page">
 
+      <!-- Header -->
       <div class="page-header fade-up">
-        <div class="page-header__back" @click="router.back()">
+        <button class="back-btn" @click="router.back()">
           <i class="fa-sharp-duotone fa-solid fa-arrow-left"></i>
-        </div>
+        </button>
         <div>
           <h1>Add Money</h1>
           <p>Top up your {{ wallet?.currency_code }} wallet via mobile money</p>
         </div>
       </div>
 
-      <!-- Wallet balance card -->
+      <!-- Balance card -->
       <div class="balance-card fade-up-1">
-        <div class="balance-card__label">Current Balance</div>
+        <div class="balance-card__top">
+          <div class="balance-card__icon">
+            <i class="fa-sharp-duotone fa-solid fa-wallet"></i>
+          </div>
+          <div class="balance-card__label">Current Balance</div>
+        </div>
         <div class="balance-card__amount">
-          {{ wallet?.currency_code }}
+          <span class="balance-card__currency">{{ wallet?.currency_code }}</span>
           <span class="balance-card__number">{{ formatAmount(wallet?.balance) }}</span>
+        </div>
+        <div class="balance-card__shine" />
+      </div>
+
+      <!-- Step indicator -->
+      <div v-if="state !== 'success'" class="step-indicator fade-up-1">
+        <div class="step-dot" :class="{ active: step >= 1, done: step > 1 }">
+          <i v-if="step > 1" class="fa-sharp-duotone fa-solid fa-check" />
+          <span v-else>1</span>
+        </div>
+        <div class="step-line" :class="{ done: step > 1 }" />
+        <div class="step-dot" :class="{ active: step >= 2 }">
+          <span>2</span>
         </div>
       </div>
 
       <!-- Success state -->
-      <div v-if="state === 'success'" class="result-card result-card--success fade-up">
+      <div v-if="state === 'success'" class="result-card fade-up">
         <div class="result-card__icon">
           <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
         </div>
         <h2>Payment Initiated</h2>
         <p>Check your phone for a USSD prompt to approve the payment.</p>
-        <div class="result-card__ref">Ref: {{ currentRef }}</div>
-
+        <div class="result-card__ref">
+          <i class="fa-sharp-duotone fa-solid fa-hashtag" />
+          {{ currentRef }}
+        </div>
         <div class="polling-status" :class="pollingStatusClass">
           <i :class="pollingIcon"></i>
           {{ pollingMessage }}
         </div>
-
-        <button class="btn-secondary" @click="reset">
+        <button class="btn-primary" @click="reset">
           <i class="fa-sharp-duotone fa-solid fa-plus"></i>
           Add More Money
         </button>
@@ -46,9 +66,14 @@
 
         <!-- Step 1: Amount -->
         <div v-if="step === 1">
-          <div class="step-title">
-            <i class="fa-sharp-duotone fa-solid fa-coins"></i>
-            How much do you want to add?
+          <div class="step-header">
+            <div class="step-header__icon">
+              <i class="fa-sharp-duotone fa-solid fa-coins"></i>
+            </div>
+            <div>
+              <div class="step-header__title">How much to add?</div>
+              <div class="step-header__sub">Choose or enter an amount</div>
+            </div>
           </div>
 
           <div class="amount-field">
@@ -59,11 +84,10 @@
               min="1"
               placeholder="0.00"
               class="amount-field__input"
-              @keyup.enter="step = 2"
+              @keyup.enter="goToStep2"
             />
           </div>
 
-          <!-- Quick amounts -->
           <div class="quick-amounts">
             <button
               v-for="amt in quickAmounts"
@@ -89,24 +113,29 @@
 
         <!-- Step 2: Mobile Money Details -->
         <div v-else-if="step === 2">
-          <div class="step-title">
-            <i class="fa-sharp-duotone fa-solid fa-mobile-screen"></i>
-            Mobile money details
+          <div class="step-header">
+            <div class="step-header__icon">
+              <i class="fa-sharp-duotone fa-solid fa-mobile-screen"></i>
+            </div>
+            <div>
+              <div class="step-header__title">Mobile money details</div>
+              <div class="step-header__sub">Where should we charge?</div>
+            </div>
           </div>
 
-          <div class="summary-pill">
-            <i class="fa-sharp-duotone fa-solid fa-coins"></i>
-            Adding {{ wallet?.currency_code }} {{ formatAmount(form.amount) }}
-            <button class="summary-pill__edit" @click="step = 1">
-              <i class="fa-sharp-duotone fa-solid fa-pen"></i>
-            </button>
+          <div class="amount-summary" @click="step = 1">
+            <div class="amount-summary__left">
+              <i class="fa-sharp-duotone fa-solid fa-coins"></i>
+              <span>Adding</span>
+              <strong>{{ wallet?.currency_code }} {{ formatAmount(form.amount) }}</strong>
+            </div>
+            <span class="amount-summary__edit">
+              <i class="fa-sharp-duotone fa-solid fa-pen-to-square"></i> Edit
+            </span>
           </div>
 
           <div class="form-field">
-            <label>
-              <i class="fa-sharp-duotone fa-solid fa-sim-card"></i>
-              Mobile Operator
-            </label>
+            <label>Mobile Operator</label>
             <div class="operator-grid">
               <button
                 v-for="op in operators"
@@ -115,6 +144,7 @@
                 :class="{ active: form.mobile_operator === op }"
                 @click="form.mobile_operator = op"
               >
+                <i class="fa-sharp-duotone fa-solid fa-sim-card operator-btn__icon"></i>
                 {{ op }}
               </button>
             </div>
@@ -125,15 +155,9 @@
           </div>
 
           <div class="form-field">
-            <label>
-              <i class="fa-sharp-duotone fa-solid fa-phone"></i>
-              Mobile Money Number
-            </label>
+            <label>Mobile Money Number</label>
             <div class="phone-input">
-              <div class="phone-input__prefix">
-                <i class="fa-sharp-duotone fa-solid fa-location-dot"></i>
-                {{ dialCode }}
-              </div>
+              <div class="phone-input__prefix">{{ dialCode }}</div>
               <input
                 v-model="form.phone_number"
                 type="tel"
@@ -172,26 +196,15 @@
 
       <!-- Recent top-ups -->
       <div v-if="recentTopUps.length" class="recent-section fade-up-3">
-        <div class="recent-section__title">
-          <i class="fa-sharp-duotone fa-solid fa-clock-rotate-left"></i>
-          Recent Top-ups
-        </div>
+        <div class="recent-section__title">Recent Top-ups</div>
         <div class="topup-list">
-          <div
-            v-for="topup in recentTopUps"
-            :key="topup.id"
-            class="topup-item"
-          >
+          <div v-for="topup in recentTopUps" :key="topup.id" class="topup-item">
             <div class="topup-item__icon" :class="`topup-item__icon--${topup.status}`">
               <i :class="statusIcon(topup.status)"></i>
             </div>
             <div class="topup-item__details">
-              <div class="topup-item__amount">
-                {{ topup.currency_code }} {{ formatAmount(topup.amount) }}
-              </div>
-              <div class="topup-item__meta">
-                {{ topup.mobile_operator }} · {{ formatDate(topup.created_at) }}
-              </div>
+              <div class="topup-item__amount">{{ topup.currency_code }} {{ formatAmount(topup.amount) }}</div>
+              <div class="topup-item__meta">{{ topup.mobile_operator }} · {{ formatDate(topup.created_at) }}</div>
             </div>
             <div class="topup-item__status" :class="`topup-item__status--${topup.status}`">
               {{ topup.status }}
@@ -453,131 +466,172 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.topup-page { max-width: 480px; margin: 0 auto; padding: 24px 16px 80px; }
+.topup-page { max-width: 480px; margin: 0 auto; padding-bottom: 80px; }
 
-.page-header {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-}
-.page-header__back {
-  width: 38px; height: 38px; border-radius: 10px;
+/* Header */
+.page-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.page-header h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
+.page-header p  { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.back-btn {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
   background: var(--bg-elevated); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--text-secondary); flex-shrink: 0;
-  transition: background 0.15s;
+  cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
 }
-.page-header__back:hover { background: var(--border); }
-.page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
-.page-header p  { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.back-btn:hover { background: var(--border); color: var(--text-primary); }
 
+/* Balance card */
 .balance-card {
-  background: var(--accent); color: var(--text-inverse);
-  border-radius: 16px; padding: 20px 22px; margin-bottom: 20px;
-  display: flex; flex-direction: column; gap: 4px;
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, var(--accent) 0%, #c94a00 100%);
+  color: #fff; border-radius: 20px; padding: 22px 24px; margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(232, 93, 4, 0.3);
 }
-.balance-card__label  { font-size: 12px; opacity: 0.8; font-weight: 500; }
-.balance-card__amount { font-size: 14px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; }
-.balance-card__number { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; }
+.balance-card__top {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.balance-card__icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.balance-card__label { font-size: 12px; font-weight: 600; opacity: 0.85; }
+.balance-card__amount { display: flex; align-items: baseline; gap: 8px; }
+.balance-card__currency { font-size: 16px; font-weight: 700; opacity: 0.85; }
+.balance-card__number { font-size: 36px; font-weight: 900; letter-spacing: -0.04em; }
+.balance-card__shine {
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(255,255,255,0.07); pointer-events: none;
+}
 
+/* Step indicator */
+.step-indicator {
+  display: flex; align-items: center; margin-bottom: 20px; padding: 0 4px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  background: var(--bg-elevated); color: var(--text-muted);
+  border: 2px solid var(--border); transition: all 0.3s;
+}
+.step-dot.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step-dot.done   { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step-line {
+  flex: 1; height: 2px; background: var(--border); margin: 0 8px; transition: background 0.3s;
+}
+.step-line.done { background: var(--accent); }
+
+/* Form card */
 .topup-card {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 16px; padding: 24px; margin-bottom: 20px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 24px; margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 
-.step-title {
-  font-size: 16px; font-weight: 700; margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px; color: var(--text-primary);
+/* Step header */
+.step-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.step-header__icon {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  background: var(--accent-dim); color: var(--accent);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
 }
-.step-title i { color: var(--accent); }
+.step-header__title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+.step-header__sub   { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
+/* Amount field */
 .amount-field {
-  display: flex; align-items: center; gap: 0;
-  border: 2px solid var(--border); border-radius: 12px;
+  display: flex; align-items: center;
+  border: 2px solid var(--border); border-radius: 14px;
   overflow: hidden; margin-bottom: 16px; transition: border-color 0.15s;
+  background: var(--bg-elevated);
 }
-.amount-field:focus-within { border-color: var(--accent); }
+.amount-field:focus-within { border-color: var(--accent); background: var(--bg-card); }
 .amount-field__currency {
-  padding: 14px 16px; background: var(--bg-elevated);
-  font-weight: 700; font-size: 15px; color: var(--text-secondary);
-  border-right: 1px solid var(--border); flex-shrink: 0;
+  padding: 16px 18px; font-weight: 800; font-size: 15px;
+  color: var(--accent); border-right: 1px solid var(--border); flex-shrink: 0;
 }
 .amount-field__input {
-  flex: 1; padding: 14px 16px; border: none; outline: none;
-  font-size: 22px; font-weight: 700; background: transparent;
+  flex: 1; padding: 16px 18px; border: none; outline: none;
+  font-size: 26px; font-weight: 800; background: transparent;
   color: var(--text-primary); font-family: inherit;
 }
-.amount-field__input::placeholder { color: var(--text-muted); font-weight: 400; font-size: 18px; }
+.amount-field__input::placeholder { color: var(--text-muted); font-weight: 400; font-size: 20px; }
 
+/* Quick amounts */
 .quick-amounts {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 6px; margin-bottom: 20px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 24px;
 }
 .quick-amount {
-  padding: 10px 4px; border: 1px solid var(--border);
-  border-radius: 10px; background: var(--bg-elevated);
-  font-size: 11px; font-weight: 600; cursor: pointer;
-  color: var(--text-secondary); transition: all 0.15s;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 12px 4px; border: 1.5px solid var(--border);
+  border-radius: 12px; background: var(--bg-elevated);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  color: var(--text-secondary); transition: all 0.15s; font-family: inherit;
 }
-.quick-amount:hover { border-color: var(--accent); color: var(--accent); }
-.quick-amount.active {
-  border-color: var(--accent); background: var(--accent-dim); color: var(--accent);
-}
+.quick-amount:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.quick-amount.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
 
-.summary-pill {
+/* Amount summary */
+.amount-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--accent-dim); border: 1px solid var(--accent);
+  border-radius: 12px; padding: 12px 16px; margin-bottom: 22px;
+  cursor: pointer; transition: background 0.15s;
+}
+.amount-summary:hover { background: var(--accent-dim); }
+.amount-summary__left {
   display: flex; align-items: center; gap: 8px;
-  background: var(--accent-dim); color: var(--accent);
-  border-radius: 10px; padding: 10px 14px; margin-bottom: 20px;
-  font-size: 14px; font-weight: 600;
+  font-size: 14px; color: var(--accent);
 }
-.summary-pill i { font-size: 13px; }
-.summary-pill__edit {
-  margin-left: auto; background: none; border: none;
-  color: var(--accent); cursor: pointer; padding: 2px 6px;
-  font-size: 12px;
-}
+.amount-summary__left i { font-size: 13px; }
+.amount-summary__left strong { font-weight: 800; }
+.amount-summary__edit { font-size: 12px; font-weight: 600; color: var(--accent); display: flex; align-items: center; gap: 4px; }
 
-.form-field { margin-bottom: 18px; }
+/* Form fields */
+.form-field { margin-bottom: 20px; }
 .form-field label {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; font-weight: 600; color: var(--text-secondary);
-  margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--text-secondary); margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: 0.06em;
 }
-.form-field label i { color: var(--accent); }
 
-.operator-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-}
+/* Operator grid */
+.operator-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .operator-btn {
-  padding: 10px 8px; border: 1px solid var(--border);
-  border-radius: 10px; background: var(--bg-elevated);
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  color: var(--text-secondary); transition: all 0.15s; text-align: center;
+  padding: 14px 8px; border: 1.5px solid var(--border);
+  border-radius: 12px; background: var(--bg-elevated);
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  color: var(--text-secondary); transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: inherit;
 }
-.operator-btn:hover  { border-color: var(--accent); color: var(--accent); }
-.operator-btn.active {
-  border-color: var(--accent); background: var(--accent-dim); color: var(--accent);
-}
+.operator-btn__icon { font-size: 18px; }
+.operator-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.operator-btn.active { border-color: var(--accent); background: var(--accent-dim); color: var(--accent); }
 
+/* Phone input */
 .phone-input {
-  display: flex; border: 1px solid var(--border);
-  border-radius: 12px; overflow: hidden; transition: border-color 0.15s;
+  display: flex; border: 1.5px solid var(--border);
+  border-radius: 14px; overflow: hidden; transition: border-color 0.15s;
+  background: var(--bg-elevated);
 }
-.phone-input:focus-within { border-color: var(--accent); }
+.phone-input:focus-within { border-color: var(--accent); background: var(--bg-card); }
 .phone-input__prefix {
-  padding: 13px 14px; background: var(--bg-elevated);
-  font-size: 14px; font-weight: 600; color: var(--text-secondary);
-  border-right: 1px solid var(--border); display: flex;
-  align-items: center; gap: 6px; flex-shrink: 0;
+  padding: 14px 16px; background: transparent;
+  font-size: 15px; font-weight: 700; color: var(--accent);
+  border-right: 1px solid var(--border); flex-shrink: 0;
 }
 .phone-input__field {
-  flex: 1; padding: 13px 14px; border: none; outline: none;
-  font-size: 15px; background: transparent; color: var(--text-primary);
+  flex: 1; padding: 14px 16px; border: none; outline: none;
+  font-size: 16px; background: transparent; color: var(--text-primary);
   font-family: inherit;
 }
 
 .field-hint {
   display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--text-muted); margin-top: 6px;
+  font-size: 12px; color: var(--text-muted); margin-top: 8px;
 }
 .field-error {
   display: flex; align-items: center; gap: 6px;
@@ -587,80 +641,70 @@ onUnmounted(() => {
 .error-banner {
   display: flex; align-items: center; gap: 10px;
   background: var(--danger-bg); color: var(--danger);
-  border-radius: 10px; padding: 12px 14px;
+  border-radius: 12px; padding: 12px 14px;
   font-size: 13px; font-weight: 500; margin-bottom: 16px;
 }
 
+/* Buttons */
 .btn-primary {
-  width: 100%; padding: 15px; background: var(--accent);
-  color: var(--text-inverse); border: none; border-radius: 12px;
+  width: 100%; padding: 16px; background: var(--accent);
+  color: #fff; border: none; border-radius: 14px;
   font-size: 15px; font-weight: 700; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  gap: 8px; transition: background 0.15s; margin-bottom: 10px;
+  gap: 8px; transition: all 0.15s; margin-bottom: 10px;
+  font-family: inherit; box-shadow: 0 4px 14px rgba(232,93,4,0.3);
 }
-.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary:hover:not(:disabled) { opacity: 0.92; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
 .btn-ghost {
-  width: 100%; padding: 12px; background: transparent;
+  width: 100%; padding: 13px; background: transparent;
   color: var(--text-secondary); border: 1px solid var(--border);
-  border-radius: 12px; font-size: 14px; font-weight: 600;
+  border-radius: 14px; font-size: 14px; font-weight: 600;
   cursor: pointer; display: flex; align-items: center;
-  justify-content: center; gap: 8px; transition: all 0.15s;
+  justify-content: center; gap: 8px; transition: all 0.15s; font-family: inherit;
 }
 .btn-ghost:hover { border-color: var(--text-secondary); color: var(--text-primary); }
 
 /* Result card */
 .result-card {
-  border-radius: 16px; padding: 32px 24px; text-align: center;
-  border: 1px solid var(--border); margin-bottom: 20px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 36px 24px; text-align: center;
+  margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
-.result-card--success { background: var(--bg); }
-.result-card__icon {
-  font-size: 48px; margin-bottom: 16px; color: var(--success);
-}
-.result-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.result-card p  { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+.result-card__icon { font-size: 56px; margin-bottom: 16px; color: var(--success); }
+.result-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.result-card p  { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; }
 .result-card__ref {
+  display: inline-flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 600; color: var(--text-muted);
-  font-family: monospace; margin-bottom: 20px;
+  font-family: monospace; background: var(--bg-elevated);
+  padding: 8px 14px; border-radius: 8px; margin-bottom: 20px;
 }
 
 .polling-status {
   display: flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 12px 16px; border-radius: 10px;
+  gap: 8px; padding: 14px 16px; border-radius: 12px;
   font-size: 13px; font-weight: 600; margin-bottom: 20px;
 }
 .polling-status--waiting   { background: #fef3c7; color: #92400e; }
 .polling-status--completed { background: var(--success-bg); color: var(--success); }
 .polling-status--failed    { background: var(--danger-bg); color: var(--danger); }
 
-.btn-secondary {
-  display: flex; align-items: center; justify-content: center;
-  gap: 8px; padding: 12px 24px; background: var(--bg-elevated);
-  border: 1px solid var(--border); border-radius: 12px;
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  color: var(--text-primary); transition: all 0.15s; margin: 0 auto;
-}
-.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-
 /* Recent top-ups */
 .recent-section { margin-top: 8px; }
 .recent-section__title {
-  font-size: 13px; font-weight: 700; color: var(--text-secondary);
-  text-transform: uppercase; letter-spacing: 0.05em;
-  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
 }
-.recent-section__title i { color: var(--accent); }
-
-.topup-list { display: flex; flex-direction: column; gap: 8px; }
+.topup-list { display: flex; flex-direction: column; gap: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
 .topup-item {
   display: flex; align-items: center; gap: 14px;
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px 16px;
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
 }
+.topup-item:last-child { border-bottom: none; }
 .topup-item__icon {
-  width: 38px; height: 38px; border-radius: 10px;
+  width: 40px; height: 40px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; flex-shrink: 0;
 }
@@ -668,14 +712,12 @@ onUnmounted(() => {
 .topup-item__icon--pending   { background: #fef3c7; color: #92400e; }
 .topup-item__icon--failed    { background: var(--danger-bg); color: var(--danger); }
 .topup-item__icon--initiated { background: var(--bg-elevated); color: var(--text-secondary); }
-
 .topup-item__details { flex: 1; }
 .topup-item__amount  { font-size: 15px; font-weight: 700; }
 .topup-item__meta    { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-
 .topup-item__status {
-  font-size: 11px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.05em; padding: 4px 8px; border-radius: 6px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px;
 }
 .topup-item__status--completed { background: var(--success-bg); color: var(--success); }
 .topup-item__status--pending   { background: #fef3c7; color: #92400e; }
