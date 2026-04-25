@@ -326,146 +326,168 @@ onMounted(async () => {
 function open(item) { selected.value = item }
 
 function downloadTxPdf(item) {
-  const doc  = new jsPDF({ unit: 'pt', format: 'a4' })
-  const W    = doc.internal.pageSize.getWidth()
-  const H    = doc.internal.pageSize.getHeight()
-  const dark = [30, 30, 30]
-  const gray = [130, 130, 130]
-  const light= [245, 245, 245]
-  const M    = 52  // margin
+  const doc    = new jsPDF({ unit: 'pt', format: 'a4' })
+  const W      = doc.internal.pageSize.getWidth()
+  const H      = doc.internal.pageSize.getHeight()
+  const dark   = [30, 30, 30]
+  const gray   = [140, 140, 140]
+  const light  = [248, 248, 248]
+  const green  = [34, 197, 94]
+  const M      = 52
 
-  // ── Logo (top-left) ──────────────────────────────────────────────────
   const logoUrl = window.location.origin + '/logo.png'
   const img     = new Image()
-  img.src       = logoUrl
+  img.crossOrigin = 'anonymous'
+  img.src         = logoUrl
 
   const render = () => {
-    try { doc.addImage(img, 'PNG', M, 40, 110, 36) } catch (_) {
-      doc.setFontSize(16)
+    // ── Green left accent bar ─────────────────────────────────────────
+    doc.setFillColor(...green)
+    doc.rect(0, 0, 5, H, 'F')
+
+    // ── Logo (square 1:1, top-left) ───────────────────────────────────
+    try {
+      doc.addImage(img, 'PNG', M, 32, 48, 48)
+    } catch (_) {
+      doc.setFontSize(15)
       doc.setFont('helvetica', 'bold')
       doc.setTextColor(...dark)
-      doc.text('UlendoPay', M, 64)
+      doc.text('UlendoPay', M, 62)
     }
 
-    // ── "RECEIPT" heading (top-right) ──────────────────────────────────
-    doc.setFontSize(28)
+    // ── "RECEIPT" (top-right) ─────────────────────────────────────────
+    doc.setFontSize(30)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(...dark)
-    doc.text('RECEIPT', W - M, 72, { align: 'right' })
+    doc.text('RECEIPT', W - M, 68, { align: 'right' })
 
-    // ── Thin rule under header ─────────────────────────────────────────
-    doc.setDrawColor(220, 220, 220)
-    doc.setLineWidth(0.5)
-    doc.line(M, 96, W - M, 96)
+    // ── Green accent rule ─────────────────────────────────────────────
+    doc.setDrawColor(...green)
+    doc.setLineWidth(1.5)
+    doc.line(M, 92, W - M, 92)
 
-    // ── Transaction type & reference (left) ───────────────────────────
-    doc.setFontSize(10)
+    // ── Transaction label (left) ──────────────────────────────────────
+    doc.setFontSize(11)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(...dark)
-    doc.text(labelFor(item), M, 126)
+    doc.text(labelFor(item), M, 118)
 
-    doc.setFontSize(9)
+    doc.setFontSize(8.5)
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(...gray)
-    doc.text(item.reference || '', M, 142)
+    doc.text(item.created_at ? `Generated on ${formatDateTime(item.created_at)}` : '', M, 132)
 
-    // ── Receipt # and date (right) ────────────────────────────────────
-    const refLabel  = 'Receipt #'
-    const dateLabel = 'Receipt date'
-    const refVal    = item.reference || '—'
-    const dateVal   = formatDate(item.created_at)
+    // ── Receipt # and date (right) — fixed columns ────────────────────
+    const labelX = W - M - 160
+    const valX   = W - M
 
-    doc.setFontSize(9)
+    doc.setFontSize(8.5)
     doc.setFont('helvetica', 'bold')
-    doc.setTextColor(...dark)
-    doc.text(refLabel,  W - M - 120, 126)
-    doc.text(dateLabel, W - M - 120, 142)
+    doc.setTextColor(...gray)
+    doc.text('Receipt #',    labelX, 118)
+    doc.text('Receipt date', labelX, 132)
 
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(...dark)
-    doc.text(refVal,  W - M, 126, { align: 'right' })
-    doc.text(dateVal, W - M, 142, { align: 'right' })
+    doc.text(item.reference || '—', valX, 118, { align: 'right' })
+    doc.text(formatDate(item.created_at), valX, 132, { align: 'right' })
 
-    // ── Amount block ──────────────────────────────────────────────────
-    const isIn  = item.kind === 'topup' || item.kind === 'transfer-in'
-    const amtColor = isIn ? [34, 197, 94] : item.kind === 'withdraw' ? [249, 115, 22] : [30, 30, 30]
+    // ── Amount block with subtle bg ───────────────────────────────────
+    const isIn     = item.kind === 'topup' || item.kind === 'transfer-in'
+    const amtColor = isIn ? green : item.kind === 'withdraw' ? [249, 115, 22] : [30, 30, 30]
     const amtText  = `${amountPrefix(item)}${fmt(amountFor(item))} ${currencyFor(item)}`
 
-    doc.setFontSize(32)
+    doc.setFillColor(245, 250, 245)
+    doc.roundedRect(M, 148, W - M * 2, 58, 6, 6, 'F')
+
+    doc.setFontSize(34)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(...amtColor)
-    doc.text(amtText, M, 196)
+    doc.text(amtText, M + 14, 186)
 
-    // Status badge
+    // Status badge inline right
     const statusColors = { completed: [34,197,94], failed: [239,68,68], refunded: [251,191,36] }
     const sc = statusColors[item.status] || [251, 191, 36]
     doc.setFillColor(...sc)
-    doc.roundedRect(M, 206, 70, 16, 4, 4, 'F')
+    doc.roundedRect(W - M - 74, 158, 74, 18, 5, 5, 'F')
     doc.setFontSize(7.5)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(255, 255, 255)
-    doc.text((item.status || '').toUpperCase(), M + 35, 217, { align: 'center' })
+    doc.text((item.status || '').toUpperCase(), W - M - 37, 170, { align: 'center' })
 
     // ── Dark table header ─────────────────────────────────────────────
-    const tableTop = 244
+    const tableTop = 224
     doc.setFillColor(...dark)
-    doc.rect(M, tableTop, W - M * 2, 24, 'F')
+    doc.rect(M, tableTop, W - M * 2, 26, 'F')
 
-    doc.setFontSize(9)
+    doc.setFontSize(8.5)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(255, 255, 255)
-    doc.text('DETAIL',  M + 10,  tableTop + 15)
-    doc.text('VALUE',   W - M - 10, tableTop + 15, { align: 'right' })
+    doc.text('DETAIL', M + 12, tableTop + 17)
+    doc.text('VALUE',  W - M - 12, tableTop + 17, { align: 'right' })
 
     // ── Table rows ────────────────────────────────────────────────────
     const rows = modalRows(item).filter(([, v]) => v)
-    let y = tableTop + 24
+    let y = tableTop + 26
 
     rows.forEach(([k, v], idx) => {
-      const rowH = 26
-      if (idx % 2 === 0) {
-        doc.setFillColor(...light)
-        doc.rect(M, y, W - M * 2, rowH, 'F')
-      }
-      doc.setFontSize(9)
+      const rowH = 28
+      doc.setFillColor(idx % 2 === 0 ? 248 : 255, idx % 2 === 0 ? 248 : 255, idx % 2 === 0 ? 248 : 255)
+      doc.rect(M, y, W - M * 2, rowH, 'F')
+
+      doc.setFontSize(8.5)
       doc.setFont('helvetica', 'normal')
       doc.setTextColor(...gray)
-      doc.text(String(k), M + 10, y + 17)
+      doc.text(String(k), M + 12, y + 18)
 
       doc.setFont('helvetica', 'bold')
       doc.setTextColor(...dark)
-      doc.text(String(v), W - M - 10, y + 17, { align: 'right', maxWidth: 200 })
+      doc.text(String(v), W - M - 12, y + 18, { align: 'right', maxWidth: 220 })
 
       y += rowH
     })
 
-    // ── Bottom rule ───────────────────────────────────────────────────
+    // ── Bottom bold rule ──────────────────────────────────────────────
     doc.setDrawColor(...dark)
     doc.setLineWidth(1)
-    doc.line(M, y + 10, W - M, y + 10)
+    doc.line(M, y + 8, W - M, y + 8)
 
-    // ── Notes / footer ────────────────────────────────────────────────
+    // ── Notes ─────────────────────────────────────────────────────────
     doc.setFontSize(9)
     doc.setFont('helvetica', 'bold')
     doc.setTextColor(...dark)
-    doc.text('Notes', M, y + 34)
+    doc.text('Notes', M, y + 28)
 
     doc.setFontSize(8.5)
     doc.setFont('helvetica', 'normal')
     doc.setTextColor(...gray)
     const note = 'This is an official UlendoPay transaction receipt. For queries contact support@ulendopay.com'
-    const noteLines = doc.splitTextToSize(note, W - M * 2)
-    doc.text(noteLines, M, y + 50)
+    doc.text(doc.splitTextToSize(note, W - M * 2), M, y + 42)
 
-    // Page border (subtle)
-    doc.setDrawColor(220, 220, 220)
-    doc.setLineWidth(0.5)
-    doc.rect(20, 20, W - 40, H - 40)
+    // ── Watermark ─────────────────────────────────────────────────────
+    doc.setFontSize(52)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(240, 240, 240)
+    doc.saveGraphicsState()
+    doc.text('UlendoPay', W / 2, H - 160, { align: 'center', angle: 20 })
+    doc.restoreGraphicsState()
+
+    // ── Footer bar ────────────────────────────────────────────────────
+    doc.setFillColor(...dark)
+    doc.rect(0, H - 36, W, 36, 'F')
+
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(180, 180, 180)
+    const now = new Date().toLocaleString('en', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    doc.text(`Generated on ${now}`, M, H - 14)
+    doc.text('ulendopay.com', W - M, H - 14, { align: 'right' })
 
     doc.save(`UlendoPay_${item.reference || 'receipt'}.pdf`)
   }
 
-  if (img.complete) { render() } else { img.onload = render; img.onerror = render }
+  if (img.complete && img.naturalWidth > 0) { render() }
+  else { img.onload = render; img.onerror = render }
 }
 
 function iconFor(item) {
