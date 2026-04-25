@@ -206,7 +206,7 @@ async function handleLogout() {
 }
 
 .top-nav__avatar {
-  display: none;
+  display: flex;
 }
 
 .nav-icon-btn {
