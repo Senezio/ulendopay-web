@@ -1,29 +1,24 @@
 <template>
   <div class="landing">
 
-    <!-- ── Navbar ─────────────────────────────────────────────────────────── -->
     <header class="navbar" :class="{ 'navbar--scrolled': scrolled }">
       <div class="navbar__inner">
-        <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
           <img src="/logo.png" alt="Logo" style="height: 40px; width: auto; display: block;">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
 
-        <!-- Desktop nav links -->
         <nav class="navbar__links">
           <a href="#features">Features</a>
           <a href="#how-it-works">How it works</a>
           <a href="#security">Security</a>
         </nav>
 
-        <!-- Desktop CTAs -->
         <div class="navbar__actions">
           <RouterLink to="/login" class="btn-ghost">Sign in</RouterLink>
           <RouterLink to="/register" class="btn-primary">Create account</RouterLink>
         </div>
 
-        <!-- Mobile: sign in + hamburger -->
         <div class="navbar__mobile-actions">
           <RouterLink to="/login" class="btn-ghost btn-ghost--sm">Sign in</RouterLink>
           <button class="hamburger" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen">
@@ -32,7 +27,6 @@
         </div>
       </div>
 
-      <!-- Mobile dropdown -->
       <div class="mobile-menu" :class="{ open: menuOpen }">
         <a href="#features"     @click="menuOpen = false">Features</a>
         <a href="#how-it-works" @click="menuOpen = false">How it works</a>
@@ -40,7 +34,6 @@
       </div>
     </header>
 
-    <!-- ── Hero ──────────────────────────────────────────────────────────── -->
     <section class="hero" :style="{ backgroundImage: `url(${bannerImage})` }">
       <div class="hero__overlay"></div>
       <div class="container hero__content">
@@ -64,7 +57,6 @@
     </section>
 
 
-    <!-- ── Fee Calculator ───────────────────────────────────────────────────── -->
     <section class="calculator-section reveal">
       <div class="container">
         <div class="calc-card">
@@ -125,7 +117,6 @@
       </div>
     </section>
 
-    <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
     <section class="trust-bar reveal">
       <div class="container trust-bar__inner">
         <div v-for="t in trustPoints" :key="t.label" class="trust-item stagger-item">
@@ -138,7 +129,6 @@
       </div>
     </section>
 
-    <!-- ── How it works ──────────────────────────────────────────────────── -->
     <section id="how-it-works" class="section reveal reveal--left">
       <div class="container">
         <div class="section__label reveal reveal--scale">HOW IT WORKS</div>
@@ -153,7 +143,6 @@
       </div>
     </section>
 
-    <!-- ── Features ──────────────────────────────────────────────────────── -->
     <section id="features" class="section section--alt reveal reveal--right">
       <div class="container">
         <div class="section__label reveal reveal--scale">FEATURES</div>
@@ -168,7 +157,6 @@
       </div>
     </section>
 
-    <!-- ── Security ──────────────────────────────────────────────────────── -->
     <section id="security" class="section reveal reveal--left">
       <div class="container security-grid">
         <div class="security__text">
@@ -212,7 +200,6 @@
       </div>
     </section>
 
-    <!-- ── CTA Section ────────────────────────────────────────────────────── -->
     <section class="cta-section" :style="{ backgroundImage: `linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.78)), url(${ctaBannerImage})` }">
       <div class="container cta-section__inner">
         <h2>Ready to send money?</h2>
@@ -222,7 +209,6 @@
       </div>
     </section>
 
-    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
@@ -238,7 +224,6 @@
       </div>
     </footer>
 
-    <!-- ── Mobile sticky CTA ──────────────────────────────────────────────── -->
     <div class="sticky-cta">
       <RouterLink to="/register" class="btn-primary btn-primary--full">Create account</RouterLink>
     </div>
@@ -653,12 +638,10 @@ const securityPoints = [
 /* ── Scroll reveal animations ──────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(60px);
   transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal.revealed {
   opacity: 1;
-  transform: translateY(0);
 }
 .reveal--left {
   opacity: 0;
@@ -680,12 +663,12 @@ const securityPoints = [
 }
 .reveal--scale {
   opacity: 0;
-  transform: scale(0.92) translateY(30px);
+  transform: scale(0.92);
   transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal--scale.revealed {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: scale(1);
 }
 
 /* CTA section background */
@@ -936,13 +919,13 @@ const securityPoints = [
 /* ── Stagger animations ─────────────────────────────────────────────────── */
 .stagger-item {
   opacity: 0;
-  transform: translateY(40px) scale(0.97);
+  transform: scale(0.97);
   transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .stagger-item.stagger-in {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: scale(1);
 }
 
 /* ── Feature card hover ─────────────────────────────────────────────────── */
