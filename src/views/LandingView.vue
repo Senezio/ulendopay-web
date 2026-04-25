@@ -641,7 +641,7 @@ const securityPoints = [
 .trust-item__desc  { font-size: 13px; color: #777; margin-top: 2px; }
 
 /* ── Sections ──────────────────────────────────────────────────────────── */
-.section     { padding: 80px 0; }
+.section     { padding: 40px 0; }
 .section--alt { background: #fafafa; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; }
 
 /* ── Scroll reveal animations ──────────────────────────────────────────── */
@@ -903,7 +903,7 @@ const securityPoints = [
 }
 
 @media (max-width: 480px) {
-  .hero { min-height: 480px; }
+  .hero { min-height: auto; }
   .hero__content { padding: 56px 24px; }
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
@@ -1007,7 +1007,7 @@ const securityPoints = [
 /* ── Fee Calculator (Responsive Fix) ─────────────────────────────────────── */
 .calculator-section {
   background: #f8f9fa;
-  padding: 48px 0;
+  padding: 24px 0 0 0;
 }
 .calc-card {
   background: var(--bg-card);
