@@ -291,7 +291,12 @@ onMounted(() => {
       setTimeout(() => el.classList.add('hero-in'), i * 120)
     })
   }, 100)
-  setTimeout(() => onScroll(), 200)
+  // Run reveal check immediately after paint, then again for slow devices
+  requestAnimationFrame(() => {
+    onScroll()
+    setTimeout(() => onScroll(), 300)
+    setTimeout(() => onScroll(), 800)
+  })
   runCalc()
 })
 onUnmounted(() => window.removeEventListener('scroll', onScroll))
@@ -1036,9 +1041,9 @@ const securityPoints = [
   min-width: 0; /* Prevents flex items from overflowing parent */
 }
 .calc-arrow {
-  font-size: 16px; 
+  font-size: 16px;
   color: #e85d04;
-  padding-bottom: 12px; 
+  padding-bottom: 12px;
   text-align: center;
   transition: transform 0.3s ease;
 }
@@ -1047,11 +1052,11 @@ const securityPoints = [
   color: #666; margin-bottom: 6px;
 }
 .calc-input-wrap {
-  display: flex; 
+  display: flex;
   border: 1px solid #ddd;
-  border-radius: 10px; 
+  border-radius: 10px;
   overflow: hidden;
-  background: var(--bg-card); 
+  background: var(--bg-card);
   transition: border-color 0.15s;
 }
 .calc-input-wrap:focus-within { border-color: #e85d04; }
