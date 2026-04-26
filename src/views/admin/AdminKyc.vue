@@ -69,6 +69,68 @@
         </div>
       </div>
 
+      <!-- Verified Users List -->
+      <div class="admin-table-card" style="margin-top: 28px;">
+        <div class="table-toolbar">
+          <div class="table-toolbar__count">
+            <i class="fa-sharp-duotone fa-solid fa-circle-check" style="color:#16a34a"></i>
+            {{ verified?.total ?? 0 }} verified
+          </div>
+          <button class="btn-icon" @click="loadVerified">
+            <i class="fa-sharp-duotone fa-solid fa-rotate"></i>
+          </button>
+        </div>
+
+        <div v-if="verifiedLoading" class="table-loading">
+          <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading...
+        </div>
+
+        <div class="table-scroll" v-else-if="verified?.data?.length">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Document</th>
+                <th>Tier</th>
+                <th>Verified</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="record in verified.data" :key="record.id">
+                <td>
+                  <div class="cell-user">
+                    <div class="cell-user__name">{{ record.user?.name }}</div>
+                    <div class="cell-user__meta">{{ record.user?.email }}</div>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge badge--gray">{{ formatDocType(record.document_type) }}</span>
+                </td>
+                <td>
+                  <span class="tier-badge" :class="'tier-badge--' + (record.requested_tier || 'basic')">
+                    {{ record.requested_tier ? record.requested_tier.charAt(0).toUpperCase() + record.requested_tier.slice(1) : '—' }}
+                  </span>
+                </td>
+                <td class="cell-date">{{ formatDate(record.updated_at) }}</td>
+                <td>
+                  <div class="cell-actions">
+                    <button class="btn-action btn-action--view" @click="openRecord(record)">
+                      <i class="fa-sharp-duotone fa-solid fa-eye"></i> View
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-else class="table-empty">
+          <i class="fa-sharp-duotone fa-solid fa-users"></i>
+          <p>No verified users yet</p>
+        </div>
+      </div>
+
       <!-- Review Modal -->
       <div v-if="selected" class="modal-overlay" @click.self="closeModal">
         <div class="modal">
@@ -166,7 +228,14 @@
 
           </div>
           <div class="modal__footer">
-            <template v-if="!rejectMode">
+            <template v-if="selected?.status === 'approved' || selected?.status === 'verified'">
+              <span class="verified-note">
+                <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
+                Verified on {{ formatDate(selected?.updated_at) }}
+              </span>
+              <button class="btn-ghost" @click="closeModal">Close</button>
+            </template>
+            <template v-else-if="!rejectMode">
               <button class="btn-danger-outline" @click="rejectMode = true">
                 <i class="fa-sharp-duotone fa-solid fa-xmark"></i> Reject
               </button>
@@ -201,9 +270,11 @@ import { adminApi } from '@/api/admin'
 import { useUiStore } from '@/stores/ui'
 
 const ui            = useUiStore()
-const records       = ref(null)
-const selected      = ref(null)
-const loading       = ref(false)
+const records         = ref(null)
+const verified        = ref(null)
+const verifiedLoading = ref(false)
+const selected        = ref(null)
+const loading         = ref(false)
 const actionLoading = ref(false)
 const rejectMode    = ref(false)
 const rejectReason  = ref('')
@@ -263,6 +334,16 @@ async function load() {
     records.value = data
   } finally {
     loading.value = false
+  }
+}
+
+async function loadVerified() {
+  verifiedLoading.value = true
+  try {
+    const { data } = await adminApi.kycVerified()
+    verified.value = data
+  } finally {
+    verifiedLoading.value = false
   }
 }
 
@@ -332,7 +413,7 @@ async function reject() {
   }
 }
 
-onMounted(load)
+onMounted(() => { load(); loadVerified() })
 </script>
 
 <style scoped>
@@ -523,5 +604,11 @@ onMounted(load)
 }
 .tier-badge--basic { background: #fff7ed; color: #c2410c; }
 .tier-badge--verified { background: #f0fdf4; color: #16a34a; }
+
+.verified-note {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #16a34a; font-weight: 600;
+  flex: 1;
+}
 
 </style>

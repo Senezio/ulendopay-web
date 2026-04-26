@@ -50,6 +50,7 @@ export const adminApi = {
 
   // KYC Document (fetched as blob to avoid direct IP access)
   kycDocument: (url) => client.get(url.replace(/.*\/api\/v1/, ''), { responseType: 'blob' }),
+  kycVerified: (params) => client.get('/admin/kyc/verified', { params }),
 
   // Tier management
   tierList: () => client.get('/admin/tiers'),
