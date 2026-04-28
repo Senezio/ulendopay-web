@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
     }
 
     const options = {
-      hostname: '198.251.88.32.nip.io',
+      hostname: '198.251.88.32',
       port: 443,
       path: targetPath,
       method: req.method,
