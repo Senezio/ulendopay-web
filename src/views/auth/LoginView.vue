@@ -289,6 +289,8 @@ async function handleCredentials() {
 
     const { data } = await client.post('/auth/login', payload)
 
+    alert('next_step=' + data.next_step + ' token=' + (data.token ? 'yes' : 'no') + ' err=' + JSON.stringify(data.errors || data.message || ''))
+
     if (data.next_step === 'dashboard') {
       auth.setSession(data.token, data.user)
       router.push(auth.isStaff ? '/admin' : '/dashboard')
