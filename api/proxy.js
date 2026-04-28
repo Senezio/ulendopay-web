@@ -30,6 +30,10 @@ module.exports = async (req, res) => {
         'authorization': req.headers['authorization'] || '',
         'x-idempotency-key': req.headers['x-idempotency-key'] || '',
         'content-length': bodyData ? Buffer.byteLength(bodyData) : 0,
+        'user-agent': 'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        'x-requested-with': 'XMLHttpRequest',
+        'origin': 'https://ulendopay.vercel.app',
+        'referer': 'https://ulendopay.vercel.app/',
       },
       rejectUnauthorized: false,
     };
