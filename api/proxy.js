@@ -1,9 +1,6 @@
 const https = require('https');
 
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-
 module.exports = async (req, res) => {
-  // Handle CORS preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Idempotency-Key');
@@ -14,37 +11,52 @@ module.exports = async (req, res) => {
   }
 
   const path = req.url.replace(/^\/api\/v1/, '');
-  const targetUrl = `https://198.251.88.32/api/v1${path}`;
+  const targetPath = `/api/v1${path}`;
 
-  const options = {
-    method: req.method,
-    agent: httpsAgent,
-    headers: { ...req.headers, 'Host': 'ulendopay.malawihire.com' },
-  };
+  const headers = { ...req.headers };
+  delete headers['host'];
+  delete headers['connection'];
+  delete headers['content-length'];
+  headers['Host'] = 'ulendopay.malawihire.com';
 
-  delete options.headers['host'];
-  delete options.headers['connection'];
-  delete options.headers['content-length'];
-
-  const fetch = (await import('node-fetch')).default;
-
+  let body = '';
   if (req.method !== 'GET' && req.method !== 'HEAD') {
-    const body = await new Promise((resolve) => {
+    body = await new Promise((resolve) => {
       let data = '';
       req.on('data', chunk => data += chunk);
       req.on('end', () => resolve(data));
     });
-    if (body) options.body = body;
+    if (body) headers['content-length'] = Buffer.byteLength(body).toString();
   }
 
-  try {
-    const response = await fetch(targetUrl, options);
-    const contentType = response.headers.get('content-type') || 'application/json';
-    res.setHeader('Content-Type', contentType);
-    res.status(response.status);
-    const text = await response.text();
-    res.send(text);
-  } catch (error) {
-    res.status(502).json({ message: 'Bridge Error', error: error.message });
-  }
+  const options = {
+    hostname: '198.251.88.32',
+    path: targetPath,
+    method: req.method,
+    headers,
+    rejectUnauthorized: false,
+  };
+
+  return new Promise((resolve) => {
+    const proxyReq = https.request(options, (proxyRes) => {
+      const contentType = proxyRes.headers['content-type'] || 'application/json';
+      res.setHeader('Content-Type', contentType);
+      res.status(proxyRes.statusCode);
+
+      let data = '';
+      proxyRes.on('data', chunk => data += chunk);
+      proxyRes.on('end', () => {
+        res.send(data);
+        resolve();
+      });
+    });
+
+    proxyReq.on('error', (error) => {
+      res.status(502).json({ message: 'Bridge Error', error: error.message });
+      resolve();
+    });
+
+    if (body) proxyReq.write(body);
+    proxyReq.end();
+  });
 };
