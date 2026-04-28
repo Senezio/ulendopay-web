@@ -38,10 +38,11 @@ module.exports = async (req, res) => {
     await new Promise((resolve, reject) => {
       const proxyReq = https.request(options, (proxyRes) => {
         res.status(proxyRes.statusCode);
-        Object.keys(proxyRes.headers).forEach(key => {
-          res.setHeader(key, proxyRes.headers[key]);
-        });
-        proxyRes.pipe(res).on('finish', resolve);
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        let data = '';
+        proxyRes.on('data', chunk => data += chunk);
+        proxyRes.on('end', () => { res.send(data); resolve(); });
       });
 
       proxyReq.on('error', reject);
