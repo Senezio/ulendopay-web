@@ -289,11 +289,24 @@ async function handleCredentials() {
 
     const { data } = await client.post('/auth/login', payload)
 
+    if (!data || (!data.user_id && data.next_step !== 'dashboard')) {
+       throw new Error('Invalid server response')
+    }
+
     if (data.next_step === 'dashboard') {
       auth.setSession(data.token, data.user)
       router.push(auth.isStaff ? '/admin' : '/dashboard')
       return
     }
+
+    userId.value     = data.user_id
+    isTotpStep.value = data.next_step === 'verify_totp'
+    step.value       = 'otp'
+  } catch (err) {
+    console.error('Login Error:', err)
+    error.value = err.response?.data?.message || err.message || 'Connection failed'
+  } finally { loading.value = false }
+}
 
     userId.value     = data.user_id
     isTotpStep.value = data.next_step === 'verify_totp'
