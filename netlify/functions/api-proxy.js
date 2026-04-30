@@ -73,10 +73,20 @@ exports.handler = async (event) => {
       body,
     };
   } catch (error) {
+    console.error('API Proxy Error:', error);
     return {
       statusCode: 502,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ message: 'Bridge Error', error: error.message }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        message: 'Bridge Error',
+        error: error.message,
+        code: error.code,
+        stack: error.stack,
+        target: targetUrl
+      }),
     };
   }
 };
