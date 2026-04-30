@@ -16,15 +16,13 @@ exports.handler = async (event) => {
     };
   }
 
-  const path = event.path
-    .replace(/^\/\.netlify\/functions\/api-proxy\/?/, '')
-    .replace(/^\/api\/?/, '');
+  const path = event.path.replace(/^\/\.netlify\/functions\/api-proxy/, '');
 
   const queryString = event.queryStringParameters
     ? '?' + new URLSearchParams(event.queryStringParameters).toString()
     : '';
 
-  const targetUrl = `https://198.251.88.32/api/${path}${queryString}`;
+  const targetUrl = `https://198.251.88.32${path}${queryString}`;
 
   const headers = {};
   Object.keys(event.headers).forEach(key => {
