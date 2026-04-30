@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://198.251.88.32/api/v1',
+  baseURL: '/api/v1',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -11,7 +11,6 @@ const client = axios.create({
 client.interceptors.request.use(config => {
   const token = localStorage.getItem('ulendo_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
-  config.headers['Host'] = 'ulendopay.malawihire.com'
   return config
 })
 
