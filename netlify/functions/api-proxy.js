@@ -16,7 +16,9 @@ exports.handler = async (event) => {
     };
   }
 
-  const path = event.path.replace(/^\/\.netlify\/functions\/api-proxy/, '');
+  let path = event.path.replace(/^\/\.netlify\/functions\/api-proxy/, '');
+  // Prepend /api because the redirect captures the part after /api/ as splat
+  path = '/api' + path;
 
   const queryString = event.queryStringParameters
     ? '?' + new URLSearchParams(event.queryStringParameters).toString()
@@ -60,6 +62,11 @@ exports.handler = async (event) => {
       body = Buffer.from(buffer).toString('utf-8');
     }
 
+    // Include error details and target URL for debugging
+    const errorBody = body && body.length < 1000 ? body : JSON.stringify({ status: response.status });
+    if (response.status >= 400) {
+      console.error('Backend error', { status: response.status, target: targetUrl, body: errorBody });
+    }
     return {
       statusCode: response.status,
       headers: {
