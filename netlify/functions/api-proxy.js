@@ -1,9 +1,7 @@
 const fetch = require('node-fetch');
 const https = require('https');
 
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false
-});
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -18,7 +16,9 @@ exports.handler = async (event) => {
     };
   }
 
-  const path = event.path.replace(/^\/\.netlify\/functions\/api-proxy\/?/, '').replace(/^\/api\/?/, '');
+  const path = event.path
+    .replace(/^\/\.netlify\/functions\/api-proxy\/?/, '')
+    .replace(/^\/api\/?/, '');
 
   const queryString = event.queryStringParameters
     ? '?' + new URLSearchParams(event.queryStringParameters).toString()
@@ -26,20 +26,17 @@ exports.handler = async (event) => {
 
   const targetUrl = `https://198.251.88.32/api/${path}${queryString}`;
 
-  const options = {
-    method: event.httpMethod,
-    agent: httpsAgent,
-    headers: {}
-  };
-
+  const headers = {};
   Object.keys(event.headers).forEach(key => {
     const lowerKey = key.toLowerCase();
-    if (!['host', 'connection', 'content-length'].includes(lowerKey)) {
-      options.headers[key] = event.headers[key];
+    if (!['host', 'connection', 'content-length', 'accept-encoding'].includes(lowerKey)) {
+      headers[key] = event.headers[key];
     }
   });
+  headers['Host'] = 'ulendopay.malawihire.com';
+  headers['accept-encoding'] = 'identity';
 
-  options.headers['Host'] = 'ulendopay.malawihire.com';
+  const options = { method: event.httpMethod, agent: httpsAgent, headers };
 
   if (event.body) {
     options.body = event.isBase64Encoded
@@ -53,9 +50,17 @@ exports.handler = async (event) => {
 
     const isBinary = /^(image|application\/pdf|application\/octet-stream|application\/vnd\.openxmlformats|application\/vnd\.ms-excel)/.test(contentType);
 
-    const body = isBinary
-      ? (await response.buffer()).toString('base64')
-      : await response.text();
+    let body;
+    let isBase64Encoded = false;
+
+    if (isBinary) {
+      const buffer = await response.arrayBuffer();
+      body = Buffer.from(buffer).toString('base64');
+      isBase64Encoded = true;
+    } else {
+      const buffer = await response.arrayBuffer();
+      body = Buffer.from(buffer).toString('utf-8');
+    }
 
     return {
       statusCode: response.status,
@@ -66,14 +71,14 @@ exports.handler = async (event) => {
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Idempotency-Key',
       },
-      isBase64Encoded: isBinary,
+      isBase64Encoded,
       body,
     };
   } catch (error) {
     return {
       statusCode: 502,
       headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ message: 'Bridge Error' }),
+      body: JSON.stringify({ message: 'Bridge Error', error: error.message }),
     };
   }
 };
