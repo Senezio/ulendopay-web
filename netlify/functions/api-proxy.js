@@ -45,6 +45,10 @@ exports.handler = async (event) => {
   }
 
   try {
+        // Add human-like headers to avoid bot detection
+    options.headers['User-Agent'] = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36';
+    options.headers['Accept'] = 'application/json, text/plain, */*';
+    options.headers['Accept-Language'] = 'en-US,en;q=0.9';
     const response = await fetch(targetUrl, options);
     const contentType = response.headers.get('Content-Type') || 'application/json';
 
