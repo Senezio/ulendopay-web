@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const https = require('https');
 
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const httpsAgent = new https.Agent({ rejectUnauthorized: false, servername: 'ulendopay.malawihire.com' });
 
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
