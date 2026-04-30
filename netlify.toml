@@ -8,11 +8,6 @@
   external_node_modules = ["node-fetch"]
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api-proxy/:splat"
-  status = 200
-
-[[redirects]]
   from = "/fontawesome/*"
   to = "/fontawesome/:splat"
   status = 200
