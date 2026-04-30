@@ -289,8 +289,9 @@ async function handleCredentials() {
 
     const { data } = await client.post('/auth/login', payload)
 
-    if (!data || (!data.user_id && data.next_step !== 'dashboard')) {
-       throw new Error('Invalid server response')
+    // Strict validation – must get user_id or 'dashboard' next_step
+    if (!data || (data.next_step !== 'dashboard' && !data.user_id)) {
+      throw new Error('Invalid server response: missing user_id')
     }
 
     if (data.next_step === 'dashboard') {
@@ -304,15 +305,7 @@ async function handleCredentials() {
     step.value       = 'otp'
   } catch (err) {
     console.error('Login Error:', err)
-    error.value = err.response?.data?.message || err.message || 'Connection failed'
-  } finally { loading.value = false }
-}
-
-    userId.value     = data.user_id
-    isTotpStep.value = data.next_step === 'verify_totp'
-    step.value       = 'otp'
-  } catch (err) {
-    error.value = err.response?.data?.message || 'Check your credentials and try again'
+    error.value = err.response?.data?.message || err.message || 'Connection failed. Check network.'
   } finally { loading.value = false }
 }
 
@@ -714,38 +707,46 @@ async function submitPinReset() {
 }
 .modal__input--pin {
   text-align: center;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.4em;
   font-size: 20px;
   font-weight: 700;
   font-family: monospace;
 }
 
 .modal__btn {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  border: none;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
   font-family: inherit;
-  transition: opacity 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 }
-.modal__btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.modal__btn--primary { background: var(--accent); color: #ffffff; }
-.modal__btn--primary:active:not(:disabled) { opacity: 0.88; }
+.modal__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.modal__btn--primary {
+  background: var(--accent);
+  color: #ffffff;
+}
 .modal__btn--ghost {
   background: var(--bg-elevated);
   color: var(--text-secondary);
 }
 
 .modal__success-icon {
-  font-size: 52px;
+  font-size: 48px;
   color: var(--success);
-  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.modal__btn i {
+  font-size: 16px;
 }
 </style>
