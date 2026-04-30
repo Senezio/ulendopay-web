@@ -305,7 +305,7 @@ async function handleCredentials() {
     step.value       = 'otp'
   } catch (err) {
     console.error('Login Error:', err)
-    error.value = err.response?.data?.message || err.message || 'Connection failed. Check network.'
+    error.value = err.response?.data?.error || err.response?.data?.message || err.message || 'Connection failed. Check network.'
   } finally { loading.value = false }
 }
 
