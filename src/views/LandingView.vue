@@ -6,7 +6,7 @@
       <div class="navbar__inner">
         <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
-          <img src="/logo.png" alt="Logo" style="height: 40px; width: auto; display: block;">
+          <img src="/logo.png?v=2" alt="Logo" style="height: 40px; width: auto; display: block;">
           <span>Ulendo <strong>Pay</strong></span>
         </RouterLink>
 
@@ -226,7 +226,7 @@
     <footer class="footer">
       <div class="container footer__inner">
         <div class="footer__brand">
-          <img src="/logo.png" alt="Logo" style="height: 32px; width: auto; display: block;">
+          <img src="/logo.png?v=2" alt="Logo" style="height: 32px; width: auto; display: block;">
           <span>Ulendo Pay</span>
         </div>
         <div class="footer__links">
@@ -239,7 +239,7 @@
     </footer>
 
     <!-- ── Mobile sticky CTA ──────────────────────────────────────────────── -->
-    <div class="sticky-cta">
+    <div class="sticky-cta" v-show="showStickyCta">
       <RouterLink to="/register" class="btn-primary btn-primary--full">Create account</RouterLink>
     </div>
 
@@ -320,7 +320,7 @@ async function runCalc() {
   calcLoading.value = true
   calcError.value = ''
   try {
-    const res = await fetch(`/api/v1/calculator?from_currency=${calcFrom.value}&to_currency=${calcTo.value}&amount=${calcAmount.value}`)
+    const res = await fetch(`https://api.ulendopay.com/api/v1/calculator?from_currency=${calcFrom.value}&to_currency=${calcTo.value}&amount=${calcAmount.value}`)
     const data = await res.json()
     if (data.message) {
       calcError.value = data.message
@@ -544,6 +544,7 @@ const securityPoints = [
 
 /* ── Hero ──────────────────────────────────────────────────────────────── */
 .hero {
+  overflow-x: hidden;
   position: relative;
   min-height: 580px;
   background-size: cover;

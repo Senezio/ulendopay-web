@@ -48,7 +48,7 @@
 
     <aside class="sidebar" :class="{ 'sidebar--open': isMenuOpen }">
       <div class="sidebar__header">
-        <img src="/logo.png" alt="UlendoPay" class="sidebar__logo" />
+        <img src="/logo.png?v=2" alt="UlendoPay" class="sidebar__logo" />
         <button class="sidebar__close" @click="isMenuOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-xmark"></i>
         </button>

@@ -49,6 +49,27 @@
           <p class="auth-alt">New to Ulendo Pay? <RouterLink to="/register">Create account</RouterLink></p>
         </template>
 
+        <!-- Phone verification step for unverified users -->
+        <template v-else-if="step === 'verify_phone'">
+          <div class="auth-head">
+            <div class="otp-icon">
+              <i class="fa-sharp-duotone fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h1>Verify your phone</h1>
+            <p>Enter the 6-digit code we sent to your phone number.</p>
+          </div>
+          <form @submit.prevent="handlePhoneVerify">
+            <UField label="Verification Code" type="text" v-model="otp"
+              placeholder="000000" maxlength="6" class="otp-field" />
+            <UError v-if="error" :message="error" />
+            <UButton :loading="loading">Verify Phone Number</UButton>
+            <button type="button" class="btn-text" @click="resendPhoneOtp" :disabled="resendCooldown > 0">
+              {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code' }}
+            </button>
+            <button type="button" class="btn-text" @click="step = 'credentials'">← Back to sign in</button>
+          </form>
+        </template>
+
         <template v-else>
           <div class="auth-head">
             <div class="otp-icon">
@@ -56,7 +77,7 @@
             </div>
             <h1>Verify your identity</h1>
             <p v-if="isTotpStep">Enter the 6-digit code from your authenticator app.</p>
-            <p v-else>We sent a 6-digit code to your phone. Enter it below.</p>
+            <p v-else>We sent a 6-digit code to your registered contact. Enter it below.</p>
           </div>
           <form @submit.prevent="handleOtp">
             <UField
@@ -101,7 +122,6 @@
             </button>
           </div>
 
-          <!-- Step 1: phone -->
           <div v-if="pinModal.step === 'phone'" class="modal__body">
             <p class="modal__info">We'll send a 6-digit reset code to your registered phone number.</p>
             <div class="modal__field">
@@ -117,7 +137,6 @@
             </button>
           </div>
 
-          <!-- Step 2: OTP -->
           <div v-if="pinModal.step === 'otp'" class="modal__body">
             <p class="modal__info">Enter the 6-digit code sent to <strong>{{ pinModal.phone }}</strong>.</p>
             <input v-model="pinModal.otp" class="modal__input modal__input--otp"
@@ -130,7 +149,6 @@
             <button class="modal__btn modal__btn--ghost" @click="pinModal.step = 'phone'">← Back</button>
           </div>
 
-          <!-- Step 3: new PIN -->
           <div v-if="pinModal.step === 'new'" class="modal__body">
             <div class="modal__field">
               <label class="modal__label">New PIN</label>
@@ -151,7 +169,6 @@
             </button>
           </div>
 
-          <!-- Step 4: done -->
           <div v-if="pinModal.step === 'done'" class="modal__body modal__body--center">
             <div class="modal__success-icon">
               <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
@@ -187,7 +204,6 @@
             </button>
           </div>
 
-          <!-- Step 1: email -->
           <div v-if="pwModal.step === 'email'" class="modal__body">
             <p class="modal__info">We'll send a reset code to your registered email address.</p>
             <div class="modal__field">
@@ -203,7 +219,6 @@
             </button>
           </div>
 
-          <!-- Step 2: OTP -->
           <div v-if="pwModal.step === 'otp'" class="modal__body">
             <p class="modal__info">Enter the 6-digit code sent to <strong>{{ pwModal.email }}</strong>.</p>
             <input v-model="pwModal.otp" class="modal__input modal__input--otp"
@@ -216,7 +231,6 @@
             <button class="modal__btn modal__btn--ghost" @click="pwModal.step = 'email'">← Back</button>
           </div>
 
-          <!-- Step 3: new password -->
           <div v-if="pwModal.step === 'new'" class="modal__body">
             <div class="modal__field">
               <label class="modal__label">New Password</label>
@@ -237,7 +251,6 @@
             </button>
           </div>
 
-          <!-- Step 4: done -->
           <div v-if="pwModal.step === 'done'" class="modal__body modal__body--center">
             <div class="modal__success-icon">
               <i class="fa-sharp-duotone fa-solid fa-circle-check"></i>
@@ -254,7 +267,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import client from '@/api/client'
@@ -274,6 +287,24 @@ const otp        = ref('')
 const error      = ref('')
 const loading    = ref(false)
 
+// Resend cooldown
+const resendCooldown = ref(0)
+let cooldownTimer = null
+
+function startResendCooldown() {
+  resendCooldown.value = 60
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) {
+      clearInterval(cooldownTimer)
+    }
+  }, 1000)
+}
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
 const methods = [
   { value: 'phone_pin',      label: 'Phone + PIN' },
   { value: 'email_password', label: 'Email' },
@@ -289,24 +320,75 @@ async function handleCredentials() {
 
     const { data } = await client.post('/auth/login', payload)
 
-    // Strict validation – must get user_id or 'dashboard' next_step
-    if (!data || (data.next_step !== 'dashboard' && !data.user_id)) {
-      throw new Error('Invalid server response: missing user_id')
-    }
-
     if (data.next_step === 'dashboard') {
       auth.setSession(data.token, data.user)
       router.push(auth.isStaff ? '/admin' : '/dashboard')
       return
     }
 
-    userId.value     = data.user_id
-    isTotpStep.value = data.next_step === 'verify_totp'
-    step.value       = 'otp'
+    userId.value = data.user_id
+
+    if (data.next_step === 'verify_totp') {
+      isTotpStep.value = true
+      step.value = 'otp'
+      return
+    }
+
+    if (data.next_step === 'verify_2fa') {
+      isTotpStep.value = false
+      step.value = 'otp'
+      return
+    }
+
+    if (data.next_step === 'verify_phone') {
+      step.value = 'verify_phone'
+      startResendCooldown()
+      return
+    }
+
+    throw new Error('Unexpected server response.')
+
   } catch (err) {
-    console.error('Login Error:', err)
-    error.value = err.response?.data?.error || err.response?.data?.message || err.message || 'Connection failed. Check network.'
+    // Handle unverified phone — backend returns 403 with next_step: verify_phone
+    const data = err.response?.data
+    if (err.response?.status === 403 && data?.code === 'PHONE_NOT_VERIFIED') {
+      userId.value = data.user_id
+      step.value = 'verify_phone'
+      startResendCooldown()
+      return
+    }
+    error.value = data?.errors
+      ? Object.values(data.errors).flat()[0]
+      : data?.message || err.message || 'Connection failed. Check network.'
   } finally { loading.value = false }
+}
+
+async function handlePhoneVerify() {
+  error.value = ''
+  loading.value = true
+  try {
+    await client.post('/auth/verify-phone', { user_id: userId.value, otp: otp.value })
+    step.value = 'credentials'
+    error.value = ''
+    otp.value = ''
+    // Show success hint
+    error.value = ''
+    alert('Phone verified successfully. Please sign in.')
+    step.value = 'credentials'
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Invalid or expired code.'
+  } finally { loading.value = false }
+}
+
+async function resendPhoneOtp() {
+  if (resendCooldown.value > 0 || !userId.value) return
+  error.value = ''
+  try {
+    await client.post('/auth/resend-otp', { user_id: userId.value, type: 'phone_verification' })
+    startResendCooldown()
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Failed to resend code.'
+  }
 }
 
 async function handleOtp() {
@@ -444,7 +526,6 @@ async function submitPinReset() {
 }
 .auth-wrap { width: 100%; max-width: 400px; }
 
-/* ── Brand ───────────────────────────────────── */
 .auth-brand { margin-bottom: 28px; }
 .brand-link {
   display: inline-flex;
@@ -457,7 +538,6 @@ async function submitPinReset() {
   display: block;
 }
 
-/* ── Auth Box ────────────────────────────────── */
 .auth-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -483,7 +563,6 @@ async function submitPinReset() {
   margin-bottom: 10px;
 }
 
-/* ── Method Toggle ───────────────────────────── */
 .method-toggle {
   display: flex;
   background: var(--bg-elevated);
@@ -512,7 +591,6 @@ async function submitPinReset() {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* ── Field Row ───────────────────────────────── */
 .field-row {
   display: flex;
   justify-content: space-between;
@@ -535,7 +613,6 @@ async function submitPinReset() {
 }
 .field-link:hover { text-decoration: underline; }
 
-/* ── OTP Field ───────────────────────────────── */
 .otp-field :deep(input) {
   text-align: center;
   letter-spacing: 0.4em;
@@ -543,7 +620,6 @@ async function submitPinReset() {
   font-weight: 700;
 }
 
-/* ── Footer ──────────────────────────────────── */
 .auth-alt {
   text-align: center;
   margin-top: 20px;
@@ -569,6 +645,7 @@ async function submitPinReset() {
   font-family: 'DM Sans', sans-serif;
 }
 .btn-text:hover { color: var(--text-secondary); }
+.btn-text:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .auth-secure {
   display: flex;
@@ -580,7 +657,6 @@ async function submitPinReset() {
   color: var(--text-muted);
 }
 
-/* ── Modal ───────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;

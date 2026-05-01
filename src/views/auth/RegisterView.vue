@@ -21,6 +21,11 @@
             <UField label="Phone Number" type="tel" v-model="form.phone" placeholder="+265 XXX XXX XXX" />
             <UField label="Email Address (optional)" type="email" v-model="form.email" placeholder="name@email.com" />
 
+            <template v-if="form.email">
+              <UField label="Password" type="password" v-model="form.password" placeholder="Min 8 chars, upper, lower & number" />
+              <UField label="Confirm Password" type="password" v-model="form.password_confirmation" placeholder="Repeat password" />
+            </template>
+
             <div class="field">
               <label class="field__label">
                 Country
@@ -61,6 +66,9 @@
               placeholder="000000" maxlength="6" class="otp-field" />
             <UError v-if="error" :message="error" />
             <UButton :loading="loading">Verify Phone Number</UButton>
+            <button type="button" class="btn-text" @click="resendPhoneOtp" :disabled="resendCooldown > 0">
+              {{ resendCooldown > 0 ? `Resend code in ${resendCooldown}s` : 'Resend code' }}
+            </button>
             <button type="button" class="btn-text" @click="step = 'form'">← Go back</button>
           </form>
         </template>
@@ -90,7 +98,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { authApi } from '@/api/auth'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
@@ -104,15 +112,57 @@ const router   = useRouter()
 const ui       = useUiStore()
 const auth     = useAuthStore()
 const step     = ref('form')
-const userId   = ref(null)
 const otp      = ref('')
 const emailOtp = ref('')
 const error    = ref('')
 const loading  = ref(false)
 
+// Resend cooldown
+const resendCooldown = ref(0)
+let cooldownTimer = null
+
+function startResendCooldown() {
+  resendCooldown.value = 60
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) clearInterval(cooldownTimer)
+  }, 1000)
+}
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
+// Persist userId in sessionStorage so navigation away doesn't lose it
+const userId = ref(null)
+
+function saveUserId(id) {
+  userId.value = id
+  sessionStorage.setItem('reg_user_id', id)
+}
+
+function loadUserId() {
+  const stored = sessionStorage.getItem('reg_user_id')
+  if (stored) userId.value = parseInt(stored)
+}
+
+function clearUserId() {
+  userId.value = null
+  sessionStorage.removeItem('reg_user_id')
+}
+
+// Restore state on mount — handles returning from email app
+onMounted(() => {
+  loadUserId()
+  if (userId.value) {
+    step.value = 'otp'
+    startResendCooldown()
+  }
+})
+
 const form = ref({
   name: '', phone: '', email: '', country_code: 'MWI',
-  pin: '', pin_confirmation: '',
+  pin: '', pin_confirmation: '', password: '', password_confirmation: '',
 })
 
 const countries = [
@@ -171,13 +221,11 @@ const countries = [
   ['ZWE', '🇿🇼 Zimbabwe',         '+263'],
 ]
 
-// Detect country from phone number prefix
 const countryDetected = ref(false)
 
 function detectCountryFromPhone(phone) {
   if (!phone) return
   const digits = phone.replace(/\D/g, '')
-  // Sort by dial code length descending for greedy match
   const sorted = [...countries].sort((a, b) => b[2].length - a[2].length)
   for (const [code,, dial] of sorted) {
     const prefix = dial.replace('+', '')
@@ -204,14 +252,26 @@ async function handleRegister() {
       router.push(auth.isStaff ? '/admin' : '/dashboard')
       return
     }
-    userId.value = data.user_id
+    saveUserId(data.user_id)
     step.value = 'otp'
+    startResendCooldown()
   } catch (err) {
     const errs = err.response?.data?.errors
     error.value = errs
       ? Object.values(errs).flat()[0]
       : err.response?.data?.message || 'Registration failed'
   } finally { loading.value = false }
+}
+
+async function resendPhoneOtp() {
+  if (resendCooldown.value > 0 || !userId.value) return
+  error.value = ''
+  try {
+    await client.post('/auth/resend-otp', { user_id: userId.value, type: 'phone_verification' })
+    startResendCooldown()
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Failed to resend code.'
+  }
 }
 
 async function handleVerify() {
@@ -223,6 +283,7 @@ async function handleVerify() {
       await authApi.verifyEmail({ user_id: userId.value, send: true })
       step.value = 'email_otp'
     } else {
+      clearUserId()
       ui.success('Phone verified. You can now sign in.')
       router.push('/login')
     }
@@ -236,6 +297,7 @@ async function handleEmailVerify() {
   loading.value = true
   try {
     await authApi.verifyEmail({ user_id: userId.value, otp: emailOtp.value })
+    clearUserId()
     ui.success('Email verified. You can now sign in.')
     router.push('/login')
   } catch (err) {
@@ -244,6 +306,7 @@ async function handleEmailVerify() {
 }
 
 function skipEmailVerification() {
+  clearUserId()
   ui.success('Account created. You can verify your email later from your profile.')
   router.push('/login')
 }
@@ -260,7 +323,6 @@ function skipEmailVerification() {
 }
 .auth-wrap { width: 100%; max-width: 420px; }
 
-/* ── Brand ───────────────────────────────────── */
 .auth-brand { margin-bottom: 28px; }
 .brand-link {
   display: inline-flex;
@@ -273,7 +335,6 @@ function skipEmailVerification() {
   display: block;
 }
 
-/* ── Auth Box ────────────────────────────────── */
 .auth-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -300,7 +361,6 @@ function skipEmailVerification() {
   margin-bottom: 10px;
 }
 
-/* ── Country Select ──────────────────────────── */
 .field__lock {
   font-size: 11px;
   font-weight: 500;
@@ -312,8 +372,6 @@ function skipEmailVerification() {
   border-color: var(--accent);
   background: var(--bg-elevated);
 }
-/* Native selects don't inherit CSS vars reliably in dark mode,
-   so we set all relevant properties explicitly */
 .field { margin-bottom: 16px; }
 .field__label {
   display: block;
@@ -340,14 +398,12 @@ function skipEmailVerification() {
   box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.1);
 }
 
-/* ── PIN Row ─────────────────────────────────── */
 .pin-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* ── OTP Field ───────────────────────────────── */
 .otp-field :deep(input) {
   text-align: center;
   letter-spacing: 0.4em;
@@ -355,7 +411,6 @@ function skipEmailVerification() {
   font-weight: 700;
 }
 
-/* ── Footer ──────────────────────────────────── */
 .auth-alt {
   text-align: center;
   margin-top: 20px;
@@ -403,4 +458,5 @@ function skipEmailVerification() {
   font-family: 'DM Sans', sans-serif;
 }
 .btn-text:hover { color: var(--text-secondary); }
+.btn-text:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>

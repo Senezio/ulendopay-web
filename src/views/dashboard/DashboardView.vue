@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="dashboard__header fade-up">
         <div class="header-text">
-          <h1>Good {{ greeting }}, {{ firstName }} 👋</h1>
+          <h1>Good {{ greeting }}, {{ firstName }} <i class="fa-sharp-duotone fa-solid fa-hand-wave"></i></h1>
           <p>Here's your financial overview</p>
         </div>
       </div>
