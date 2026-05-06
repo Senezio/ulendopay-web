@@ -64,8 +64,33 @@
           <UField
             label="Document Number"
             v-model="form.document_number"
-            placeholder="Enter ID or Passport number"
+            :placeholder="isIdentityDoc ? 'Enter ID or Passport number (required)' : 'Enter document number'"
+            :required="isIdentityDoc"
           />
+
+          <div v-if="isIdentityDoc" class="field">
+            <label>Date of Birth <span class="required">*</span></label>
+            <input
+              type="date"
+              v-model="form.date_of_birth"
+              :max="maxDob"
+              min="1900-01-01"
+              class="date-input"
+              required
+            />
+            <span class="field-hint">Must match your document exactly</span>
+          </div>
+
+          <div v-if="isIdentityDoc" class="field">
+            <label>Gender <span class="required">*</span></label>
+            <select v-model="form.gender" required>
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            <span class="field-hint">Must match your document exactly</span>
+          </div>
 
           <div class="field">
             <label>Document Photo / PDF</label>
@@ -121,7 +146,15 @@ const allDocs = [
 const availableDocuments = computed(() => allDocs)
 const tierDocHint = computed(() => 'Please upload a valid government-issued photo ID or supporting document.')
 
-const form = ref({ document_type: 'national_id', document_number: '', requested_tier: '' })
+const form = ref({ document_type: 'national_id', document_number: '', date_of_birth: '', gender: '', requested_tier: '' })
+
+const identityDocTypes = ['passport', 'national_id', 'drivers_license', 'voters_card']
+const isIdentityDoc    = computed(() => identityDocTypes.includes(form.value.document_type))
+const maxDob           = computed(() => {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 18) // must be at least 18
+  return d.toISOString().split('T')[0]
+})
 
 function onTierChange() {
   if (form.value.document_type === '') {
@@ -176,6 +209,22 @@ async function handleSubmit() {
   // Clear previous error
   error.value = ''
   
+  // Validate DOB and gender for identity documents
+  if (identityDocTypes.includes(form.value.document_type)) {
+    if (!form.value.date_of_birth) {
+      error.value = 'Date of birth is required for identity documents'
+      return
+    }
+    if (!form.value.gender) {
+      error.value = 'Gender is required for identity documents'
+      return
+    }
+    if (!form.value.document_number) {
+      error.value = 'Document number is required for identity documents'
+      return
+    }
+  }
+
   // Validate file exists
   if (!file.value) {
     error.value = 'Please select a document to upload'
@@ -195,6 +244,8 @@ async function handleSubmit() {
     fd.append('document_type', form.value.document_type)
     fd.append('document_number', form.value.document_number || '')
     fd.append('requested_tier', form.value.requested_tier)
+    if (form.value.date_of_birth) fd.append('date_of_birth', form.value.date_of_birth)
+    if (form.value.gender)        fd.append('gender', form.value.gender)
     fd.append('document', file.value, file.value.name)
 
     // Log FormData contents for debugging
@@ -300,6 +351,15 @@ async function handleSubmit() {
 .file-upload input { display: none; }
 .file-icon { font-size: 28px; }
 .file-text { font-size: 13px; color: var(--text-secondary); text-align: center; }
+
+.date-input {
+  width: 100%; padding: 11px 14px; background: var(--bg-elevated);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text-primary); font-size: 14px; font-family: 'Sora', sans-serif;
+  outline: none; box-sizing: border-box;
+}
+.date-input:focus { border-color: var(--accent); }
+.required { color: var(--danger); margin-left: 2px; }
 
 .submitted { text-align: center; padding: 20px 0; }
 .submitted h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
