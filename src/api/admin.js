@@ -37,6 +37,12 @@ export const adminApi = {
 
   // Fraud
   fraudAlerts: (params) => client.get('/admin/fraud-alerts', { params }),
+  complianceAlerts:      (params) => client.get('/admin/compliance/alerts', { params }),
+  complianceAlertShow:   (id)     => client.get(`/admin/compliance/alerts/${id}`),
+  complianceAlertReview: (id)     => client.post(`/admin/compliance/alerts/${id}/review`),
+  complianceAlertClear:  (id, notes) => client.post(`/admin/compliance/alerts/${id}/clear`, { notes }),
+  complianceAlertConfirm:(id, notes) => client.post(`/admin/compliance/alerts/${id}/confirm`, { notes }),
+  complianceStats:       ()       => client.get('/admin/compliance/stats'),
   fraudClear: (id, notes) => client.post(`/admin/fraud-alerts/${id}/clear`, { notes }),
   fraudConfirm: (id, notes) => client.post(`/admin/fraud-alerts/${id}/confirm`, { notes }),
 
@@ -64,4 +70,11 @@ export const adminApi = {
   accountToggle:  (id)       => client.post(`/admin/accounts/${id}/toggle`),
   accountAdjust:  (id, data) => client.post(`/admin/accounts/${id}/adjust`, data),
   accountCreate:  (data)     => client.post('/admin/accounts', data),
+
+  // Audit Log
+  auditLog: (params) => client.get('/admin/audit-log', { params }),
+  
+  // Webhook Logs
+  webhookLogs: (params) => client.get('/admin/webhooks/logs', { params }),
+  webhookLogShow: (id) => client.get('/admin/webhooks/logs/' + id),
 }

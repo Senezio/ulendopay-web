@@ -31,22 +31,29 @@
       <form v-else class="contact-form fade-up-1" @submit.prevent="submit">
         <div class="contact-form__field">
           <label class="contact-form__label">Full name</label>
-          <input v-model="name" class="contact-form__input" type="text"
+          <input v-model="form.name" class="contact-form__input" type="text"
             placeholder="Your name" required />
         </div>
         <div class="contact-form__field">
           <label class="contact-form__label">Email address</label>
-          <input v-model="email" class="contact-form__input" type="email"
+          <input v-model="form.email" class="contact-form__input" type="email"
             placeholder="you@example.com" required />
         </div>
         <div class="contact-form__field">
           <label class="contact-form__label">Message</label>
-          <textarea v-model="message" class="contact-form__input contact-form__textarea"
+          <textarea v-model="form.message" class="contact-form__input contact-form__textarea"
             rows="5" placeholder="How can we help?" required></textarea>
         </div>
-        <button type="submit" class="btn-primary">Send message</button>
+
+        <div v-if="error" class="contact-form__error">{{ error }}</div>
+
+        <button type="submit" class="btn-primary" :disabled="loading">
+          <i v-if="loading" class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i>
+          <span v-else>Send message</span>
+        </button>
+
         <p class="contact-form__note">
-          You can also reach us at
+          Or email us directly at
           <a href="mailto:support@ulendopay.com">support@ulendopay.com</a>
         </p>
       </form>
@@ -61,15 +68,30 @@
 
 <script setup>
 import { ref } from 'vue'
+import client from '@/api/client'
 
-const name    = ref('')
-const email   = ref('')
-const message = ref('')
 const sent    = ref(false)
+const loading = ref(false)
+const error   = ref('')
 
-function submit() {
-  if (!name.value || !email.value || !message.value) return
-  sent.value = true
+const form = ref({
+  name: '',
+  email: '',
+  message: '',
+})
+
+async function submit() {
+  if (!form.value.name || !form.value.email || !form.value.message) return
+  error.value = ''
+  loading.value = true
+  try {
+    await client.post('/contact', form.value)
+    sent.value = true
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Failed to send message. Please try again.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -84,7 +106,10 @@ function submit() {
   font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
-.contact-wrap { width: 100%; max-width: 520px; }
+.contact-wrap {
+  width: 100%;
+  max-width: 520px;
+}
 
 /* ── Brand ───────────────────────────────────── */
 .contact-brand { margin-bottom: 28px; }
@@ -128,10 +153,6 @@ function submit() {
 
 /* ── Form ────────────────────────────────────── */
 .contact-form {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -150,14 +171,14 @@ function submit() {
 }
 
 .contact-form__input {
-  padding: 11px 14px;
-  font-size: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
   font-family: inherit;
   border: 1.5px solid var(--border);
   border-radius: 10px;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
-  background: var(--bg-elevated);
+  background: var(--bg-card);
   color: var(--text-primary);
   width: 100%;
   box-sizing: border-box;
@@ -167,14 +188,23 @@ function submit() {
 
 .contact-form__textarea {
   resize: vertical;
-  min-height: 120px;
-  line-height: 1.5;
+  min-height: 140px;
+  line-height: 1.6;
+}
+
+.contact-form__error {
+  font-size: 13px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 
 .contact-form__note {
   font-size: 13px;
   color: var(--text-muted);
   text-align: center;
+  margin: 0;
 }
 .contact-form__note a {
   color: var(--accent);
@@ -202,32 +232,30 @@ function submit() {
 }
 .btn-primary:hover { opacity: 0.9; }
 .btn-primary:active { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Success ─────────────────────────────────── */
 .contact-success {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 48px 32px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  padding: 48px 0;
 }
 .contact-success__icon {
-  font-size: 52px;
+  font-size: 56px;
   color: var(--success);
   line-height: 1;
   margin-bottom: 8px;
 }
 .contact-success h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
 }
 .contact-success p {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-secondary);
   margin-bottom: 8px;
 }
@@ -238,8 +266,15 @@ function submit() {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 20px;
+  margin-top: 32px;
   font-size: 12px;
   color: var(--text-muted);
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 480px) {
+  .contact-page { padding: 32px 16px 60px; }
+  .contact-header h1 { font-size: 24px; }
+  .contact-form__input { font-size: 16px; }
 }
 </style>

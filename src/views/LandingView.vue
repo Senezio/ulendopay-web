@@ -7,7 +7,7 @@
         <!-- Logo -->
         <RouterLink to="/" class="navbar__logo">
           <img src="/logo.png?v=2" alt="Logo" style="height: 40px; width: auto; display: block;">
-          <span>Ulendo <strong>Pay</strong></span>
+          
         </RouterLink>
 
         <!-- Desktop nav links -->
@@ -67,12 +67,12 @@
     <!-- ── Fee Calculator ───────────────────────────────────────────────────── -->
     <section class="calculator-section">
       <div class="container">
-        <div class="calc-card">
-          <div class="calc-card__header">
-            <div class="calc-card__title">How much will it cost?</div>
-            <div class="calc-card__sub">Get a live estimate — no account needed</div>
-          </div>
-          <div class="calc-card__body">
+        <div class="calc-header">
+          <div class="section__label">FEE CALCULATOR</div>
+          <h2 class="calc-title">How much will it cost?</h2>
+          <p class="calc-sub">Get a live estimate — no account needed</p>
+        </div>
+        <div class="calc-body">
             <div class="calc-row">
               <div class="calc-field">
                 <label>You send</label>
@@ -120,7 +120,6 @@
             <RouterLink to="/register" class="btn-primary btn-primary--full calc-cta">
               Send money at this rate →
             </RouterLink>
-          </div>
         </div>
       </div>
     </section>
@@ -128,7 +127,7 @@
     <!-- ── Trust bar ─────────────────────────────────────────────────────── -->
     <section class="trust-bar">
       <div class="container trust-bar__inner">
-        <div v-for="t in trustPoints" :key="t.label" class="trust-item stagger-item">
+        <div v-for="t in trustPoints" :key="t.label" class="trust-item">
           <span class="trust-item__icon"><i :class="t.iconClass"></i></span>
           <div>
             <div class="trust-item__label">{{ t.label }}</div>
@@ -227,7 +226,7 @@
       <div class="container footer__inner">
         <div class="footer__brand">
           <img src="/logo.png?v=2" alt="Logo" style="height: 32px; width: auto; display: block;">
-          <span>Ulendo Pay</span>
+          
         </div>
         <div class="footer__links">
           <RouterLink to="/privacy">Privacy Policy</RouterLink>
@@ -378,6 +377,7 @@ const securityPoints = [
   color: #1a1a1a;
   background: var(--bg-card);
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 .container {
@@ -911,7 +911,7 @@ const securityPoints = [
   .hero__content { padding: 56px 24px; }
   .trust-bar__inner { grid-template-columns: 1fr; }
   .features-grid    { grid-template-columns: 1fr; }
-  .calc-card { width: 100%; box-sizing: border-box; }
+  .calc-body { width: 100%; box-sizing: border-box; }
   .hero__actions { flex-direction: column; }
   .btn-primary--lg, .btn-outline--lg { width: 100%; text-align: center; box-sizing: border-box; }
 }
@@ -1012,26 +1012,32 @@ const securityPoints = [
 .calculator-section {
   background: #f8f9fa;
   padding: 48px 0;
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+  overflow-x: hidden;
 }
-.calc-card {
-  background: var(--bg-card);
-  border: 1px solid #e5e5e5;
-  border-radius: 16px;
-  overflow: hidden;
+.calc-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.calc-title {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  color: #111;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.calc-sub {
+  font-size: 15px;
+  color: #777;
+  margin: 0;
+}
+.calc-body {
   max-width: 680px;
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
 }
-.calc-card__header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
-}
-.calc-card__title { font-size: 17px; font-weight: 700; color: #111; }
-.calc-card__sub   { font-size: 13px; color: #888; margin-top: 3px; }
-
-.calc-card__body { padding: 24px; box-sizing: border-box; }
 
 .calc-row {
   display: flex;

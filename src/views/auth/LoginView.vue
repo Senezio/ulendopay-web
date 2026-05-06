@@ -9,7 +9,7 @@
         </RouterLink>
       </div>
 
-      <div class="auth-box fade-up-1">
+
         <template v-if="step === 'credentials'">
           <div class="auth-head">
             <h1>Sign in</h1>
@@ -91,8 +91,6 @@
             </button>
           </form>
         </template>
-      </div>
-
       <div class="auth-secure fade-up-2">
         <i class="fa-sharp-duotone fa-solid fa-lock"></i> Secured with end-to-end encryption
       </div>
@@ -539,10 +537,7 @@ async function submitPinReset() {
 }
 
 .auth-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
+  padding: 0;
 }
 
 .auth-head { margin-bottom: 24px; }

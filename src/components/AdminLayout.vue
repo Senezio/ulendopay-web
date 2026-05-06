@@ -1,21 +1,14 @@
 <template>
   <div class="admin-layout">
 
-    <!-- Mobile header -->
     <header class="admin-mobile-header">
       <button class="menu-toggle" @click="sidebarOpen = !sidebarOpen">
         <i class="fa-sharp-duotone fa-solid fa-bars"></i>
       </button>
-      <div class="mobile-brand">
-        <img src="/logo.png" alt="UlendoPay" style="height: 28px; width: auto; border-radius: 6px;">
-        <span>Admin Dashboard</span>
-      </div>
-      <div class="mobile-user">
-        <i class="fa-sharp-duotone fa-solid fa-user-tie"></i>
-      </div>
+
+      
     </header>
 
-    <!-- Sidebar overlay for mobile -->
     <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false"></div>
 
     <aside class="admin-sidebar" :class="{ open: sidebarOpen }">
@@ -62,18 +55,27 @@
           <i class="fa-sharp-duotone fa-solid fa-triangle-exclamation"></i>Fraud Alerts
           <span v-if="fraudCount > 0" class="nav-badge nav-badge--danger">{{ fraudCount }}</span>
         </RouterLink>
+        <RouterLink to="/admin/compliance" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/compliance') }" @click="sidebarOpen = false">
+          <i class="fa-sharp-duotone fa-solid fa-shield-halved"></i>Compliance
+          <span v-if="complianceCount > 0" class="nav-badge nav-badge--danger">{{ complianceCount }}</span>
+        </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/staff" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/staff') }" @click="sidebarOpen = false">
           <i class="fa-duotone fa-solid fa-user-shield"></i>Staff
         </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/partners" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/partners') }" @click="sidebarOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-handshake"></i>Partners
-        
         </RouterLink>
         <RouterLink to="/admin/settings" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/settings') }" @click="sidebarOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-gear"></i>Settings
         </RouterLink>
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/accounts" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/accounts') }" @click="sidebarOpen = false">
           <i class="fa-duotone fa-solid fa-building-columns"></i>Accounts
+        </RouterLink>
+        <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/audit-log" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/audit-log') }" @click="sidebarOpen = false">
+          <i class="fa-sharp-duotone fa-solid fa-clock-rotate-left"></i>Audit Log
+        </RouterLink>
+        <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/webhooks" class="admin-nav-item" :class="{ active: route.path === '/admin/webhooks' }" @click="sidebarOpen = false">
+          <i class="fa-sharp-duotone fa-solid fa-terminal"></i>Webhook Logs
         </RouterLink>
       </nav>
 
@@ -114,8 +116,9 @@ const auth        = useAuthStore()
 const admin       = useAdminStore()
 const sidebarOpen = ref(false)
 
-const kycCount   = computed(() => admin.stats?.users?.kyc_pending ?? 0)
-const fraudCount = computed(() => admin.stats?.fraud_alerts?.new ?? 0)
+const kycCount        = computed(() => admin.stats?.users?.kyc_pending ?? 0)
+const fraudCount      = computed(() => admin.stats?.fraud_alerts?.new ?? 0)
+const complianceCount = computed(() => admin.stats?.compliance_alerts?.new ?? 0)
 const initials   = computed(() => (auth.user?.name || 'A').split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase())
 
 function formatRole(r) {
@@ -135,19 +138,15 @@ async function handleLogout() {
 .admin-mobile-header {
   display: none;
   position: fixed; top: 0; left: 0; right: 0; z-index: 20;
-  background: #0f172a; height: 56px;
-  padding: 0 16px; align-items: center; justify-content: space-between;
+  background: #0f172a; height: 48px;
+  padding: 0 14px; align-items: center; justify-content: space-between;
 }
 .menu-toggle {
   width: 36px; height: 36px; background: #1e293b; border: none;
   border-radius: 8px; color: #94a3b8; cursor: pointer; font-size: 16px;
   display: flex; align-items: center; justify-content: center;
 }
-.mobile-brand {
-  display: flex; align-items: center; gap: 10px;
-  color: var(--text-inverse); font-weight: 700; font-size: 15px;
-}
-.mobile-brand img { border-radius: 6px; background: var(--bg-card); padding: 2px; }
+
 .mobile-user {
   width: 36px; height: 36px; background: #1e293b;
   border-radius: 8px; display: flex; align-items: center;
@@ -177,18 +176,18 @@ async function handleLogout() {
   justify-content: center; color: var(--text-inverse); font-size: 15px; flex-shrink: 0;
 }
 .brand-name { color: var(--text-inverse); font-weight: 700; font-size: 14px; }
-.brand-sub  { color: #475569; font-size: 10px; font-weight: 500; }
+.brand-sub  { color: #94a3b8; font-size: 10px; font-weight: 500; }
 .sidebar-close { display: none; margin-left: auto; background: none; border: none; color: #64748b; cursor: pointer; font-size: 16px; }
 
 .admin-sidebar__nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 1px; }
 .nav-section-label {
-  font-size: 10px; font-weight: 700; color: #334155;
+  font-size: 10px; font-weight: 700; color: #94a3b8;
   text-transform: uppercase; letter-spacing: 0.08em;
   padding: 10px 8px 4px;
 }
 .admin-nav-item {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 7px; color: #64748b;
+  padding: 9px 10px; border-radius: 7px; color: #94a3b8;
   text-decoration: none; font-size: 13px; font-weight: 500;
   transition: all 0.15s;
 }
@@ -212,11 +211,11 @@ async function handleLogout() {
   font-weight: 700; flex-shrink: 0;
 }
 .staff-name { color: #e2e8f0; font-size: 12px; font-weight: 600; }
-.staff-role { color: #475569; font-size: 10px; }
+.staff-role { color: #64748b; font-size: 10px; }
 .footer-actions { display: flex; gap: 6px; }
 .footer-btn {
   flex: 1; padding: 7px; background: #1e293b; border: none;
-  border-radius: 7px; color: #475569; cursor: pointer; font-size: 12px;
+  border-radius: 7px; color: #64748b; cursor: pointer; font-size: 12px;
   text-align: center; text-decoration: none; display: flex;
   align-items: center; justify-content: center; transition: all 0.15s;
 }
@@ -227,8 +226,8 @@ async function handleLogout() {
 /* ── Mobile ── */
 @media (max-width: 768px) {
   .admin-mobile-header { display: flex; }
-  .admin-main { margin-left: 0; padding-top: 56px; width: 100%; }
-  .admin-sidebar { transform: translateX(-100%); }
+  .admin-main { margin-left: 0; padding-top: 48px; width: 100%; }
+  .admin-sidebar { transform: translateX(-100%); width: 60%; }
   .admin-sidebar.open { transform: translateX(0); }
   .sidebar-overlay { display: block; }
   .sidebar-close { display: block; }

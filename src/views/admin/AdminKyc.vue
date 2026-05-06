@@ -144,18 +144,56 @@
 
             <!-- Document Viewer -->
             <div class="document-viewer">
-              <div class="document-viewer__label">Submitted Document</div>
+              <div class="document-viewer__toolbar">
+                <span class="document-viewer__label">Submitted Document</span>
+                <div class="document-viewer__controls" v-if="documentUrl && isPdf">
+                  <button class="doc-btn" @click="prevPage" :disabled="pdfPage <= 1">
+                    <i class="fa-sharp-duotone fa-solid fa-chevron-left"></i>
+                  </button>
+                  <span class="doc-page">{{ pdfPage }} / {{ pdfTotalPages }}</span>
+                  <button class="doc-btn" @click="nextPage" :disabled="pdfPage >= pdfTotalPages">
+                    <i class="fa-sharp-duotone fa-solid fa-chevron-right"></i>
+                  </button>
+                  <div class="doc-divider"></div>
+                  <button class="doc-btn" @click="zoomOut" :disabled="pdfScale <= 0.5">
+                    <i class="fa-sharp-duotone fa-solid fa-minus"></i>
+                  </button>
+                  <span class="doc-zoom">{{ Math.round(pdfScale * 100) }}%</span>
+                  <button class="doc-btn" @click="zoomIn" :disabled="pdfScale >= 3">
+                    <i class="fa-sharp-duotone fa-solid fa-plus"></i>
+                  </button>
+                  <div class="doc-divider"></div>
+                  <a :href="documentUrl" target="_blank" class="doc-btn" title="Open in new tab">
+                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </div>
+                <div class="document-viewer__controls" v-else-if="documentUrl && isImage">
+                  <button class="doc-btn" @click="imgZoom = Math.max(0.5, imgZoom - 0.25)">
+                    <i class="fa-sharp-duotone fa-solid fa-minus"></i>
+                  </button>
+                  <span class="doc-zoom">{{ Math.round(imgZoom * 100) }}%</span>
+                  <button class="doc-btn" @click="imgZoom = Math.min(3, imgZoom + 0.25)">
+                    <i class="fa-sharp-duotone fa-solid fa-plus"></i>
+                  </button>
+                  <div class="doc-divider"></div>
+                  <a :href="documentUrl" target="_blank" class="doc-btn" title="Open in new tab">
+                    <i class="fa-sharp-duotone fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </div>
+              </div>
               <div v-if="documentLoading" class="document-viewer__loading">
                 <i class="fa-sharp-duotone fa-solid fa-spinner-third fa-spin"></i> Loading document...
               </div>
               <div v-else-if="documentUrl" class="document-viewer__content">
-                <img
-                  v-if="isImage"
-                  :src="documentUrl"
-                  alt="KYC Document"
-                  class="document-viewer__img"
-                  @error="documentError = true"
-                />
+                <div v-if="isImage" class="document-viewer__img-wrap">
+                  <img
+                    :src="documentUrl"
+                    alt="KYC Document"
+                    class="document-viewer__img"
+                    :style="{ transform: `scale(${imgZoom})`, transformOrigin: 'top center' }"
+                    @error="documentError = true"
+                  />
+                </div>
                 <div v-else-if="isPdf" class="document-viewer__pdf-wrap">
                   <canvas ref="pdfCanvas" class="document-viewer__pdf-canvas"></canvas>
                 </div>
@@ -279,34 +317,66 @@ const actionLoading = ref(false)
 const rejectMode    = ref(false)
 const rejectReason  = ref('')
 const documentUrl   = ref(null)
-const pdfCanvas     = ref(null)
+const pdfCanvas       = ref(null)
 const documentLoading = ref(false)
-const documentError = ref(false)
-const documentMime  = ref(null)
+const documentError   = ref(false)
+const documentMime    = ref(null)
+const pdfInstance     = ref(null)
+const pdfPage         = ref(1)
+const pdfTotalPages   = ref(1)
+const pdfScale        = ref(1.5)
+const imgZoom         = ref(1)
 
 const isImage = computed(() => documentMime.value?.startsWith('image/'))
 const isPdf   = computed(() => documentMime.value === 'application/pdf')
 
-async function renderPdf(blobUrl) {
+async function renderPdfPage() {
   await nextTick()
-  if (!pdfCanvas.value) return
+  if (!pdfCanvas.value || !pdfInstance.value) return
   try {
-    const pdfjs = window.pdfjsLib
-    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
-    const pdf = await pdfjs.getDocument(blobUrl).promise
-    const page = await pdf.getPage(1)
-    const viewport = page.getViewport({ scale: 1.5 })
-    const canvas = pdfCanvas.value
-    canvas.width = viewport.width
-    canvas.height = viewport.height
+    const page     = await pdfInstance.value.getPage(pdfPage.value)
+    const viewport = page.getViewport({ scale: pdfScale.value })
+    const canvas   = pdfCanvas.value
+    canvas.width   = viewport.width
+    canvas.height  = viewport.height
     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
   } catch (e) {
     console.error('PDF render failed', e)
   }
 }
 
+async function loadPdf(blobUrl) {
+  try {
+    const pdfjs = window.pdfjsLib
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+    pdfInstance.value   = await pdfjs.getDocument(blobUrl).promise
+    pdfTotalPages.value = pdfInstance.value.numPages
+    pdfPage.value       = 1
+    pdfScale.value      = 1.5
+    await renderPdfPage()
+  } catch (e) {
+    console.error('PDF load failed', e)
+  }
+}
+
+async function prevPage() {
+  if (pdfPage.value > 1) { pdfPage.value--; await renderPdfPage() }
+}
+
+async function nextPage() {
+  if (pdfPage.value < pdfTotalPages.value) { pdfPage.value++; await renderPdfPage() }
+}
+
+async function zoomIn() {
+  if (pdfScale.value < 3) { pdfScale.value = Math.round((pdfScale.value + 0.25) * 100) / 100; await renderPdfPage() }
+}
+
+async function zoomOut() {
+  if (pdfScale.value > 0.5) { pdfScale.value = Math.round((pdfScale.value - 0.25) * 100) / 100; await renderPdfPage() }
+}
+
 watch([isPdf, documentUrl], async ([pdf, url]) => {
-  if (pdf && url) await renderPdf(url)
+  if (pdf && url) await loadPdf(url)
 })
 
 function formatDocType(type) {
@@ -362,8 +432,14 @@ async function openRecord(record) {
     if (data.record.document_url) {
       try {
         const res  = await adminApi.kycDocument(data.record.document_url)
-        documentMime.value = res.data.type
-        documentUrl.value  = URL.createObjectURL(res.data)
+        // Read mime from response headers — blob.type may be empty
+        const mime = res.headers['content-type']?.split(';')[0].trim() || res.data.type || ''
+        console.log('[KYC] content-type header:', res.headers['content-type'])
+        console.log('[KYC] resolved mime:', mime)
+        console.log('[KYC] blob.type:', res.data.type)
+        documentMime.value = mime
+        const blob = new Blob([res.data], { type: mime })
+        documentUrl.value  = URL.createObjectURL(blob)
       } catch (e) {
         documentUrl.value = null
       }
@@ -490,40 +566,51 @@ onMounted(() => { load(); loadVerified() })
   border-radius: 12px;
   overflow: hidden;
 }
-.document-viewer__label {
-  padding: 10px 16px;
-  font-size: 11px; font-weight: 700;
-  color: #64748b; text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+.document-viewer__toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap; gap: 8px;
 }
+.document-viewer__label {
+  font-size: 11px; font-weight: 700;
+  color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.document-viewer__controls {
+  display: flex; align-items: center; gap: 4px;
+}
+.doc-btn {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  color: #475569; cursor: pointer; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; transition: all 0.15s;
+}
+.doc-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.doc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.doc-page { font-size: 12px; color: #475569; font-weight: 600; padding: 0 6px; white-space: nowrap; }
+.doc-zoom { font-size: 12px; color: #475569; font-weight: 600; padding: 0 6px; min-width: 40px; text-align: center; }
+.doc-divider { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
 .document-viewer__loading {
-  padding: 40px;
-  text-align: center;
-  color: #94a3b8;
-  font-size: 14px;
+  padding: 40px; text-align: center; color: #94a3b8; font-size: 14px;
   display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-.document-viewer__content { background: #000; }
-.document-viewer__img {
-  width: 100%; max-height: 500px;
-  object-fit: contain; display: block;
+.document-viewer__content { background: #525659; }
+.document-viewer__img-wrap {
+  overflow: auto; max-height: 520px; background: #525659;
+  display: flex; justify-content: center; padding: 16px;
 }
-.document-viewer__pdf {
-  width: 100%; height: 500px; display: block;
+.document-viewer__img {
+  max-width: 100%; display: block; transition: transform 0.2s;
 }
 .document-viewer__pdf-wrap {
   background: #525659; padding: 12px;
-  display: flex; justify-content: center; overflow-y: auto; max-height: 500px;
+  display: flex; justify-content: center; overflow: auto; max-height: 520px;
 }
 .document-viewer__pdf-canvas {
   max-width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .document-viewer__error {
-  padding: 40px;
-  text-align: center;
-  color: #94a3b8;
+  padding: 40px; text-align: center; color: #94a3b8;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
 .document-viewer__error i { font-size: 28px; color: #fbbf24; }

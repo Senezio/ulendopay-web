@@ -26,7 +26,7 @@
           <span class="tier-badge" :class="'tier-badge--' + (auth.user?.tier || 'unverified')">
             {{ auth.user?.tier ? auth.user.tier.charAt(0).toUpperCase() + auth.user.tier.slice(1) : 'Unverified' }} Tier
           </span>
-          <span v-if="auth.user?.tier !== 'verified'" class="upgrade-hint">
+          <span v-if="canUpgrade" class="upgrade-hint">
             Want higher limits? <RouterLink to="/kyc">Upgrade to Verified</RouterLink>
           </span>
         </div>
@@ -42,9 +42,11 @@
         <form v-else @submit.prevent="handleSubmit">
           <div class="field">
             <label>Requested Tier</label>
-            <select v-model="form.requested_tier">
-              <option value="basic">Basic — Higher limits, KYC pending</option>
-              <option value="verified">Verified — Full access, maximum limits</option>
+            <select v-model="form.requested_tier" @change="onTierChange">
+              <option v-if="tiersLoading" disabled value="">Loading tiers...</option>
+              <option v-for="t in availableTiers" :key="t.name" :value="t.name">
+                {{ t.label }} — {{ t.name }}
+              </option>
             </select>
             <span class="field-hint">Select the tier you are applying for</span>
           </div>
@@ -93,44 +95,56 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import AppLayout from '@/components/AppLayout.vue'
 import UField  from '@/components/ui/UField.vue'
 import UButton from '@/components/ui/UButton.vue'
 import UError  from '@/components/ui/UError.vue'
 import { useAuthStore } from '@/stores/auth'
 import client from '@/api/client'
+import { tierApi } from '@/api/tier'
 
 const auth = useAuthStore()
 
-watch(() => form.value.requested_tier, () => {
-  form.value.document_type = form.value.requested_tier === 'verified' ? 'passport' : 'national_id'
-})
+const availableTiers  = ref([])
+const tiersLoading    = ref(false)
+const canUpgrade      = computed(() => availableTiers.value.length > 0)
 
-const form      = ref({ document_type: 'national_id', document_number: '', requested_tier: 'basic' })
-
-const basicDocs = [
+const allDocs = [
   { value: 'national_id',     label: 'National ID / NRC' },
   { value: 'drivers_license', label: "Driver's License" },
   { value: 'voters_card',     label: "Voter's Card" },
-]
-
-const verifiedDocs = [
   { value: 'passport',        label: 'Passport' },
-  { value: 'national_id',     label: 'National ID + Bank Statement' },
-  { value: 'drivers_license', label: "Driver's License + Bank Statement" },
   { value: 'bank_statement',  label: 'Bank Statement (3 months, official letterhead)' },
 ]
 
-const availableDocuments = computed(() =>
-  form.value.requested_tier === 'verified' ? verifiedDocs : basicDocs
-)
+const availableDocuments = computed(() => allDocs)
+const tierDocHint = computed(() => 'Please upload a valid government-issued photo ID or supporting document.')
 
-const tierDocHint = computed(() =>
-  form.value.requested_tier === 'verified'
-    ? 'Verified tier requires a strong ID. Bank statements must show 3 months of activity on official letterhead.'
-    : 'Basic tier requires one government-issued photo ID.'
-)
+const form = ref({ document_type: 'national_id', document_number: '', requested_tier: '' })
+
+function onTierChange() {
+  if (form.value.document_type === '') {
+    form.value.document_type = allDocs[0].value
+  }
+}
+
+async function loadTiers() {
+  tiersLoading.value = true
+  try {
+    const res = await client.get('/tier/available')
+    availableTiers.value = res.data.tiers || []
+    if (availableTiers.value.length > 0) {
+      form.value.requested_tier = availableTiers.value[0].name
+    }
+  } catch {
+    availableTiers.value = []
+  } finally {
+    tiersLoading.value = false
+  }
+}
+
+onMounted(loadTiers)
 const file      = ref(null)
 const fileInput = ref(null)
 const error     = ref('')

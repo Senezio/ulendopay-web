@@ -9,7 +9,6 @@
         </RouterLink>
       </div>
 
-      <div class="auth-box fade-up-1">
         <template v-if="step === 'form'">
           <div class="auth-head">
             <h1>Create account</h1>
@@ -87,8 +86,6 @@
             <button type="button" class="btn-text" @click="skipEmailVerification">Skip for now →</button>
           </form>
         </template>
-      </div>
-
       <div class="auth-secure fade-up-2">
         <i class="fa-sharp-duotone fa-solid fa-lock"></i> Secured with end-to-end encryption
       </div>
@@ -336,10 +333,7 @@ function skipEmailVerification() {
 }
 
 .auth-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
+  padding: 0;
 }
 
 .auth-head { margin-bottom: 24px; }

@@ -38,11 +38,14 @@ const router = createRouter({
     { path: '/admin/transactions', name: 'admin-transactions', component: () => import('@/views/admin/AdminTransactions.vue'), meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/rates',        name: 'admin-rates',        component: () => import('@/views/admin/AdminRates.vue'),        meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/fraud',        name: 'admin-fraud',        component: () => import('@/views/admin/AdminFraud.vue'),        meta: { requiresAuth: true, requiresStaff: true } },
+    { path: '/admin/compliance',   name: 'admin-compliance',   component: () => import('@/views/admin/AdminCompliance.vue'),   meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/analytics',    name: 'admin-analytics',    component: () => import('@/views/admin/AdminAnalytics.vue'),    meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/staff',        name: 'admin-staff',        component: () => import('@/views/admin/AdminStaff.vue'),        meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
     { path: '/admin/partners',     name: 'admin-partners',     component: () => import('@/views/admin/AdminPartners.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
     { path: '/admin/settings',     name: 'admin-settings',     component: () => import('@/views/admin/AdminSettings.vue'),     meta: { requiresAuth: true, requiresStaff: true } },
     { path: '/admin/accounts',     name: 'admin-accounts',     component: () => import('@/views/admin/AdminAccounts.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
+    { path: '/admin/audit-log',    name: 'admin-audit-log',    component: () => import('@/views/admin/AdminAuditLog.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
+    { path: '/admin/webhooks', name: 'admin-webhooks', component: () => import('@/views/admin/AdminWebhookLog.vue'), meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
 
     // ── 404 ──────────────────────────────────────────────────────────────────
     { path: '/:pathMatch(.*)*', redirect: '/' },
