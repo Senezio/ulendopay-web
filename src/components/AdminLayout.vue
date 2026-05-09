@@ -77,6 +77,9 @@
         <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/webhooks" class="admin-nav-item" :class="{ active: route.path === '/admin/webhooks' }" @click="sidebarOpen = false">
           <i class="fa-sharp-duotone fa-solid fa-terminal"></i>Webhook Logs
         </RouterLink>
+        <RouterLink v-if="auth.user?.role === 'super_admin'" to="/admin/finance" class="admin-nav-item" :class="{ active: route.path.startsWith('/admin/finance') }" @click="sidebarOpen = false">
+          <i class="fa-sharp-duotone fa-solid fa-chart-mixed-up-circle-dollar"></i>Financial Reports
+        </RouterLink>
       </nav>
 
       <div class="admin-sidebar__footer">

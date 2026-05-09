@@ -46,6 +46,7 @@ const router = createRouter({
     { path: '/admin/accounts',     name: 'admin-accounts',     component: () => import('@/views/admin/AdminAccounts.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
     { path: '/admin/audit-log',    name: 'admin-audit-log',    component: () => import('@/views/admin/AdminAuditLog.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
     { path: '/admin/webhooks', name: 'admin-webhooks', component: () => import('@/views/admin/AdminWebhookLog.vue'), meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
+    { path: '/admin/finance',   name: 'admin-finance',   component: () => import('@/views/admin/AdminFinance.vue'),     meta: { requiresAuth: true, requiresStaff: true, requiresRole: 'super_admin' } },
 
     // ── 404 ──────────────────────────────────────────────────────────────────
     { path: '/:pathMatch(.*)*', redirect: '/' },

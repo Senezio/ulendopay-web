@@ -74,6 +74,21 @@ export const adminApi = {
   // Audit Log
   auditLog: (params) => client.get('/admin/audit-log', { params }),
   
+
+  // Financial Reports
+  reportTrialBalance: (params) => client.get("/reports/trial-balance", { params }),
+  reportBalanceSheet: (params) => client.get("/reports/balance-sheet", { params }),
+  reportProfitLoss:   (params) => client.get("/reports/profit-loss", { params }),
+  reportCashFlow:     (params) => client.get("/reports/cash-flow", { params }),
+
+  // Accounting Periods
+  periodList:      ()        => client.get("/periods"),
+  periodShow:      (id)      => client.get("/periods/" + id),
+  periodOpen:      (data)    => client.post("/periods", data),
+  periodClose:     (id)      => client.post("/periods/" + id + "/close"),
+  periodReopen:    (id)      => client.post("/periods/" + id + "/reopen"),
+  periodLock:      (id, data)=> client.post("/periods/" + id + "/lock", data),
+  periodSnapshots: (id)      => client.get("/periods/" + id + "/snapshots"),
   // Webhook Logs
   webhookLogs: (params) => client.get('/admin/webhooks/logs', { params }),
   webhookLogShow: (id) => client.get('/admin/webhooks/logs/' + id),
